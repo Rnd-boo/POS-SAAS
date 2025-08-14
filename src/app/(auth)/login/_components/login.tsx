@@ -5,15 +5,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
-import {
-  LoginForm,
-  loginSchemaForm,
-} from "@/validations/client-auth-validation";
+import { LoginForm, loginSchemaForm } from "@/validations/auth-validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   INITIAL_LOGIN_FORM,
   INITIAL_STATE_LOGIN_FORM,
-} from "@/constants/auth-client-constant";
+} from "@/constants/auth.constant";
 import FormInput from "@/components/common/form-input";
 import { startTransition, useActionState, useEffect } from "react";
 import { login } from "../actions";

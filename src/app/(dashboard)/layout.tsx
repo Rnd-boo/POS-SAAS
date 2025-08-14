@@ -1,3 +1,6 @@
+"use client";
+
+import { signOut } from "@/actions/auth-action";
 import { AppSidebar } from "@/components/common/app-sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -31,7 +34,7 @@ export default function DashboardLayout({
             <h1>CABANG!</h1>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Avatar className="h-8 w-8 rounded-lg">
+                <Avatar className="h-10 w-10 rounded-lg hover:bg-muted">
                   <AvatarImage
                     src="https://tgspmwvxvpbzhcvcltta.supabase.co/storage/v1/object/public/images/avatar.png"
                     alt="RANDY"
@@ -44,7 +47,11 @@ export default function DashboardLayout({
                 <Separator />
                 <DropdownMenuItem>Profile</DropdownMenuItem>
                 <DropdownMenuGroup>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      signOut();
+                    }}
+                  >
                     <LogOut /> Logout
                   </DropdownMenuItem>
                 </DropdownMenuGroup>

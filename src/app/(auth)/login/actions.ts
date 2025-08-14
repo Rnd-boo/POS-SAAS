@@ -1,8 +1,8 @@
 "use server";
-import { INITIAL_STATE_LOGIN_FORM } from "@/constants/auth-client-constant";
+import { INITIAL_STATE_LOGIN_FORM } from "@/constants/auth.constant";
 import { createClient } from "@/lib/supabase/server";
-import { ClientProfilesFormState } from "@/types/client-profiles";
-import { loginSchemaForm } from "@/validations/client-auth-validation";
+import { ClientProfilesFormState } from "@/types/profiles";
+import { loginSchemaForm } from "@/validations/auth-validation";
 import bcrypt from "bcryptjs";
 import { SignJWT } from "jose";
 import { revalidatePath } from "next/cache";
@@ -48,12 +48,12 @@ export async function login(
     .eq("username", validatedFields.data.username)
     .single();
 
-  if (error) {
+  if (error || !profile) {
     return {
       status: "error",
       errors: {
         ...prevState.errors,
-        _form: [error.message],
+        _form: ["Username not found"],
       },
     };
   }
@@ -68,7 +68,7 @@ export async function login(
       status: "error",
       errors: {
         ...prevState.errors,
-        _form: ["Invalid username or password"],
+        _form: ["Invalid password"],
       },
     };
   }
