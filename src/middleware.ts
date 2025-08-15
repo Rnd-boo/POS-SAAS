@@ -12,7 +12,7 @@ const getJwtSecretKey = () => {
 };
 
 export async function middleware(request: NextRequest) {
-  const token = request.cookies.get("client_session")?.value;
+  const token = request.cookies.get("client_profile")?.value;
 
   // If no token → go to login
   if (!token) {
@@ -32,7 +32,7 @@ export async function middleware(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     const res = NextResponse.redirect(url);
-    res.cookies.delete("client_session");
+    res.cookies.delete("client_profile");
     return res;
   }
 

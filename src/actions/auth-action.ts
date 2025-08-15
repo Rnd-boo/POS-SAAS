@@ -9,7 +9,7 @@ export async function signOut() {
   const cookiesStore = await cookies();
 
   try {
-    cookiesStore.delete("client_session");
+    cookiesStore.delete("client_profile");
     revalidatePath("/", "layout");
   } catch (error) {
     console.log("Error signin out", error);

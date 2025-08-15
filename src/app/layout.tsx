@@ -7,6 +7,7 @@ import { cookies } from "next/headers";
 import { Profile } from "@/types/profiles";
 import * as jose from "jose";
 import { getJwtSecretKey } from "@/lib/jwt";
+import ReactQueryProvider from "@/providers/react-query-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,7 +35,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const cookieStore = await cookies();
-  const token = cookieStore.get("client_session")?.value;
+  const token = cookieStore.get("client_profile")?.value;
   let profile: Profile | null = null;
 
   if (token) {
@@ -46,17 +47,19 @@ export default async function RootLayout({
         suppressHydrationWarning
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <AuthStoreProvider profile={profile || {}}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {children}
-            <Toaster />
-          </ThemeProvider>
-        </AuthStoreProvider>
+        <ReactQueryProvider>
+          <AuthStoreProvider profile={profile || {}}>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              {children}
+              <Toaster />
+            </ThemeProvider>
+          </AuthStoreProvider>
+        </ReactQueryProvider>
       </body>
     </html>
   );

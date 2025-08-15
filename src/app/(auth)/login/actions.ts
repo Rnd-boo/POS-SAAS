@@ -88,7 +88,7 @@ export async function login(
       .sign(getJwtSecretKey());
 
     const cookiesStore = await cookies();
-    cookiesStore.set("client_session", token, {
+    cookiesStore.set("client_profile", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       path: "/",
