@@ -78,6 +78,9 @@ export async function login(
     const token = await new SignJWT({
       id: profile.id,
       client: profile.client_id,
+      name: profile.name,
+      branch: profile.branch,
+      role: profile.role,
     })
       .setProtectedHeader({ alg: "HS256" })
       .setIssuedAt()

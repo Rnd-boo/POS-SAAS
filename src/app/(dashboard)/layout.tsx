@@ -17,6 +17,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { useAuthStore } from "@/stores/auth-store";
 import { LogOut } from "lucide-react";
 
 export default function DashboardLayout({
@@ -24,6 +25,7 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const profile = useAuthStore((state) => state.profile);
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -31,7 +33,7 @@ export default function DashboardLayout({
         <header className="flex justify-between h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]:h-12">
           <SidebarTrigger className="cursor-pointer mx-3" />
           <div className="flex gap-4 items-center px-6">
-            <h1>CABANG!</h1>
+            <h1 className="uppercase">{profile?.branch}</h1>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Avatar className="h-10 w-10 rounded-lg hover:bg-muted">
@@ -39,11 +41,15 @@ export default function DashboardLayout({
                     src="https://tgspmwvxvpbzhcvcltta.supabase.co/storage/v1/object/public/images/avatar.png"
                     alt="RANDY"
                   />
-                  <AvatarFallback className="rounded-lg">RANDY</AvatarFallback>
+                  <AvatarFallback className="rounded-lg">
+                    {profile?.name}
+                  </AvatarFallback>
                 </Avatar>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56" align="end">
-                <DropdownMenuLabel>Randy</DropdownMenuLabel>
+                <DropdownMenuLabel className="capitalize">
+                  {profile?.name}
+                </DropdownMenuLabel>
                 <Separator />
                 <DropdownMenuItem>Profile</DropdownMenuItem>
                 <DropdownMenuGroup>

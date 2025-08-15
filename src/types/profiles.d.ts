@@ -9,3 +9,10 @@ export type ClientProfilesFormState = {
     _form?: string[];
   };
 };
+
+export type Profile = {
+  id?: string;
+  name?: string;
+  role?: string;
+  branch?: string;
+};
