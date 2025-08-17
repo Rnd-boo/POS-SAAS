@@ -24,9 +24,14 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  let payload: any;
   // If token exists, verify it
   try {
-    const { payload } = await jwtVerify(token, getJwtSecretKey());
+    const { payload: verifiedPayload } = await jwtVerify(
+      token,
+      getJwtSecretKey()
+    );
+    payload = verifiedPayload;
   } catch (err) {
     // Token invalid/expired → clear cookie & go to login
     const url = request.nextUrl.clone();
@@ -34,6 +39,21 @@ export async function middleware(request: NextRequest) {
     const res = NextResponse.redirect(url);
     res.cookies.delete("client_profile");
     return res;
+  }
+
+  const userRole = payload.role as string | undefined;
+
+  const path = request.nextUrl.pathname;
+  if (path.startsWith("/admin")) {
+    if (userRole !== "admin" && userRole !== "supervisor") {
+      return NextResponse.redirect(new URL("/unauthorized", request.url));
+    }
+  }
+
+  if (path.startsWith("/master-data")) {
+    if (userRole !== "supervisor") {
+      return NextResponse.redirect(new URL("/unauthorized", request.url));
+    }
   }
 
   // If logged in and tries to visit /login → send to home
