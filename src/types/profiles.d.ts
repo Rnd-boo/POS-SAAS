@@ -15,4 +15,9 @@ export type Profile = {
   name?: string;
   role?: string;
   branch?: string;
+  brand?: string;
+  permissions?: {
+    dashboard: boolean;
+    inventory: boolean;
+  };
 };

@@ -41,6 +41,7 @@ export default async function RootLayout({
   if (token) {
     profile = await getProfileFromToken(token);
   }
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body

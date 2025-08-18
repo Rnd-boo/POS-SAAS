@@ -39,7 +39,7 @@ export default function DashboardLayout({
                 <Avatar className="h-10 w-10 rounded-lg hover:bg-muted">
                   <AvatarImage
                     src="https://tgspmwvxvpbzhcvcltta.supabase.co/storage/v1/object/public/images/avatar.png"
-                    alt="RANDY"
+                    alt={profile?.name}
                   />
                   <AvatarFallback className="rounded-lg">
                     {profile?.name}

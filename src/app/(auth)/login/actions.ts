@@ -44,7 +44,16 @@ export async function login(
   const supabase = await createClient();
   const { data: profile, error } = await supabase
     .from("client_profiles")
-    .select("*")
+    .select(
+      `
+      *,
+       role_access!role (
+        name,
+        dashboard,
+        inventory
+      )
+    `
+    )
     .eq("username", validatedFields.data.username)
     .single();
 
@@ -57,6 +66,8 @@ export async function login(
       },
     };
   }
+  console.log("Profile data:", JSON.stringify(profile, null, 2));
+  console.log("Supabase error:", error);
 
   const isValidPassword = await bcrypt.compare(
     validatedFields.data.password,
@@ -80,7 +91,11 @@ export async function login(
       client: profile.client_id,
       name: profile.name,
       branch: profile.branch,
-      role: profile.role,
+      role: profile.role_access.name,
+      permissions: {
+        dashboard: profile.role_access.dashboard,
+        inventory: profile.role_access.inventory,
+      },
     })
       .setProtectedHeader({ alg: "HS256" })
       .setIssuedAt()

@@ -30,7 +30,17 @@ export default function UserManagement() {
     queryFn: async () => {
       const result = await supabase
         .from("client_profiles")
-        .select("*", { count: "exact" })
+        .select(
+          `
+          *,
+          role_access!role (
+            name,
+            dashboard,
+            inventory
+          )
+         `,
+          { count: "exact" }
+        )
         .range((currentPage - 1) * currentLimit, currentPage * currentLimit - 1)
         .order("created_at")
         .ilike("name", `%${currentSearch}%`);
@@ -49,8 +59,9 @@ export default function UserManagement() {
       return [
         index + 1,
         user.name,
+        user.brand,
         user.branch,
-        user.role,
+        user.role_access.name,
         <DropdownAction
           menu={[
             {
