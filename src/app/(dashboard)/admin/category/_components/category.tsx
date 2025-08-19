@@ -5,15 +5,17 @@ import DropdownAction from "@/components/common/dropdown-action";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { HEADER_TABLE_USER } from "@/constants/user.constant";
+import { HEADER_TABLE_CATEGORY } from "@/constants/category.constant";
 import useDataTable from "@/hooks/use-data-table";
 import { createClient } from "@/lib/supabase/client";
+import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { Pencil, Trash2 } from "lucide-react";
 import { useMemo } from "react";
 import { toast } from "sonner";
+import DialogCreateCategory from "./dialog-create-category";
 
-export default function UserManagement() {
+export default function CategoryManagement() {
   const supabase = createClient();
 
   const {
@@ -25,28 +27,22 @@ export default function UserManagement() {
     handleChangeSearch,
   } = useDataTable();
 
-  const { data: users, isLoading } = useQuery({
-    queryKey: ["users", currentPage, currentLimit, currentSearch],
+  const {
+    data: categories,
+    isLoading,
+    refetch,
+  } = useQuery({
+    queryKey: ["categories", currentPage, currentLimit, currentSearch],
     queryFn: async () => {
       const result = await supabase
-        .from("client_profiles")
-        .select(
-          `
-          *,
-          role_access!role (
-            name,
-            dashboard,
-            inventory
-          )
-         `,
-          { count: "exact" }
-        )
+        .from("category")
+        .select("*")
         .range((currentPage - 1) * currentLimit, currentPage * currentLimit - 1)
         .order("created_at")
         .ilike("name", `%${currentSearch}%`);
 
       if (result.error)
-        toast.error("Get User Data Failed", {
+        toast.error("Get Category Data Failed", {
           description: result.error.message,
         });
 
@@ -55,13 +51,19 @@ export default function UserManagement() {
   });
 
   const filteredData = useMemo(() => {
-    return (users?.data || []).map((user, index) => {
+    return (categories?.data || []).map((category, index) => {
       return [
-        index + 1,
-        user.name,
-        user.brand,
-        user.branch,
-        user.role_access.name,
+        currentLimit * (currentPage - 1) + index + 1,
+        category.name,
+        <span className="block truncate max-w-xs">{category.description}</span>,
+        <div
+          className={cn(
+            "px-2 py-1 rounded-full text-white w-fit",
+            category.is_active ? "bg-green-600" : "bg-red-500"
+          )}
+        >
+          {category.is_active ? "Active" : "Not Active"}
+        </div>,
         <DropdownAction
           menu={[
             {
@@ -87,32 +89,33 @@ export default function UserManagement() {
         />,
       ];
     });
-  }, [users]);
+  }, [categories]);
 
   const totalPages = useMemo(() => {
-    return users && users.count !== null
-      ? Math.ceil(users.count / currentLimit)
+    return categories && categories.count !== null
+      ? Math.ceil(categories.count / currentLimit)
       : 0;
-  }, [users]);
+  }, [categories]);
 
   return (
     <div className="w-full">
-      <div className="flex flex-col lg:flex-row mb-4 gap-2 w-full justify-between">
-        <h1 className="text-2xl font-bold">User Management</h1>
+      <div className="flex flex-col lg:flex-row mb-4 gap-2 justify-between w-full">
+        <h1>Category Management</h1>
         <div className="flex gap-2">
           <Input
-            placeholder="Search by name"
+            placeholder="Search by category name"
             onChange={(e) => handleChangeSearch(e.target.value)}
           />
           <Dialog>
             <DialogTrigger asChild>
               <Button variant="outline">Create</Button>
             </DialogTrigger>
+            <DialogCreateCategory refetch={refetch} />
           </Dialog>
         </div>
       </div>
       <DataTable
-        header={HEADER_TABLE_USER}
+        header={HEADER_TABLE_CATEGORY}
         isLoading={isLoading}
         data={filteredData}
         totalPages={totalPages}

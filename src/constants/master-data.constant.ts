@@ -1,5 +1,5 @@
 export const MASTER_PRODUCT = [
-  { title: "Product", url: "/admin/master-data/product" },
-  { title: "Category", url: "//admin/master-data/category" },
-  { title: "Unit", url: "/admin/master-data/unit" },
+  { title: "Product", url: "/admin/product" },
+  { title: "Category", url: "/admin/category" },
+  { title: "Unit", url: "/admin/unit" },
 ];

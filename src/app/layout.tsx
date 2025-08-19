@@ -5,9 +5,9 @@ import { Toaster } from "@/components/ui/sonner";
 import AuthStoreProvider from "@/providers/auth-store-provider";
 import { cookies } from "next/headers";
 import { Profile } from "@/types/profiles";
-import * as jose from "jose";
-import { getJwtSecretKey } from "@/lib/jwt";
+
 import ReactQueryProvider from "@/providers/react-query-provider";
+import { getProfileFromToken } from "@/actions/auth-action";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,16 +18,6 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
-
-async function getProfileFromToken(token: string): Promise<Profile | null> {
-  try {
-    const { payload } = await jose.jwtVerify(token, getJwtSecretKey());
-    return payload as Profile;
-  } catch (err) {
-    console.error("Invalid JWT", err);
-    return null;
-  }
-}
 
 export default async function RootLayout({
   children,

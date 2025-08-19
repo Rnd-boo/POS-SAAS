@@ -66,8 +66,6 @@ export async function login(
       },
     };
   }
-  console.log("Profile data:", JSON.stringify(profile, null, 2));
-  console.log("Supabase error:", error);
 
   const isValidPassword = await bcrypt.compare(
     validatedFields.data.password,
