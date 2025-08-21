@@ -11,9 +11,12 @@ import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { Pencil, Trash2 } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import DialogCreateCategory from "./dialog-create-category";
+import DialogUpdateCategory from "./dialog-update-category";
+import { Category } from "@/validations/category-validation";
+import DialogDeleteCategory from "./dialog-delete-category";
 
 export default function CategoryManagement() {
   const supabase = createClient();
@@ -36,7 +39,7 @@ export default function CategoryManagement() {
     queryFn: async () => {
       const result = await supabase
         .from("category")
-        .select("*")
+        .select("*", { count: "exact" })
         .range((currentPage - 1) * currentLimit, currentPage * currentLimit - 1)
         .order("created_at")
         .ilike("name", `%${currentSearch}%`);
@@ -49,6 +52,15 @@ export default function CategoryManagement() {
       return result;
     },
   });
+
+  const [selectedAction, setSelectedAction] = useState<{
+    data: Category;
+    type: "update" | "delete";
+  } | null>(null);
+
+  const handleChangeAction = (open: boolean) => {
+    if (!open) setSelectedAction(null);
+  };
 
   const filteredData = useMemo(() => {
     return (categories?.data || []).map((category, index) => {
@@ -68,22 +80,32 @@ export default function CategoryManagement() {
           menu={[
             {
               label: (
-                <span className=" flex items-center gap-2">
+                <span className="flex items-center gap-2">
                   <Pencil />
                   Edit
                 </span>
               ),
-              action: () => {},
+              action: () => {
+                setSelectedAction({
+                  data: category,
+                  type: "update",
+                });
+              },
             },
             {
               label: (
-                <span className=" flex items-center gap-2">
+                <span className="flex items-center gap-2">
                   <Trash2 className="text-red-400" />
                   Delete
                 </span>
               ),
               variant: "destructive",
-              action: () => {},
+              action: () => {
+                setSelectedAction({
+                  data: category,
+                  type: "delete",
+                });
+              },
             },
           ]}
         />,
@@ -123,6 +145,18 @@ export default function CategoryManagement() {
         currentLimit={currentLimit}
         onChangePage={handleChangePage}
         onChangeLimit={handleChangeLimit}
+      />
+      <DialogUpdateCategory
+        open={selectedAction !== null && selectedAction.type === "update"}
+        refetch={refetch}
+        currentData={selectedAction?.data}
+        handleChangeAction={handleChangeAction}
+      />
+      <DialogDeleteCategory
+        open={selectedAction !== null && selectedAction.type === "delete"}
+        refetch={refetch}
+        currentData={selectedAction?.data}
+        handleChangeAction={handleChangeAction}
       />
     </div>
   );
