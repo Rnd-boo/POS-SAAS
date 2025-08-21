@@ -8,7 +8,6 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
-import { Columns } from "lucide-react";
 import PaginationDatatable from "./pagination-data-table";
 import { Label } from "../ui/label";
 import {
@@ -18,8 +17,8 @@ import {
   SelectItem,
   SelectLabel,
   SelectTrigger,
+  SelectValue,
 } from "../ui/select";
-import { SelectValue } from "@radix-ui/react-select";
 import { LIMIT_LISTS } from "@/constants/datatable-constant";
 
 export default function DataTable({

@@ -5,7 +5,6 @@ import { Toaster } from "@/components/ui/sonner";
 import AuthStoreProvider from "@/providers/auth-store-provider";
 import { cookies } from "next/headers";
 import { Profile } from "@/types/profiles";
-
 import ReactQueryProvider from "@/providers/react-query-provider";
 import { getProfileFromToken } from "@/actions/auth-action";
 

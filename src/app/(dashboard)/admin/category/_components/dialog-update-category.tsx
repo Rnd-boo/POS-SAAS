@@ -23,6 +23,8 @@ export default function DialogUpdateCategory({
   open?: boolean;
   handleChangeAction?: (open: boolean) => void;
 }) {
+  console.log("DialogUpdateCategory loaded from:", __filename || "unknown");
+
   const form = useForm<CategoryForm>({
     resolver: zodResolver(categoryFormSchema),
   });
@@ -36,7 +38,6 @@ export default function DialogUpdateCategory({
       formData.append(key, value);
     });
     formData.append("id", currentData?.id ?? "");
-
     startTransition(() => {
       updateCategoryAction(formData);
     });
