@@ -5,21 +5,17 @@ import DropdownAction from "@/components/common/dropdown-action";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { HEADER_TABLE_CATEGORY } from "@/constants/category.constant";
 import useDataTable from "@/hooks/use-data-table";
 import { createClient } from "@/lib/supabase/client";
-import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { Pencil, Trash2 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
-// import DialogCreateCategory from "./dialog-create-category";
-// import DialogUpdateCategory from "./dialog-update-category";
-import { Category } from "@/validations/category-validation";
 import { Unit } from "@/validations/unit-validation";
 import { HEADER_TABLE_UNIT } from "@/constants/unit.constant";
 import DialogCreateUnit from "./dialog-create-category";
-// import DialogDeleteCategory from "./dialog-delete-category";
+import DialogUpdateUnit from "./dialog-update-category";
+import DialogDeleteUnit from "./dialog-delete-category";
 
 export default function UnitManagement() {
   const supabase = createClient();
@@ -141,18 +137,18 @@ export default function UnitManagement() {
         onChangePage={handleChangePage}
         onChangeLimit={handleChangeLimit}
       />
-      {/* <DialogUpdateCategory
+      <DialogUpdateUnit
         open={selectedAction !== null && selectedAction.type === "update"}
         refetch={refetch}
         currentData={selectedAction?.data}
         handleChangeAction={handleChangeAction}
       />
-      <DialogDeleteCategory
+      <DialogDeleteUnit
         open={selectedAction !== null && selectedAction.type === "delete"}
         refetch={refetch}
         currentData={selectedAction?.data}
         handleChangeAction={handleChangeAction}
-      /> */}
+      />
     </div>
   );
 }

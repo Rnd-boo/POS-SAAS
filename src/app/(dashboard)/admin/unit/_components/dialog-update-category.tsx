@@ -3,32 +3,29 @@ import { startTransition, useActionState, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Dialog } from "@/components/ui/dialog";
-import { updateCategory } from "../action";
-import {
-  Category,
-  CategoryForm,
-  categoryFormSchema,
-} from "@/validations/category-validation";
-import { INITIAL_STATE_CATEGORY } from "@/constants/category.constant";
-import FormCategory from "./form-category";
+import { updateUnit } from "../action";
 
-export default function DialogUpdateCategory({
+import { Unit, UnitForm, unitFormSchema } from "@/validations/unit-validation";
+import { INITIAL_STATE_UNIT } from "@/constants/unit.constant";
+import FormUnit from "./form-unit";
+
+export default function DialogUpdateUnit({
   refetch,
   currentData,
   handleChangeAction,
   open,
 }: {
   refetch: () => void;
-  currentData?: Category;
+  currentData?: Unit;
   open?: boolean;
   handleChangeAction?: (open: boolean) => void;
 }) {
-  const form = useForm<CategoryForm>({
-    resolver: zodResolver(categoryFormSchema),
+  const form = useForm<UnitForm>({
+    resolver: zodResolver(unitFormSchema),
   });
 
-  const [updateCategoryState, updateCategoryAction, isPendingUpdateCategory] =
-    useActionState(updateCategory, INITIAL_STATE_CATEGORY);
+  const [updateUnitState, updateUnitAction, isPendingUpdateUnit] =
+    useActionState(updateUnit, INITIAL_STATE_UNIT);
 
   const onSubmit = form.handleSubmit(async (data) => {
     const formData = new FormData();
@@ -37,38 +34,37 @@ export default function DialogUpdateCategory({
     });
     formData.append("id", currentData?.id ?? "");
     startTransition(() => {
-      updateCategoryAction(formData);
+      updateUnitAction(formData);
     });
   });
 
   useEffect(() => {
-    if (updateCategoryState?.status === "error") {
-      toast.error("Update Category Failed", {
-        description: updateCategoryState.errors?._form?.[0],
+    if (updateUnitState?.status === "error") {
+      toast.error("Update Unit Failed", {
+        description: updateUnitState.errors?._form?.[0],
       });
     }
-    if (updateCategoryState?.status === "success") {
-      toast.success("Update Category Success");
+    if (updateUnitState?.status === "success") {
+      toast.success("Update Unit Success");
       form.reset();
       handleChangeAction?.(false);
       refetch();
     }
-  }, [updateCategoryState]);
+  }, [updateUnitState]);
 
   useEffect(() => {
     if (currentData) {
       form.setValue("name", currentData.name);
-      form.setValue("description", currentData.description);
-      form.setValue("is_active", currentData.is_active.toString());
+      form.setValue("notes", currentData.notes);
     }
   }, [currentData]);
 
   return (
     <Dialog open={open} onOpenChange={handleChangeAction}>
-      <FormCategory
+      <FormUnit
         form={form}
         onSubmit={onSubmit}
-        isLoading={isPendingUpdateCategory}
+        isLoading={isPendingUpdateUnit}
         type="Update"
       />
     </Dialog>

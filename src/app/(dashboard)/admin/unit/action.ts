@@ -57,3 +57,65 @@ export async function createUnit(prevState: UnitFormState, formData: FormData) {
     status: "success",
   };
 }
+
+export async function updateUnit(prevState: UnitFormState, formData: FormData) {
+  const validatedFields = unitSchema.safeParse({
+    name: formData.get("name"),
+    notes: formData.get("notes"),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      status: "error",
+      errors: {
+        ...validatedFields.error.flatten().fieldErrors,
+        _form: [],
+      },
+    };
+  }
+
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("units")
+    .update({
+      name: validatedFields.data.name,
+      notes: validatedFields.data.notes,
+    })
+    .eq("id", formData.get("id"));
+
+  if (error) {
+    return {
+      status: "error",
+      errors: {
+        ...prevState.errors,
+        _form: [error.message],
+      },
+    };
+  }
+
+  return {
+    status: "success",
+  };
+}
+
+export async function deleteUnit(prevState: UnitFormState, formData: FormData) {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("units")
+    .delete()
+    .eq("id", formData.get("id"));
+
+  if (error) {
+    return {
+      status: "error",
+      errors: {
+        ...prevState.errors,
+        _form: [error.message],
+      },
+    };
+  }
+
+  return { status: "success" };
+}
