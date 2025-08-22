@@ -13,12 +13,14 @@ import { useQuery } from "@tanstack/react-query";
 import { Pencil, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import DialogCreateCategory from "./dialog-create-category";
-import DialogUpdateCategory from "./dialog-update-category";
+// import DialogCreateCategory from "./dialog-create-category";
+// import DialogUpdateCategory from "./dialog-update-category";
 import { Category } from "@/validations/category-validation";
-import DialogDeleteCategory from "./dialog-delete-category";
+import { Unit } from "@/validations/unit-validation";
+import { HEADER_TABLE_UNIT } from "@/constants/unit.constant";
+// import DialogDeleteCategory from "./dialog-delete-category";
 
-export default function CategoryManagement() {
+export default function UnitManagement() {
   const supabase = createClient();
 
   const {
@@ -31,21 +33,21 @@ export default function CategoryManagement() {
   } = useDataTable();
 
   const {
-    data: categories,
+    data: units,
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ["categories", currentPage, currentLimit, currentSearch],
+    queryKey: ["units", currentPage, currentLimit, currentSearch],
     queryFn: async () => {
       const result = await supabase
-        .from("categories")
+        .from("units")
         .select("*", { count: "exact" })
         .range((currentPage - 1) * currentLimit, currentPage * currentLimit - 1)
         .order("created_at")
         .ilike("name", `%${currentSearch}%`);
 
       if (result.error)
-        toast.error("Get Category Data Failed", {
+        toast.error("Get Unit Data Failed", {
           description: result.error.message,
         });
 
@@ -54,7 +56,7 @@ export default function CategoryManagement() {
   });
 
   const [selectedAction, setSelectedAction] = useState<{
-    data: Category;
+    data: Unit;
     type: "update" | "delete";
   } | null>(null);
 
@@ -63,19 +65,11 @@ export default function CategoryManagement() {
   };
 
   const filteredData = useMemo(() => {
-    return (categories?.data || []).map((category, index) => {
+    return (units?.data || []).map((unit, index) => {
       return [
         currentLimit * (currentPage - 1) + index + 1,
-        category.name,
-        <span className="block truncate max-w-xs">{category.description}</span>,
-        <div
-          className={cn(
-            "px-2 py-1 rounded-full text-white w-fit",
-            category.is_active ? "bg-green-600" : "bg-red-500"
-          )}
-        >
-          {category.is_active ? "Active" : "Not Active"}
-        </div>,
+        unit.name,
+        unit.notes,
         <DropdownAction
           menu={[
             {
@@ -87,7 +81,7 @@ export default function CategoryManagement() {
               ),
               action: () => {
                 setSelectedAction({
-                  data: category,
+                  data: unit,
                   type: "update",
                 });
               },
@@ -102,7 +96,7 @@ export default function CategoryManagement() {
               variant: "destructive",
               action: () => {
                 setSelectedAction({
-                  data: category,
+                  data: unit,
                   type: "delete",
                 });
               },
@@ -111,13 +105,13 @@ export default function CategoryManagement() {
         />,
       ];
     });
-  }, [categories]);
+  }, [units]);
 
   const totalPages = useMemo(() => {
-    return categories && categories.count !== null
-      ? Math.ceil(categories.count / currentLimit)
+    return units && units.count !== null
+      ? Math.ceil(units.count / currentLimit)
       : 0;
-  }, [categories]);
+  }, [units]);
 
   return (
     <div className="w-full">
@@ -125,19 +119,19 @@ export default function CategoryManagement() {
         <h1>Category Management</h1>
         <div className="flex gap-2">
           <Input
-            placeholder="Search by category name"
+            placeholder="Search by Unit name"
             onChange={(e) => handleChangeSearch(e.target.value)}
           />
           <Dialog>
             <DialogTrigger asChild>
               <Button variant="outline">Create</Button>
             </DialogTrigger>
-            <DialogCreateCategory refetch={refetch} />
+            {/* <DialogCreateCategory refetch={refetch} /> */}
           </Dialog>
         </div>
       </div>
       <DataTable
-        header={HEADER_TABLE_CATEGORY}
+        header={HEADER_TABLE_UNIT}
         isLoading={isLoading}
         data={filteredData}
         totalPages={totalPages}
@@ -146,7 +140,7 @@ export default function CategoryManagement() {
         onChangePage={handleChangePage}
         onChangeLimit={handleChangeLimit}
       />
-      <DialogUpdateCategory
+      {/* <DialogUpdateCategory
         open={selectedAction !== null && selectedAction.type === "update"}
         refetch={refetch}
         currentData={selectedAction?.data}
@@ -157,7 +151,7 @@ export default function CategoryManagement() {
         refetch={refetch}
         currentData={selectedAction?.data}
         handleChangeAction={handleChangeAction}
-      />
+      /> */}
     </div>
   );
 }

@@ -42,7 +42,7 @@ export async function createCategory(
     console.log("Custom token method failed:", error);
   }
 
-  const { error } = await supabase.from("category").insert({
+  const { error } = await supabase.from("categories").insert({
     created_by: currentUserId,
     name: validatedFields.data.name,
     description: validatedFields.data.description,
@@ -87,7 +87,7 @@ export async function updateCategory(
   const supabase = await createClient();
 
   const { error } = await supabase
-    .from("category")
+    .from("categories")
     .update({
       name: validatedFields.data.name,
       description: validatedFields.data.description,
@@ -117,7 +117,7 @@ export async function deleteCategory(
   const supabase = await createClient();
 
   const { error } = await supabase
-    .from("category")
+    .from("categories")
     .delete()
     .eq("id", formData.get("id"));
 

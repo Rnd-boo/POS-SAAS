@@ -83,7 +83,7 @@ export function AppSidebar() {
             >
               <Link href="/" className="font-semibold">
                 <div className="bg-ungu flex p-2 items-center justify-center rounded-md">
-                  <Coffee className="size-5" />
+                  <Coffee className="size-5 text-white" />
                 </div>
                 POS
               </Link>

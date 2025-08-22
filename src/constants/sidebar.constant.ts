@@ -27,12 +27,12 @@ export const SIDEBAR_MENULIST = {
         { title: "Purchase Return", url: "/admin/purchase-return" },
       ],
     },
-    {
-      title: "Product",
-      url: "/admin/product",
-      icon: BookMarked,
-      items: [],
-    },
+    // {
+    //   title: "Product",
+    //   url: "/admin/product",
+    //   icon: BookMarked,
+    //   items: [],
+    // },
     {
       title: "Order",
       url: "/order",
