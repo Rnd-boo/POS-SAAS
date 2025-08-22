@@ -34,12 +34,6 @@ export default function DialogCreateCategory({
       formData.append(key, value);
     });
 
-    // Debug: Log FormData contents
-    console.log("FormData contents:");
-    for (const [key, value] of formData.entries()) {
-      console.log(`${key}: ${value}`);
-    }
-
     startTransition(() => {
       createCategoryAction(formData);
     });

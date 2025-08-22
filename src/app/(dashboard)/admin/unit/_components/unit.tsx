@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { Category } from "@/validations/category-validation";
 import { Unit } from "@/validations/unit-validation";
 import { HEADER_TABLE_UNIT } from "@/constants/unit.constant";
+import DialogCreateUnit from "./dialog-create-category";
 // import DialogDeleteCategory from "./dialog-delete-category";
 
 export default function UnitManagement() {
@@ -126,7 +127,7 @@ export default function UnitManagement() {
             <DialogTrigger asChild>
               <Button variant="outline">Create</Button>
             </DialogTrigger>
-            {/* <DialogCreateCategory refetch={refetch} /> */}
+            <DialogCreateUnit refetch={refetch} />
           </Dialog>
         </div>
       </div>
