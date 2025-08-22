@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useAuthStore } from "@/stores/auth-store";
 import { LogOut } from "lucide-react";
+import DashboardBreadCrumb from "./_components/dashboard-breadcrumb";
 
 export default function DashboardLayout({
   children,
@@ -31,7 +32,14 @@ export default function DashboardLayout({
       <AppSidebar />
       <SidebarInset className="overflow-x-hidden">
         <header className="flex justify-between h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]:h-12">
-          <SidebarTrigger className="cursor-pointer mx-3" />
+          <div className="flex items-center">
+            <SidebarTrigger className="cursor-pointer mx-3" />
+            <Separator
+              orientation="vertical"
+              className="mr-4 data-[orientation=vertical]:h-4"
+            />
+            <DashboardBreadCrumb />
+          </div>
           <div className="flex gap-4 items-center px-6">
             <h1 className="uppercase">{profile?.branch}</h1>
             <DropdownMenu>

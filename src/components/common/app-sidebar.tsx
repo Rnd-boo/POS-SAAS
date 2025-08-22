@@ -110,7 +110,8 @@ export function AppSidebar() {
                               tooltip={item.title}
                               className={cn("px-4 py-3 h-auto", {
                                 "bg-ungu text-white hover:bg-ungu hover:text-white":
-                                  pathname === item.url,
+                                  pathname === item.url ||
+                                  pathname.startsWith(item.url + "/"),
                               })}
                               onClick={(e) => {
                                 e.preventDefault();
@@ -152,7 +153,8 @@ export function AppSidebar() {
                           href={item.url}
                           className={cn("px-4 py-3 h-auto", {
                             "bg-ungu text-white hover:bg-ungu hover:text-white":
-                              pathname === item.url,
+                              pathname === item.url ||
+                              pathname.startsWith(item.url + "/"),
                           })}
                         >
                           {item.icon && <item.icon />}

@@ -34,9 +34,7 @@ export default function UserManagement() {
           `
           *,
           role_access!role (
-            name,
-            dashboard,
-            inventory
+            name
           )
          `,
           { count: "exact" }
