@@ -5,7 +5,6 @@ import DropdownAction from "@/components/common/dropdown-action";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { HEADER_TABLE_CATEGORY } from "@/constants/category.constant";
 import useDataTable from "@/hooks/use-data-table";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
@@ -13,12 +12,10 @@ import { useQuery } from "@tanstack/react-query";
 import { Pencil, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import DialogCreateCategory from "./dialog-create-category";
-import DialogUpdateCategory from "./dialog-update-category";
-import { Category } from "@/validations/category-validation";
-import DialogDeleteCategory from "./dialog-delete-category";
+import { Product } from "@/validations/product-validation";
+import { HEADER_TABLE_PRODUCT } from "@/constants/product.constant";
 
-export default function CategoryManagement() {
+export default function ProductManagement() {
   const supabase = createClient();
 
   const {
@@ -31,21 +28,26 @@ export default function CategoryManagement() {
   } = useDataTable();
 
   const {
-    data: categories,
+    data: products,
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ["categories", currentPage, currentLimit, currentSearch],
+    queryKey: ["products", currentPage, currentLimit, currentSearch],
     queryFn: async () => {
       const result = await supabase
-        .from("categories")
-        .select("*", { count: "exact" })
+        .from("products")
+        .select(
+          `*, categories (
+            name
+          )`,
+          { count: "exact" }
+        )
         .range((currentPage - 1) * currentLimit, currentPage * currentLimit - 1)
         .order("name")
         .ilike("name", `%${currentSearch}%`);
 
       if (result.error)
-        toast.error("Get Category Data Failed", {
+        toast.error("Get Product Data Failed", {
           description: result.error.message,
         });
 
@@ -54,7 +56,7 @@ export default function CategoryManagement() {
   });
 
   const [selectedAction, setSelectedAction] = useState<{
-    data: Category;
+    data: Product;
     type: "update" | "delete";
   } | null>(null);
 
@@ -63,18 +65,19 @@ export default function CategoryManagement() {
   };
 
   const filteredData = useMemo(() => {
-    return (categories?.data || []).map((category, index) => {
+    return (products?.data || []).map((product, index) => {
       return [
         currentLimit * (currentPage - 1) + index + 1,
-        category.name,
-        <span className="block truncate max-w-xs">{category.description}</span>,
+        product.name,
+        product.categories.name,
+        product.upc,
         <div
           className={cn(
             "px-2 py-1 rounded-full text-white w-fit",
-            category.is_active ? "bg-green-600" : "bg-red-500"
+            product.is_active ? "bg-green-600" : "bg-red-500"
           )}
         >
-          {category.is_active ? "Active" : "Not Active"}
+          {product.is_active ? "Active" : "Not Active"}
         </div>,
         <DropdownAction
           menu={[
@@ -87,7 +90,7 @@ export default function CategoryManagement() {
               ),
               action: () => {
                 setSelectedAction({
-                  data: category,
+                  data: product,
                   type: "update",
                 });
               },
@@ -102,7 +105,7 @@ export default function CategoryManagement() {
               variant: "destructive",
               action: () => {
                 setSelectedAction({
-                  data: category,
+                  data: product,
                   type: "delete",
                 });
               },
@@ -111,33 +114,33 @@ export default function CategoryManagement() {
         />,
       ];
     });
-  }, [categories]);
+  }, [products]);
 
   const totalPages = useMemo(() => {
-    return categories && categories.count !== null
-      ? Math.ceil(categories.count / currentLimit)
+    return products && products.count !== null
+      ? Math.ceil(products.count / currentLimit)
       : 0;
-  }, [categories]);
+  }, [products]);
 
   return (
     <div className="w-full">
       <div className="flex flex-col lg:flex-row mb-4 gap-2 justify-between w-full">
-        <h1 className="text-xl font-semibold">Category Management</h1>
+        <h1 className="text-xl font-semibold">Product Management</h1>
         <div className="flex gap-2">
-          <Input
-            placeholder="Search by category name"
+          {/* <Input
+            placeholder="Search by product name"
             onChange={(e) => handleChangeSearch(e.target.value)}
-          />
+          /> */}
           <Dialog>
             <DialogTrigger asChild>
               <Button variant="outline">Create</Button>
             </DialogTrigger>
-            <DialogCreateCategory refetch={refetch} />
+            {/* <DialogCreateCategory refetch={refetch} /> */}
           </Dialog>
         </div>
       </div>
       <DataTable
-        header={HEADER_TABLE_CATEGORY}
+        header={HEADER_TABLE_PRODUCT}
         isLoading={isLoading}
         data={filteredData}
         totalPages={totalPages}
@@ -146,7 +149,7 @@ export default function CategoryManagement() {
         onChangePage={handleChangePage}
         onChangeLimit={handleChangeLimit}
       />
-      <DialogUpdateCategory
+      {/* <DialogUpdateCategory
         open={selectedAction !== null && selectedAction.type === "update"}
         refetch={refetch}
         currentData={selectedAction?.data}
@@ -157,7 +160,7 @@ export default function CategoryManagement() {
         refetch={refetch}
         currentData={selectedAction?.data}
         handleChangeAction={handleChangeAction}
-      />
+      /> */}
     </div>
   );
 }
