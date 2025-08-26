@@ -3,7 +3,6 @@
 import { getProfileFromToken } from "@/actions/auth-action";
 import { createClient } from "@/lib/supabase/server";
 import { CategoryFormState } from "@/types/category";
-import { Profile } from "@/types/profiles";
 import { categorySchema } from "@/validations/category-validation";
 import { cookies } from "next/headers";
 
@@ -25,10 +24,9 @@ export async function createCategory(
   }
 
   const supabase = await createClient();
-  const cookieStore = await cookies();
-  const token = cookieStore.get("client_profile")?.value;
 
   let currentUserId: string | null = null;
+  let currentClientId: string | null = null;
 
   try {
     const cookieStore = await cookies();
@@ -37,13 +35,15 @@ export async function createCategory(
     if (token) {
       const profile = await getProfileFromToken(token);
       currentUserId = profile?.id || null;
+      currentClientId = profile?.clients || null;
     }
   } catch (error) {
     console.log("Custom token method failed:", error);
   }
 
   const { error } = await supabase.from("categories").insert({
-    created_by: currentUserId,
+    client_profiles_id: currentUserId,
+    clients_id: currentClientId,
     name: validatedFields.data.name,
     description: validatedFields.data.description,
     is_active: validatedFields.data.is_active,

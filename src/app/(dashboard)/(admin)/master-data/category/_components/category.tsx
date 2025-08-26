@@ -17,10 +17,11 @@ import DialogCreateCategory from "./dialog-create-category";
 import DialogUpdateCategory from "./dialog-update-category";
 import { Category } from "@/validations/category-validation";
 import DialogDeleteCategory from "./dialog-delete-category";
+import { useAuthStore } from "@/stores/auth-store";
 
 export default function CategoryManagement() {
   const supabase = createClient();
-
+  const currentId = useAuthStore((state) => state.profile?.id);
   const {
     currentLimit,
     currentPage,
@@ -35,11 +36,27 @@ export default function CategoryManagement() {
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ["categories", currentPage, currentLimit, currentSearch],
+    queryKey: [
+      "categories",
+      currentPage,
+      currentLimit,
+      currentSearch,
+      currentId,
+    ],
     queryFn: async () => {
+      const { data: profile, error: profileError } = await supabase
+        .from("client_profiles")
+        .select("clients_id")
+        .eq("id", currentId)
+        .single();
+
+      if (profileError) throw profileError;
+      const clientId = profile.clients_id;
+
       const result = await supabase
         .from("categories")
         .select("*", { count: "exact" })
+        .eq("clients_id", clientId)
         .range((currentPage - 1) * currentLimit, currentPage * currentLimit - 1)
         .order("name")
         .ilike("name", `%${currentSearch}%`);

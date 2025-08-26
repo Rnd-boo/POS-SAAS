@@ -86,7 +86,7 @@ export async function login(
     // Create JWT using jose (Edge Runtime compatible)
     const token = await new SignJWT({
       id: profile.id,
-      client: profile.client_id,
+      clients: profile.clients_id,
       name: profile.name,
       branch: profile.branch,
       role: profile.role_access.name,

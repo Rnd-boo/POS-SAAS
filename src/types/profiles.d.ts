@@ -12,6 +12,7 @@ export type ClientProfilesFormState = {
 
 export type Profile = {
   id?: string;
+  clients?: string;
   name?: string;
   role?: string;
   branch?: string;
