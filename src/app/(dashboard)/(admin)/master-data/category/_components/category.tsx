@@ -10,7 +10,7 @@ import useDataTable from "@/hooks/use-data-table";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { Pencil, Trash2 } from "lucide-react";
+import { Loader2, Pencil, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import DialogCreateCategory from "./dialog-create-category";
@@ -21,7 +21,7 @@ import { useAuthStore } from "@/stores/auth-store";
 
 export default function CategoryManagement() {
   const supabase = createClient();
-  const currentId = useAuthStore((state) => state.profile?.id);
+  const currentId = useAuthStore((state) => state.profile?.clients);
   const {
     currentLimit,
     currentPage,
@@ -44,19 +44,10 @@ export default function CategoryManagement() {
       currentId,
     ],
     queryFn: async () => {
-      const { data: profile, error: profileError } = await supabase
-        .from("client_profiles")
-        .select("clients_id")
-        .eq("id", currentId)
-        .single();
-
-      if (profileError) throw profileError;
-      const clientId = profile.clients_id;
-
       const result = await supabase
         .from("categories")
-        .select("*", { count: "exact" })
-        .eq("clients_id", clientId)
+        .select("id, name, description, is_active", { count: "exact" })
+        .eq("clients_id", currentId)
         .range((currentPage - 1) * currentLimit, currentPage * currentLimit - 1)
         .order("name")
         .ilike("name", `%${currentSearch}%`);
@@ -68,6 +59,7 @@ export default function CategoryManagement() {
 
       return result;
     },
+    enabled: !!currentId,
   });
 
   const [selectedAction, setSelectedAction] = useState<{

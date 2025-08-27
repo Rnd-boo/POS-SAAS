@@ -20,7 +20,7 @@ import { useAuthStore } from "@/stores/auth-store";
 
 export default function UnitManagement() {
   const supabase = createClient();
-  const currentId = useAuthStore((state) => state.profile?.id);
+  const currentId = useAuthStore((state) => state.profile?.clients);
   const {
     currentLimit,
     currentPage,
@@ -37,19 +37,10 @@ export default function UnitManagement() {
   } = useQuery({
     queryKey: ["units", currentPage, currentLimit, currentSearch, currentId],
     queryFn: async () => {
-      const { data: profile, error: profileError } = await supabase
-        .from("client_profiles")
-        .select("clients_id")
-        .eq("id", currentId)
-        .single();
-
-      if (profileError) throw profileError;
-      const clientId = profile.clients_id;
-
       const result = await supabase
         .from("units")
-        .select("*", { count: "exact" })
-        .eq("clients_id", clientId)
+        .select("id, name, notes", { count: "exact" })
+        .eq("clients_id", currentId)
         .range((currentPage - 1) * currentLimit, currentPage * currentLimit - 1)
         .order("created_at")
         .ilike("name", `%${currentSearch}%`);
@@ -61,6 +52,7 @@ export default function UnitManagement() {
 
       return result;
     },
+    enabled: !!currentId,
   });
 
   const [selectedAction, setSelectedAction] = useState<{

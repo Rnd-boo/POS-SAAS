@@ -14,10 +14,11 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Product } from "@/validations/product-validation";
 import { HEADER_TABLE_PRODUCT } from "@/constants/product.constant";
+import { useAuthStore } from "@/stores/auth-store";
 
 export default function ProductManagement() {
   const supabase = createClient();
-
+  const currentId = useAuthStore((state) => state.profile?.clients);
   const {
     currentLimit,
     currentPage,
@@ -42,6 +43,7 @@ export default function ProductManagement() {
           )`,
           { count: "exact" }
         )
+        .eq("clients_id", currentId)
         .range((currentPage - 1) * currentLimit, currentPage * currentLimit - 1)
         .order("name")
         .ilike("name", `%${currentSearch}%`);
@@ -53,6 +55,7 @@ export default function ProductManagement() {
 
       return result;
     },
+    enabled: !!currentId,
   });
 
   const [selectedAction, setSelectedAction] = useState<{

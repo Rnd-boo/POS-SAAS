@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { HEADER_TABLE_USER } from "@/constants/user.constant";
 import useDataTable from "@/hooks/use-data-table";
 import { createClient } from "@/lib/supabase/client";
+import { useAuthStore } from "@/stores/auth-store";
 import { useQuery } from "@tanstack/react-query";
 import { Pencil, Trash2 } from "lucide-react";
 import { useMemo } from "react";
@@ -15,7 +16,8 @@ import { toast } from "sonner";
 
 export default function UserManagement() {
   const supabase = createClient();
-
+  const currentId = useAuthStore((state) => state.profile?.clients);
+  console.log(currentId);
   const {
     currentLimit,
     currentPage,
@@ -32,13 +34,14 @@ export default function UserManagement() {
         .from("client_profiles")
         .select(
           `
-          *,
+          name, brand, branch,
           role_access!role (
             name
           )
          `,
           { count: "exact" }
         )
+        .eq("clients_id", currentId)
         .range((currentPage - 1) * currentLimit, currentPage * currentLimit - 1)
         .order("created_at")
         .ilike("name", `%${currentSearch}%`);
@@ -50,6 +53,7 @@ export default function UserManagement() {
 
       return result;
     },
+    enabled: !!currentId,
   });
 
   const filteredData = useMemo(() => {
@@ -57,9 +61,9 @@ export default function UserManagement() {
       return [
         index + 1,
         user.name,
-        user.brand,
         user.branch,
-        user.role_access.name,
+        user.branch,
+        (user as any).role_access?.name || "No Role",
         <DropdownAction
           menu={[
             {
