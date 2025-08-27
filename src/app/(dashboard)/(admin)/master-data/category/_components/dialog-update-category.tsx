@@ -59,7 +59,7 @@ export default function DialogUpdateCategory({
     if (currentData) {
       form.setValue("name", currentData.name);
       form.setValue("description", currentData.description);
-      form.setValue("is_active", currentData.is_active.toString());
+      form.setValue("status", currentData.status.toString());
     }
   }, [currentData]);
 

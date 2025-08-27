@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { Product } from "@/validations/product-validation";
 import { HEADER_TABLE_PRODUCT } from "@/constants/product.constant";
 import { useAuthStore } from "@/stores/auth-store";
+import DialogCreateProduct from "./dialog-create-product";
 
 export default function ProductManagement() {
   const supabase = createClient();
@@ -77,10 +78,10 @@ export default function ProductManagement() {
         <div
           className={cn(
             "px-2 py-1 rounded-full text-white w-fit",
-            product.is_active ? "bg-green-600" : "bg-red-500"
+            product.status ? "bg-green-600" : "bg-red-500"
           )}
         >
-          {product.is_active ? "Active" : "Not Active"}
+          {product.status ? "Active" : "Not Active"}
         </div>,
         <DropdownAction
           menu={[
@@ -138,7 +139,7 @@ export default function ProductManagement() {
             <DialogTrigger asChild>
               <Button variant="outline">Create</Button>
             </DialogTrigger>
-            {/* <DialogCreateCategory refetch={refetch} /> */}
+            <DialogCreateProduct refetch={refetch} />
           </Dialog>
         </div>
       </div>

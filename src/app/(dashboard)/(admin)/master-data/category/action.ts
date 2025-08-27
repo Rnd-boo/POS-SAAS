@@ -13,7 +13,7 @@ export async function createCategory(
   const validatedFields = categorySchema.safeParse({
     name: formData.get("name"),
     description: formData.get("description"),
-    is_active: formData.get("is_active") === "true" ? true : false,
+    status: formData.get("status") === "true" ? true : false,
   });
 
   if (!validatedFields.success) {
@@ -46,7 +46,7 @@ export async function createCategory(
     clients_id: currentClientId,
     name: validatedFields.data.name,
     description: validatedFields.data.description,
-    is_active: validatedFields.data.is_active,
+    status: validatedFields.data.status,
   });
 
   if (error) {
@@ -71,7 +71,7 @@ export async function updateCategory(
   const validatedFields = categorySchema.safeParse({
     name: formData.get("name"),
     description: formData.get("description"),
-    is_active: formData.get("is_active") === "true" ? true : false,
+    status: formData.get("status") === "true" ? true : false,
   });
 
   if (!validatedFields.success) {
@@ -91,7 +91,7 @@ export async function updateCategory(
     .update({
       name: validatedFields.data.name,
       description: validatedFields.data.description,
-      is_active: validatedFields.data.is_active,
+      status: validatedFields.data.status,
     })
     .eq("id", formData.get("id"));
 

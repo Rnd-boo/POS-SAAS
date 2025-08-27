@@ -9,7 +9,7 @@ export const HEADER_TABLE_CATEGORY = [
 export const INITIAL_CATEGORY = {
   name: "",
   description: "",
-  is_active: "",
+  status: "",
 };
 
 export const INITIAL_STATE_CATEGORY = {
@@ -17,7 +17,7 @@ export const INITIAL_STATE_CATEGORY = {
   errors: {
     name: [],
     description: [],
-    is_active: [],
+    status: [],
     _form: [],
   },
 };

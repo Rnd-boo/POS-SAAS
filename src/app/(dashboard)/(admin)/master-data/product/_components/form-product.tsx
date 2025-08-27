@@ -1,3 +1,5 @@
+"use client";
+
 import FormInput from "@/components/common/form-input";
 import FormSelect from "@/components/common/form-select";
 import { Button } from "@/components/ui/button";
@@ -11,11 +13,14 @@ import {
 } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
 import { STATUS_LIST } from "@/constants/general.constant";
+import { createClient } from "@/lib/supabase/client";
+import { useAuthStore } from "@/stores/auth-store";
+import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { FormEvent } from "react";
 import { FieldValues, Path, UseFormReturn } from "react-hook-form";
 
-export default function FormCategory<T extends FieldValues>({
+export default function FormProduct<T extends FieldValues>({
   form,
   onSubmit,
   isLoading,
@@ -26,15 +31,36 @@ export default function FormCategory<T extends FieldValues>({
   isLoading: boolean;
   type: "Create" | "Update";
 }) {
+  const supabase = createClient();
+  const currentId = useAuthStore((state) => state.profile?.clients);
+
+  console.log("🔍 Form Debug:", {
+    isValid: form.formState.isValid,
+    errors: form.formState.errors,
+    values: form.getValues(),
+  });
+
+  const { data: categoriesResult } = useQuery({
+    queryKey: ["categories", currentId],
+    queryFn: async () => {
+      const result = await supabase
+        .from("categories")
+        .select("id, name")
+        .eq("status", true)
+        .eq("clients_id", currentId);
+      return result;
+    },
+    enabled: !!currentId,
+  });
   return (
     <DialogContent className="sm:max-w-[425px]">
       <Form {...form}>
         <DialogHeader>
-          <DialogTitle>{type} Category</DialogTitle>
+          <DialogTitle>{type} Product</DialogTitle>
           <DialogDescription>
             {type === "Create"
-              ? "Add a new category"
-              : "Make a changes this category"}
+              ? "Add a new Product"
+              : "Make a changes this Product"}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={onSubmit} className="space-y-4 ">
@@ -42,8 +68,23 @@ export default function FormCategory<T extends FieldValues>({
             <FormInput
               form={form}
               name={"name" as Path<T>}
+              label="Product"
+              placeholder="Insert Product name"
+            />
+            <FormSelect
+              form={form}
+              name={"categories_id" as Path<T>}
               label="Category"
-              placeholder="Insert category name"
+              data={categoriesResult?.data ?? undefined}
+              valueKey="id"
+              labelKey="name"
+            />
+            <FormInput
+              form={form}
+              name={"upc" as Path<T>}
+              label="Product Code"
+              placeholder="Insert Product code"
+              type="text"
             />
             <FormInput
               form={form}

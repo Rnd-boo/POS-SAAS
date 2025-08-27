@@ -46,7 +46,7 @@ export default function CategoryManagement() {
     queryFn: async () => {
       const result = await supabase
         .from("categories")
-        .select("id, name, description, is_active", { count: "exact" })
+        .select("id, name, description, status", { count: "exact" })
         .eq("clients_id", currentId)
         .range((currentPage - 1) * currentLimit, currentPage * currentLimit - 1)
         .order("name")
@@ -80,10 +80,10 @@ export default function CategoryManagement() {
         <div
           className={cn(
             "px-2 py-1 rounded-full text-white w-fit",
-            category.is_active ? "bg-green-600" : "bg-red-500"
+            category.status ? "bg-green-600" : "bg-red-500"
           )}
         >
-          {category.is_active ? "Active" : "Not Active"}
+          {category.status ? "Active" : "Not Active"}
         </div>,
         <DropdownAction
           menu={[

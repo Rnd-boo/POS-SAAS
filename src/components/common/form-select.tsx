@@ -16,18 +16,41 @@ import {
   SelectValue,
 } from "../ui/select";
 import { cn } from "@/lib/utils";
+import React from "react";
 
 export default function FormSelect<T extends FieldValues>({
   form,
   name,
   label,
   selectItem,
+  data,
+  valueKey = "id",
+  labelKey = "name",
+  disabledKey,
 }: {
   form: UseFormReturn<T>;
   name: Path<T>;
   label?: string;
-  selectItem: { value: string; label: string; disabled?: boolean }[];
+  selectItem?: { value: string; label: string; disabled?: boolean }[];
+  data?: any[];
+  valueKey?: string;
+  labelKey?: string;
+  disabledKey?: string;
 }) {
+  const selectItems = React.useMemo(() => {
+    if (selectItem) {
+      // Use static options if provided
+      return selectItem;
+    } else if (data) {
+      // Transform dynamic data into SelectOption format
+      return data.map((item) => ({
+        value: item[valueKey].toString(),
+        label: item[labelKey],
+        disabled: disabledKey ? item[disabledKey] : false,
+      }));
+    }
+    return [];
+  }, [selectItem, data, valueKey, labelKey, disabledKey]);
   return (
     <FormField
       control={form.control}
@@ -47,7 +70,7 @@ export default function FormSelect<T extends FieldValues>({
               <SelectContent>
                 <SelectGroup>
                   <SelectLabel>{label}</SelectLabel>
-                  {selectItem.map((item) => (
+                  {selectItems.map((item) => (
                     <SelectItem
                       key={item.label}
                       value={item.value}
