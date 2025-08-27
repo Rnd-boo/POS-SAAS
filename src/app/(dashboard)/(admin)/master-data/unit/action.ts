@@ -20,10 +20,9 @@ export async function createUnit(prevState: UnitFormState, formData: FormData) {
   }
 
   const supabase = await createClient();
-  const cookieStore = await cookies();
-  const token = cookieStore.get("client_profile")?.value;
 
   let currentUserId: string | null = null;
+  let currentClientId: string | null = null;
 
   try {
     const cookieStore = await cookies();
@@ -32,13 +31,15 @@ export async function createUnit(prevState: UnitFormState, formData: FormData) {
     if (token) {
       const profile = await getProfileFromToken(token);
       currentUserId = profile?.id || null;
+      currentClientId = profile?.clients || null;
     }
   } catch (error) {
     console.log("Custom token method failed:", error);
   }
 
   const { error } = await supabase.from("units").insert({
-    created_by: currentUserId,
+    client_profiles_id: currentUserId,
+    clients_id: currentClientId,
     name: validatedFields.data.name,
     notes: validatedFields.data.notes,
   });
