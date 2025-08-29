@@ -13,9 +13,9 @@ import {
   INITIAL_PRODUCT,
   INITIAL_STATE_PRODUCT,
 } from "@/constants/product.constant";
-import FormProduct from "../_components/form-product";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
+import FormProduct from "../_components/form-product";
 
 export default function CreateProduct() {
   const router = useRouter();

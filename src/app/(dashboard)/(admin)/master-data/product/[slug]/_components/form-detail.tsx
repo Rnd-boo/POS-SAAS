@@ -1,5 +1,6 @@
 "use client";
 
+import DialogInformation from "@/components/common/dialog-information";
 import FormInput from "@/components/common/form-input";
 import FormSelect from "@/components/common/form-select";
 import { Button } from "@/components/ui/button";
@@ -23,35 +24,18 @@ import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { FieldValues, Path, UseFormReturn } from "react-hook-form";
 
-export default function FormProduct<T extends FieldValues>({
+export default function FormDetail<T extends FieldValues>({
   form,
   onSubmit,
   isLoading = false,
-  type,
+  fields,
 }: {
   form: UseFormReturn<T>;
   onSubmit?: (event: FormEvent<HTMLFormElement>) => void;
   isLoading?: boolean;
-  type: "Create" | "Update";
+  fields: { label: string; value: string | number | undefined }[];
 }) {
-  const supabase = createClient();
-  const currentId = useAuthStore((state) => state.profile?.clients);
-
   const router = useRouter();
-
-  const { data: categoriesResult } = useQuery({
-    queryKey: ["categories", currentId],
-    queryFn: async () => {
-      const result = await supabase
-        .from("categories")
-        .select("id, name")
-        .eq("status", true)
-        .eq("clients_id", currentId);
-      return result;
-    },
-    enabled: !!currentId,
-  });
-
   const [openDialog, setOpenDialog] = useState<boolean>(false);
 
   return (
@@ -59,13 +43,16 @@ export default function FormProduct<T extends FieldValues>({
       <Form {...form}>
         <CardHeader className="flex justify-between">
           <div>
-            <CardTitle className="text-xl">{type} Product</CardTitle>
-            <CardDescription>
-              {type === "Create"
-                ? "Add a new Product"
-                : "Make a changes this Product"}
-            </CardDescription>
+            <CardTitle className="text-xl">Detail Product</CardTitle>
           </div>
+          <Button
+            type="button"
+            onClick={() => {
+              setOpenDialog(true);
+            }}
+          >
+            View Information
+          </Button>
         </CardHeader>
         <form onSubmit={onSubmit} className="space-y-4">
           <CardContent className="space-y-5 max-h-[50vh] px-6 grid grid-cols-2 gap-x-5">
@@ -74,14 +61,13 @@ export default function FormProduct<T extends FieldValues>({
               name={"name" as Path<T>}
               label="Product"
               placeholder="Insert Product name"
+              disabled
             />
-            <FormSelect
+            <FormInput
               form={form}
               name={"categories_id" as Path<T>}
               label="Category"
-              data={categoriesResult?.data ?? undefined}
-              valueKey="id"
-              labelKey="name"
+              disabled
             />
             <FormInput
               form={form}
@@ -89,12 +75,14 @@ export default function FormProduct<T extends FieldValues>({
               label="Product Code"
               placeholder="Insert Product code"
               type="text"
+              disabled
             />
             <FormSelect
               form={form}
               name={"status" as Path<T>}
               label="Status"
               selectItem={STATUS_LIST}
+              disabled
             />
             <FormInput
               form={form}
@@ -102,22 +90,25 @@ export default function FormProduct<T extends FieldValues>({
               label="Description"
               placeholder="Optional"
               type="textarea"
+              disabled
             />
           </CardContent>
-          <CardFooter className="justify-end flex gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => router.back()}
-            >
-              Cancel
-            </Button>
-            <Button type="submit">
-              {isLoading ? <Loader2 className="animate-spin" /> : type}
-            </Button>
-          </CardFooter>
         </form>
       </Form>
+      <DialogInformation
+        open={openDialog}
+        onOpenChange={setOpenDialog}
+        isLoading={isLoading}
+        title="Product"
+        fields={fields}
+      />
+      <Separator />
+      <CardContent></CardContent>
+      <CardFooter className="justify-end flex gap-2">
+        <Button type="button" variant="outline" onClick={() => router.back()}>
+          Back
+        </Button>
+      </CardFooter>
     </Card>
   );
 }

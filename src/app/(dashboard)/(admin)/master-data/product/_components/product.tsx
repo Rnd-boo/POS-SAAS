@@ -15,7 +15,7 @@ import { HEADER_TABLE_PRODUCT } from "@/constants/product.constant";
 import { useAuthStore } from "@/stores/auth-store";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import DialogDeleteProduct from "./dialog-delete-category";
+import DialogDeleteProduct from "./dialog-delete-product";
 
 export default function ProductManagement() {
   const supabase = createClient();

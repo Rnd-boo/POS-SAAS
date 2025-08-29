@@ -2,35 +2,26 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
-import { FormProvider, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import {
   Product,
   ProductForm,
   productFormSchema,
 } from "@/validations/product-validation";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import FormInput from "@/components/common/form-input";
-import FormSelect from "@/components/common/form-select";
+
 import { Button } from "@/components/ui/button";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import { useAuthStore } from "@/stores/auth-store";
 import { toast } from "sonner";
 import { INITIAL_PRODUCT } from "@/constants/product.constant";
-import { STATUS_LIST } from "@/constants/general.constant";
+import FormDetail from "./form-detail";
+import { Card } from "@/components/ui/card";
 
 export default function ViewProduct() {
   const params = useParams();
   const productSlug = params?.slug as string;
-  const router = useRouter();
   const supabase = createClient();
   const currentId = useAuthStore((state) => state.profile?.clients);
 
@@ -44,10 +35,9 @@ export default function ViewProduct() {
       const result = await supabase
         .from("products")
         .select(
-          `*, categories (
+          `*,client_profiles:client_profiles_id(name), categories:categories_id(
             name
-          )`,
-          { count: "exact" }
+          )`
         )
         .eq("clients_id", currentId)
         .eq("slug", productSlug)
@@ -64,55 +54,27 @@ export default function ViewProduct() {
   });
   useEffect(() => {
     form.setValue("name", product?.name || "");
-    form.setValue("description", product?.description || "");
+    form.setValue(
+      "description",
+      product?.description?.trim() || "No Description"
+    );
     form.setValue("status", product?.status?.toString() || "");
     form.setValue("upc", product?.upc || "");
     form.setValue("categories_id", product?.categories?.name || "");
   }, [product, form]);
 
   return (
-    <FormProvider {...form}>
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle>{product?.name}</CardTitle>
-          <CardDescription>View Product</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-5 max-h-[50vh] px-6 grid grid-cols-2 gap-x-5">
-          <FormInput form={form} name={"name"} label="Product" disabled />
-          <FormInput
-            form={form}
-            name={"categories_id"}
-            label="Category"
-            disabled
-          />
-          <FormInput
-            form={form}
-            name={"upc"}
-            label="Product Code"
-            type="text"
-            disabled
-          />
-          <FormSelect
-            form={form}
-            name={"status"}
-            label="Status"
-            disabled
-            selectItem={STATUS_LIST}
-          />
-          <FormInput
-            form={form}
-            name={"description"}
-            label="Description"
-            type="textarea"
-            disabled
-          />
-        </CardContent>
-        <CardFooter className="justify-end flex gap-2">
-          <Button type="button" variant="outline" onClick={() => router.back()}>
-            Back
-          </Button>
-        </CardFooter>
-      </Card>
-    </FormProvider>
+    <>
+      <FormDetail
+        form={form}
+        isLoading={isLoading}
+        fields={[
+          { label: "Created By", value: product?.client_profiles?.name },
+          { label: "Created At", value: product?.created_at },
+          // { label: "Updated By", value: product?.updated_by },
+          { label: "Updated At", value: product?.updated_at },
+        ]}
+      />
+    </>
   );
 }
