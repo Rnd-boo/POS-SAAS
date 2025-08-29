@@ -69,7 +69,7 @@ export async function createProduct(
 }
 
 // export async function updateProduct(
-//   prevState: CategoryFormState,
+//   prevState: ProductFormState,
 //   formData: FormData
 // ) {
 //   const validatedFields = categorySchema.safeParse({
@@ -114,26 +114,26 @@ export async function createProduct(
 //   };
 // }
 
-// export async function deleteCategory(
-//   prevState: CategoryFormState,
-//   formData: FormData
-// ) {
-//   const supabase = await createClient();
+export async function deleteProduct(
+  prevState: ProductFormState,
+  formData: FormData
+) {
+  const supabase = await createClient();
 
-//   const { error } = await supabase
-//     .from("categories")
-//     .delete()
-//     .eq("id", formData.get("id"));
+  const { error } = await supabase
+    .from("products")
+    .delete()
+    .eq("id", formData.get("id"));
 
-//   if (error) {
-//     return {
-//       status: "error",
-//       errors: {
-//         ...prevState.errors,
-//         _form: [error.message],
-//       },
-//     };
-//   }
+  if (error) {
+    return {
+      status: "error",
+      errors: {
+        ...prevState.errors,
+        _form: [error.message],
+      },
+    };
+  }
 
-//   return { status: "success" };
-// }
+  return { status: "success" };
+}

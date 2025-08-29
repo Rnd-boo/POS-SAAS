@@ -25,6 +25,7 @@ export default function FormSelect<T extends FieldValues>({
   selectItem,
   data,
   valueKey = "id",
+  disabled = false,
   labelKey = "name",
   disabledKey,
 }: {
@@ -34,6 +35,7 @@ export default function FormSelect<T extends FieldValues>({
   selectItem?: { value: string; label: string; disabled?: boolean }[];
   data?: any[];
   valueKey?: string;
+  disabled?: boolean;
   labelKey?: string;
   disabledKey?: string;
 }) {
@@ -59,7 +61,7 @@ export default function FormSelect<T extends FieldValues>({
         <FormItem>
           <FormLabel>{label}</FormLabel>
           <FormControl>
-            <Select {...rest} onValueChange={onChange}>
+            <Select {...rest} onValueChange={onChange} disabled={disabled}>
               <SelectTrigger
                 className={cn("w-full", {
                   "border-red-500": form.formState.errors[name]?.message,

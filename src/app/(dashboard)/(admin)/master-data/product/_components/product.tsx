@@ -1,27 +1,27 @@
 "use client";
 
 import DataTable from "@/components/common/data-table";
-import DropdownAction from "@/components/common/dropdown-action";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import useDataTable from "@/hooks/use-data-table";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { Eye, Pencil, SquarePen, Trash2 } from "lucide-react";
+import { Eye, SquarePen, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Product } from "@/validations/product-validation";
 import { HEADER_TABLE_PRODUCT } from "@/constants/product.constant";
 import { useAuthStore } from "@/stores/auth-store";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import DialogDeleteProduct from "./dialog-delete-category";
 
 export default function ProductManagement() {
   const supabase = createClient();
   const currentId = useAuthStore((state) => state.profile?.clients);
   const pathname = usePathname();
+  const router = useRouter();
 
   const {
     currentLimit,
@@ -64,11 +64,15 @@ export default function ProductManagement() {
 
   const [selectedAction, setSelectedAction] = useState<{
     data: Product;
-    type: "update" | "delete" | "view";
+    type: "delete";
   } | null>(null);
 
   const handleChangeAction = (open: boolean) => {
     if (!open) setSelectedAction(null);
+  };
+
+  const handleClickAction = (type: string) => {
+    router.push(`${pathname}/${type}`);
   };
 
   const filteredData = useMemo(() => {
@@ -86,11 +90,11 @@ export default function ProductManagement() {
         >
           {product.status ? "Active" : "Not Active"}
         </div>,
-        <div className="flex items-center max-w-[40px]">
+        <div className="flex items-center max-w-[40px] gap-x-2">
           <Button
             variant="ghost"
             size="icon"
-            className=" cursor-pointer"
+            className="cursor-pointer size-6 text-destructive hover:text-muted-foreground"
             onClick={() => {
               setSelectedAction({
                 data: product,
@@ -103,12 +107,9 @@ export default function ProductManagement() {
           <Button
             variant="ghost"
             size="icon"
-            className=" cursor-pointer"
+            className="cursor-pointer size-6 hover:text-muted-foreground"
             onClick={() => {
-              setSelectedAction({
-                data: product,
-                type: "update",
-              });
+              handleClickAction("edit");
             }}
           >
             <SquarePen className="size-5" />
@@ -116,12 +117,9 @@ export default function ProductManagement() {
           <Button
             variant="ghost"
             size="icon"
-            className=" cursor-pointer"
+            className="cursor-pointer size-6 hover:text-muted-foreground"
             onClick={() => {
-              setSelectedAction({
-                data: product,
-                type: "view",
-              });
+              handleClickAction(product?.slug ?? "");
             }}
           >
             <Eye className="size-5" />
@@ -161,18 +159,12 @@ export default function ProductManagement() {
         onChangePage={handleChangePage}
         onChangeLimit={handleChangeLimit}
       />
-      {/* <DialogUpdateCategory
-        open={selectedAction !== null && selectedAction.type === "update"}
-        refetch={refetch}
-        currentData={selectedAction?.data}
-        handleChangeAction={handleChangeAction}
-      />
-      <DialogDeleteCategory
+      <DialogDeleteProduct
         open={selectedAction !== null && selectedAction.type === "delete"}
         refetch={refetch}
         currentData={selectedAction?.data}
         handleChangeAction={handleChangeAction}
-      /> */}
+      />
     </div>
   );
 }

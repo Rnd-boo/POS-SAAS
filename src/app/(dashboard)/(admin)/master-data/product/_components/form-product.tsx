@@ -29,8 +29,8 @@ export default function FormProduct<T extends FieldValues>({
   type,
 }: {
   form: UseFormReturn<T>;
-  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
-  isLoading: boolean;
+  onSubmit?: (event: FormEvent<HTMLFormElement>) => void;
+  isLoading?: boolean;
   type: "Create" | "Update";
 }) {
   const supabase = createClient();
