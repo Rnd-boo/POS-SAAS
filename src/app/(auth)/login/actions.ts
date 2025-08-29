@@ -89,6 +89,7 @@ export async function login(
       clients: profile.clients_id,
       name: profile.name,
       branch: profile.branch,
+      brand: profile.brand,
       role: profile.role_access.name,
       permissions: {
         dashboard: profile.role_access.dashboard,

@@ -9,17 +9,20 @@ import useDataTable from "@/hooks/use-data-table";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { Pencil, Trash2 } from "lucide-react";
+import { Eye, Pencil, SquarePen, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Product } from "@/validations/product-validation";
 import { HEADER_TABLE_PRODUCT } from "@/constants/product.constant";
 import { useAuthStore } from "@/stores/auth-store";
-import DialogCreateProduct from "./dialog-create-product";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export default function ProductManagement() {
   const supabase = createClient();
   const currentId = useAuthStore((state) => state.profile?.clients);
+  const pathname = usePathname();
+
   const {
     currentLimit,
     currentPage,
@@ -61,7 +64,7 @@ export default function ProductManagement() {
 
   const [selectedAction, setSelectedAction] = useState<{
     data: Product;
-    type: "update" | "delete";
+    type: "update" | "delete" | "view";
   } | null>(null);
 
   const handleChangeAction = (open: boolean) => {
@@ -83,39 +86,47 @@ export default function ProductManagement() {
         >
           {product.status ? "Active" : "Not Active"}
         </div>,
-        <DropdownAction
-          menu={[
-            {
-              label: (
-                <span className="flex items-center gap-2">
-                  <Pencil />
-                  Edit
-                </span>
-              ),
-              action: () => {
-                setSelectedAction({
-                  data: product,
-                  type: "update",
-                });
-              },
-            },
-            {
-              label: (
-                <span className="flex items-center gap-2">
-                  <Trash2 className="text-red-400" />
-                  Delete
-                </span>
-              ),
-              variant: "destructive",
-              action: () => {
-                setSelectedAction({
-                  data: product,
-                  type: "delete",
-                });
-              },
-            },
-          ]}
-        />,
+        <div className="flex items-center max-w-[40px]">
+          <Button
+            variant="ghost"
+            size="icon"
+            className=" cursor-pointer"
+            onClick={() => {
+              setSelectedAction({
+                data: product,
+                type: "delete",
+              });
+            }}
+          >
+            <Trash2 className="size-5" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className=" cursor-pointer"
+            onClick={() => {
+              setSelectedAction({
+                data: product,
+                type: "update",
+              });
+            }}
+          >
+            <SquarePen className="size-5" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className=" cursor-pointer"
+            onClick={() => {
+              setSelectedAction({
+                data: product,
+                type: "view",
+              });
+            }}
+          >
+            <Eye className="size-5" />
+          </Button>
+        </div>,
       ];
     });
   }, [products]);
@@ -135,12 +146,9 @@ export default function ProductManagement() {
             placeholder="Search by product name"
             onChange={(e) => handleChangeSearch(e.target.value)}
           /> */}
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="outline">Create</Button>
-            </DialogTrigger>
-            <DialogCreateProduct refetch={refetch} />
-          </Dialog>
+          <Link href={`${pathname}/create`}>
+            <Button variant="outline">Create</Button>
+          </Link>
         </div>
       </div>
       <DataTable
