@@ -33,7 +33,12 @@ export default function CreateProduct() {
     // Debug: Log the form data
     const formData = new FormData();
     Object.entries(data).forEach(([key, value]) => {
-      formData.append(key, value);
+      if (key === "units") {
+        // serialize units array into JSON
+        formData.append("units", JSON.stringify(value));
+      } else {
+        formData.append(key, String(value ?? ""));
+      }
     });
 
     startTransition(() => {

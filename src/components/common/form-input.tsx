@@ -16,6 +16,7 @@ export default function FormInput<T extends FieldValues>({
   placeholder,
   type = "text",
   disabled = false,
+  className,
 }: {
   form: UseFormReturn<T>;
   name: Path<T>;
@@ -23,6 +24,7 @@ export default function FormInput<T extends FieldValues>({
   placeholder?: string;
   type?: string;
   disabled?: boolean;
+  className?: string;
 }) {
   return (
     <FormField
@@ -48,6 +50,7 @@ export default function FormInput<T extends FieldValues>({
                 placeholder={placeholder}
                 autoComplete="off"
                 disabled={disabled}
+                className={className}
               />
             )}
           </FormControl>

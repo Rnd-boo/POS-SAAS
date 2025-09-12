@@ -5,6 +5,7 @@ export type UnitFormState = {
     created_by?: string[];
     name?: string[];
     notes?: string[];
+    status?: string[];
     _form?: string[];
   };
 };

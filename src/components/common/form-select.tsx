@@ -28,6 +28,7 @@ export default function FormSelect<T extends FieldValues>({
   disabled = false,
   labelKey = "name",
   disabledKey,
+  className = "w-full",
 }: {
   form: UseFormReturn<T>;
   name: Path<T>;
@@ -38,6 +39,7 @@ export default function FormSelect<T extends FieldValues>({
   disabled?: boolean;
   labelKey?: string;
   disabledKey?: string;
+  className?: string;
 }) {
   const selectItems = React.useMemo(() => {
     if (selectItem) {
@@ -63,7 +65,7 @@ export default function FormSelect<T extends FieldValues>({
           <FormControl>
             <Select {...rest} onValueChange={onChange} disabled={disabled}>
               <SelectTrigger
-                className={cn("w-full", {
+                className={cn(className, {
                   "border-red-500": form.formState.errors[name]?.message,
                 })}
               >
@@ -77,7 +79,6 @@ export default function FormSelect<T extends FieldValues>({
                       key={item.label}
                       value={item.value}
                       disabled={item.disabled}
-                      className="capitalize"
                     >
                       {item.label}
                     </SelectItem>

@@ -50,6 +50,12 @@ export default function FormUnit<T extends FieldValues>({
               placeholder="Optional"
               type="textarea"
             />
+            <FormSelect
+              form={form}
+              name={"status" as Path<T>}
+              label="Status"
+              selectItem={STATUS_LIST}
+            />
           </div>
           <DialogFooter>
             <DialogClose asChild>

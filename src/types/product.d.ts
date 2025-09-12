@@ -7,6 +7,7 @@ export type ProductFormState = {
     upc?: string[];
     description?: string[];
     status?: string[];
+    units?: string[];
     _form?: string[];
   };
 };

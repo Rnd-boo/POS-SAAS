@@ -20,8 +20,9 @@ import { useAuthStore } from "@/stores/auth-store";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { FieldValues, Path, UseFormReturn } from "react-hook-form";
+import FormProductUnit from "./form-product-unit";
 
 export default function FormProduct<T extends FieldValues>({
   form,
@@ -47,12 +48,23 @@ export default function FormProduct<T extends FieldValues>({
         .select("id, name")
         .eq("status", true)
         .eq("clients_id", currentId);
-      return result;
+      return result?.data;
     },
     enabled: !!currentId,
   });
 
-  const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const { data: units } = useQuery({
+    queryKey: ["units", currentId],
+    queryFn: async () => {
+      const result = await supabase
+        .from("units")
+        .select("id,name")
+        .eq("status", true)
+        .eq("clients_id", currentId);
+      return result?.data;
+    },
+    enabled: !!currentId,
+  });
 
   return (
     <Card className="w-full">
@@ -79,7 +91,7 @@ export default function FormProduct<T extends FieldValues>({
               form={form}
               name={"categories_id" as Path<T>}
               label="Category"
-              data={categoriesResult?.data ?? undefined}
+              data={categoriesResult ?? undefined}
               valueKey="id"
               labelKey="name"
             />
@@ -103,6 +115,13 @@ export default function FormProduct<T extends FieldValues>({
               placeholder="Optional"
               type="textarea"
             />
+          </CardContent>
+          <Separator />
+          <CardHeader className="flex justify-between">
+            <CardTitle className="text-lg">Product Units</CardTitle>
+          </CardHeader>
+          <CardContent className="flex gap-2">
+            <FormProductUnit form={form} units={units ?? undefined} />
           </CardContent>
           <CardFooter className="justify-end flex gap-2">
             <Button

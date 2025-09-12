@@ -17,6 +17,7 @@ import DialogCreateUnit from "./dialog-create-category";
 import DialogUpdateUnit from "./dialog-update-category";
 import DialogDeleteUnit from "./dialog-delete-category";
 import { useAuthStore } from "@/stores/auth-store";
+import { cn } from "@/lib/utils";
 
 export default function UnitManagement() {
   const supabase = createClient();
@@ -39,7 +40,7 @@ export default function UnitManagement() {
     queryFn: async () => {
       const result = await supabase
         .from("units")
-        .select("id, name, notes", { count: "exact" })
+        .select("id, name, notes, status", { count: "exact" })
         .eq("clients_id", currentId)
         .range((currentPage - 1) * currentLimit, currentPage * currentLimit - 1)
         .order("created_at")
@@ -70,6 +71,14 @@ export default function UnitManagement() {
         currentLimit * (currentPage - 1) + index + 1,
         unit.name,
         unit.notes,
+        <div
+          className={cn(
+            "px-2 py-1 rounded-full text-white w-fit",
+            unit.status ? "bg-green-600" : "bg-red-500"
+          )}
+        >
+          {unit.status ? "Active" : "Not Active"}
+        </div>,
         <DropdownAction
           menu={[
             {

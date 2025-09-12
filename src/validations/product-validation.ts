@@ -1,5 +1,10 @@
 import z from "zod";
 
+export const productUnitSchema = z.object({
+  units_id: z.string(),
+  conversion_factor: z.string(),
+});
+
 export const productSchema = z.object({
   name: z.string(),
   categories_id: z.string(),
@@ -7,6 +12,7 @@ export const productSchema = z.object({
   upc: z.string(),
   // base_price: z.number(),
   status: z.boolean(),
+  units: z.array(productUnitSchema),
 });
 
 export const productFormSchema = z.object({
@@ -16,7 +22,10 @@ export const productFormSchema = z.object({
   upc: z.string().min(1, "Product Code is required"),
   // base_price: z.string().min(1, "Base Price is required"),
   status: z.string().min(1, "Status is required"),
+  // Product Unit Fields
+  units: z.array(productUnitSchema),
 });
 
 export type Product = z.infer<typeof productSchema> & { id: string };
+export type ProductUnit = z.infer<typeof productUnitSchema> & { id: number };
 export type ProductForm = z.infer<typeof productFormSchema>;

@@ -33,7 +33,7 @@ export default function DashboardLayout({
       <SidebarInset className="overflow-x-hidden">
         <header className="flex justify-between h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]:h-12">
           <div className="flex items-center">
-            <SidebarTrigger className="cursor-pointer mx-3" />
+            <SidebarTrigger className="cursor-[ew-resize] mx-3" />
             <Separator
               orientation="vertical"
               className="mr-4 data-[orientation=vertical]:h-4"

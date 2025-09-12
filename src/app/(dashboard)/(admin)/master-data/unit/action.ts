@@ -10,6 +10,7 @@ export async function createUnit(prevState: UnitFormState, formData: FormData) {
   const validatedFields = unitSchema.safeParse({
     name: formData.get("name"),
     notes: formData.get("notes"),
+    status: formData.get("status") === "true" ? true : false,
   });
 
   if (!validatedFields.success) {
@@ -63,6 +64,7 @@ export async function updateUnit(prevState: UnitFormState, formData: FormData) {
   const validatedFields = unitSchema.safeParse({
     name: formData.get("name"),
     notes: formData.get("notes"),
+    status: formData.get("status"),
   });
 
   if (!validatedFields.success) {
@@ -82,6 +84,7 @@ export async function updateUnit(prevState: UnitFormState, formData: FormData) {
     .update({
       name: validatedFields.data.name,
       notes: validatedFields.data.notes,
+      status: validatedFields.data.status,
     })
     .eq("id", formData.get("id"));
 

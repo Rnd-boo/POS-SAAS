@@ -42,7 +42,7 @@ export default function ProductManagement() {
       const result = await supabase
         .from("products")
         .select(
-          `*, categories (
+          `id, name,upc,status,slug, description, categories_id, categories (
             name
           )`,
           { count: "exact" }
@@ -80,7 +80,7 @@ export default function ProductManagement() {
       return [
         currentLimit * (currentPage - 1) + index + 1,
         product.name,
-        product.categories.name,
+        (product.categories as unknown as { name: string }).name,
         product.upc,
         <div
           className={cn(
@@ -94,7 +94,27 @@ export default function ProductManagement() {
           <Button
             variant="ghost"
             size="icon"
-            className="cursor-pointer size-6 text-destructive hover:text-muted-foreground"
+            className="cursor-pointer size-4 hover:text-muted-foreground"
+            onClick={() => {
+              handleClickAction(product?.slug ?? "");
+            }}
+          >
+            <Eye />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="cursor-pointer size-4 hover:text-muted-foreground"
+            onClick={() => {
+              handleClickAction("edit");
+            }}
+          >
+            <SquarePen />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="cursor-pointer size-4 text-destructive hover:text-muted-foreground"
             onClick={() => {
               setSelectedAction({
                 data: product,
@@ -102,27 +122,7 @@ export default function ProductManagement() {
               });
             }}
           >
-            <Trash2 className="size-5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="cursor-pointer size-6 hover:text-muted-foreground"
-            onClick={() => {
-              handleClickAction("edit");
-            }}
-          >
-            <SquarePen className="size-5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="cursor-pointer size-6 hover:text-muted-foreground"
-            onClick={() => {
-              handleClickAction(product?.slug ?? "");
-            }}
-          >
-            <Eye className="size-5" />
+            <Trash2 />
           </Button>
         </div>,
       ];
