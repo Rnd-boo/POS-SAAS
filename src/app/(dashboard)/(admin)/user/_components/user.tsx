@@ -17,7 +17,7 @@ import { toast } from "sonner";
 export default function UserManagement() {
   const supabase = createClient();
   const currentId = useAuthStore((state) => state.profile?.clients);
-  console.log(currentId);
+
   const {
     currentLimit,
     currentPage,

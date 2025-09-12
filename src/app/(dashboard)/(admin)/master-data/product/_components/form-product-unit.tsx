@@ -26,10 +26,9 @@ export default function FormProductUnit<T extends FieldValues>({
     name: "units" as ArrayPath<T>,
   });
 
-  const selectedUnitId = form.watch("units.0.units_id" as Path<T>);
-  const selectedUnit = units?.find(
-    (unit) => unit.id === (parseInt(selectedUnitId) as any)
-  );
+  const selectedUnitId = form.watch("units.0.units_id" as Path<T>) || "";
+
+  const selectedUnit = units?.find((unit) => unit.id == selectedUnitId);
 
   // Set conversion_factor to "1" for the first unit (base unit)
   useEffect(() => {
@@ -62,7 +61,7 @@ export default function FormProductUnit<T extends FieldValues>({
           <Input
             name={`units.${index}.base_unit`}
             disabled
-            value={selectedUnit?.name}
+            value={selectedUnit?.name || ""}
             className="w-[150px] self-end"
           />
           {fields.length > 1 && index > 0 && (
@@ -85,7 +84,7 @@ export default function FormProductUnit<T extends FieldValues>({
         onClick={() =>
           append({
             units_id: "",
-            conversion_factor: "", // Changed to string to match schema
+            conversion_factor: "",
           } as any)
         }
       >

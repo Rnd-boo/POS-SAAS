@@ -3,10 +3,7 @@
 import { getProfileFromToken } from "@/actions/auth-action";
 import { createClient } from "@/lib/supabase/server";
 import { ProductFormState } from "@/types/product";
-import {
-  productSchema,
-  productUnitSchema,
-} from "@/validations/product-validation";
+import { productSchema } from "@/validations/product-validation";
 import { cookies } from "next/headers";
 
 export async function createProduct(
