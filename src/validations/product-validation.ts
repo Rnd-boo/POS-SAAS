@@ -1,7 +1,7 @@
 import z from "zod";
 
 export const productUnitSchema = z.object({
-  units_id: z.string(),
+  units_id: z.string().min(1, "Unit is required"),
   conversion_factor: z.string(),
 });
 
@@ -12,7 +12,7 @@ export const productSchema = z.object({
   upc: z.string(),
   // base_price: z.number(),
   status: z.boolean(),
-  units: z.array(productUnitSchema),
+  units: z.array(productUnitSchema).optional(),
 });
 
 export const productFormSchema = z.object({

@@ -53,19 +53,6 @@ export default function FormProduct<T extends FieldValues>({
     enabled: !!currentId,
   });
 
-  const { data: units } = useQuery({
-    queryKey: ["units", currentId],
-    queryFn: async () => {
-      const result = await supabase
-        .from("units")
-        .select("id,name")
-        .eq("status", true)
-        .eq("clients_id", currentId);
-      return result?.data;
-    },
-    enabled: !!currentId,
-  });
-
   return (
     <Card className="w-full">
       <Form {...form}>
@@ -121,7 +108,7 @@ export default function FormProduct<T extends FieldValues>({
             <CardTitle className="text-lg">Product Units</CardTitle>
           </CardHeader>
           <CardContent className="flex gap-2">
-            <FormProductUnit form={form} units={units ?? undefined} />
+            <FormProductUnit form={form} />
           </CardContent>
           <CardFooter className="justify-end flex gap-2">
             <Button

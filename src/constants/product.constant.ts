@@ -17,6 +17,7 @@ export const INITIAL_PRODUCT = {
     {
       units_id: "",
       conversion_factor: "1",
+      base_unit: "",
     },
   ],
 };

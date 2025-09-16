@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { INITIAL_PRODUCT } from "@/constants/product.constant";
 import FormDetail from "./form-detail";
 import { Card } from "@/components/ui/card";
+import { id } from "zod/v4/locales";
 
 export default function ViewProduct() {
   const params = useParams();
@@ -29,7 +30,7 @@ export default function ViewProduct() {
     resolver: zodResolver(productFormSchema),
     defaultValues: INITIAL_PRODUCT,
   });
-  const { data: product, isLoading } = useQuery({
+  const { data: product, isLoading: isLoadingProduct } = useQuery({
     queryKey: ["product", productSlug],
     queryFn: async () => {
       const result = await supabase
@@ -52,23 +53,60 @@ export default function ViewProduct() {
     },
     enabled: !!currentId && !!productSlug,
   });
+
   useEffect(() => {
-    form.setValue("name", product?.name || "");
+    form.setValue("name", product?.name);
     form.setValue(
       "description",
       product?.description?.trim() || "No Description"
     );
-    form.setValue("status", product?.status?.toString() || "");
-    form.setValue("upc", product?.upc || "");
-    form.setValue("categories_id", product?.categories?.name || "");
+    form.setValue("status", product?.status ? "Active" : "Not Active");
+    form.setValue("upc", product?.upc);
+    form.setValue("categories_id", product?.categories?.name);
   }, [product, form]);
+
+  const { data: productUnit, isLoading: isLoadingProductUnit } = useQuery({
+    queryKey: ["product_units", product?.id],
+    queryFn: async () => {
+      const result = await supabase
+        .from("product_units")
+        .select(
+          `id,is_base_unit, products_id, units_id, conversion_factor, units(
+            name
+          )`
+        )
+        .eq("clients_id", currentId)
+        .eq("products_id", product?.id);
+
+      if (result.error)
+        toast.error("Get Product Data Failed", {
+          description: result.error.message,
+        });
+
+      return result.data;
+    },
+    enabled: !!currentId && !!product?.id,
+  });
+
+  useEffect(() => {
+    if (productUnit && Array.isArray(productUnit)) {
+      const formattedUnits = productUnit
+        .filter((unit) => unit && unit.units && unit.conversion_factor)
+        .map((unit) => ({
+          units_id: (unit.units as unknown as { name: string }).name,
+          conversion_factor: String(unit.conversion_factor),
+        }));
+
+      form.setValue("units", formattedUnits);
+    }
+  }, [productUnit, form]);
 
   return (
     <>
       <FormDetail
         form={form}
-        isLoading={isLoading}
-        fields={[
+        isLoading={isLoadingProduct || isLoadingProductUnit}
+        data={[
           { label: "Created By", value: product?.client_profiles?.name },
           { label: "Created At", value: product?.created_at },
           // { label: "Updated By", value: product?.updated_by },

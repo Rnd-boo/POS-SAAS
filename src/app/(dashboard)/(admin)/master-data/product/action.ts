@@ -71,7 +71,7 @@ export async function createProduct(
     };
   }
 
-  const productUnitsData = validatedProductFields.data.units.map(
+  const productUnitsData = (validatedProductFields?.data?.units ?? []).map(
     (unit, index) => ({
       clients_id: currentClientId,
       products_id: insertedProduct.id,

@@ -16,14 +16,12 @@ export default function DialogInformation({
   open,
   onOpenChange,
   title,
-  isLoading,
-  fields,
+  data,
 }: {
   open: boolean;
-  isLoading: boolean;
   onOpenChange: (open: boolean) => void;
   title: string;
-  fields: { label: string; value: string | number | undefined }[];
+  data: { label: string; value: string | number | undefined }[];
 }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -32,7 +30,7 @@ export default function DialogInformation({
           <DialogHeader>
             <DialogTitle>Information {title}</DialogTitle>
           </DialogHeader>
-          {fields.map((field, i) => {
+          {data.map((field, i) => {
             let displayValue = field.value ?? "";
 
             if (

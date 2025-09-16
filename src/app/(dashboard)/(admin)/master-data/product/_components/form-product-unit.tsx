@@ -1,9 +1,13 @@
+"use client";
+
 import FormInput from "@/components/common/form-input";
 import FormSelect from "@/components/common/form-select";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { createClient } from "@/lib/supabase/client";
+import { useAuthStore } from "@/stores/auth-store";
+import { useQuery } from "@tanstack/react-query";
 import { Plus, X } from "lucide-react";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import {
   ArrayPath,
   FieldValues,
@@ -19,17 +23,40 @@ type FormProductUnitProps<T extends FieldValues> = {
 
 export default function FormProductUnit<T extends FieldValues>({
   form,
-  units,
 }: FormProductUnitProps<T>) {
+  const supabase = createClient();
+  const currentId = useAuthStore((state) => state.profile?.clients);
+  const { data: units } = useQuery({
+    queryKey: ["units", currentId],
+    queryFn: async () => {
+      const result = await supabase
+        .from("units")
+        .select("id,name")
+        .eq("status", true)
+        .eq("clients_id", currentId);
+      return result?.data;
+    },
+    enabled: !!currentId,
+  });
+
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "units" as ArrayPath<T>,
   });
 
   const selectedUnitId = form.watch("units.0.units_id" as Path<T>) || "";
-
   const selectedUnit = units?.find((unit) => unit.id == selectedUnitId);
 
+  useEffect(() => {
+    if (selectedUnit && fields.length > 0) {
+      fields.forEach((_, fieldIndex) => {
+        form.setValue(
+          `units.${fieldIndex}.base_unit` as Path<T>,
+          selectedUnit.name || ("" as any)
+        );
+      });
+    }
+  }, [selectedUnit?.id, fields.length, form]);
   // Set conversion_factor to "1" for the first unit (base unit)
   useEffect(() => {
     if (fields.length > 0) {
@@ -40,7 +67,7 @@ export default function FormProductUnit<T extends FieldValues>({
   return (
     <div>
       {fields.map((field, index) => (
-        <div className="flex w-full gap-2 mb-2" key={field.id}>
+        <div className="flex w-full gap-2  items-start" key={field.id}>
           <FormSelect
             form={form}
             name={`units.${index}.units_id` as Path<T>}
@@ -49,6 +76,7 @@ export default function FormProductUnit<T extends FieldValues>({
             valueKey="id"
             labelKey="name"
             className="min-w-[150px]"
+            disabledKey="isDisabled"
           />
           <FormInput
             form={form}
@@ -58,11 +86,13 @@ export default function FormProductUnit<T extends FieldValues>({
             className="max-w-[100px]"
             disabled={index === 0}
           />
-          <Input
-            name={`units.${index}.base_unit`}
+          <FormInput
+            form={form}
+            name={`units.${index}.base_unit` as Path<T>}
+            label=""
+            placeholder="Base Unit"
+            className="max-w-[100px]"
             disabled
-            value={selectedUnit?.name || ""}
-            className="w-[150px] self-end"
           />
           {fields.length > 1 && index > 0 && (
             <Button
@@ -70,9 +100,9 @@ export default function FormProductUnit<T extends FieldValues>({
               size="icon"
               variant="destructive"
               onClick={() => remove(index)}
-              className="self-end cursor-pointer"
+              className="cursor-pointer self-end"
             >
-              <X className="size-4" />
+              <X />
             </Button>
           )}
         </div>
@@ -81,10 +111,12 @@ export default function FormProductUnit<T extends FieldValues>({
         size="sm"
         type="button"
         variant="outline"
+        className="mt-2"
         onClick={() =>
           append({
             units_id: "",
             conversion_factor: "",
+            base_unit: "",
           } as any)
         }
       >
