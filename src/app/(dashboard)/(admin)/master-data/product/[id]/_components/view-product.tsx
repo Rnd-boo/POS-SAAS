@@ -22,7 +22,7 @@ import { id } from "zod/v4/locales";
 
 export default function ViewProduct() {
   const params = useParams();
-  const productSlug = params?.slug as string;
+  const productId = params?.id as string;
   const supabase = createClient();
   const currentId = useAuthStore((state) => state.profile?.clients);
 
@@ -31,7 +31,7 @@ export default function ViewProduct() {
     defaultValues: INITIAL_PRODUCT,
   });
   const { data: product, isLoading: isLoadingProduct } = useQuery({
-    queryKey: ["product", productSlug],
+    queryKey: ["product", productId],
     queryFn: async () => {
       const result = await supabase
         .from("products")
@@ -41,7 +41,7 @@ export default function ViewProduct() {
           )`
         )
         .eq("clients_id", currentId)
-        .eq("slug", productSlug)
+        .eq("id", productId)
         .single();
 
       if (result.error)
@@ -51,7 +51,7 @@ export default function ViewProduct() {
 
       return result.data;
     },
-    enabled: !!currentId && !!productSlug,
+    enabled: !!currentId && !!productId,
   });
 
   useEffect(() => {

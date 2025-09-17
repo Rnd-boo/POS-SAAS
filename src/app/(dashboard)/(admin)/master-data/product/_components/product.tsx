@@ -42,7 +42,7 @@ export default function ProductManagement() {
       const result = await supabase
         .from("products")
         .select(
-          `id, name,upc,status,slug, description, categories_id, categories (
+          `id, name,upc,status, description, categories_id, categories (
             name
           )`,
           { count: "exact" }
@@ -96,7 +96,7 @@ export default function ProductManagement() {
             size="icon"
             className="cursor-pointer size-4 hover:text-muted-foreground"
             onClick={() => {
-              handleClickAction(product?.slug ?? "");
+              handleClickAction(product?.id ?? "");
             }}
           >
             <Eye />
@@ -106,7 +106,7 @@ export default function ProductManagement() {
             size="icon"
             className="cursor-pointer size-4 hover:text-muted-foreground"
             onClick={() => {
-              handleClickAction("edit");
+              handleClickAction(`${product?.id}/edit`);
             }}
           >
             <SquarePen />

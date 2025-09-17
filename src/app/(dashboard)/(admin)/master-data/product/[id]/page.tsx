@@ -4,6 +4,6 @@ export const metadata = {
   title: "POS | View Product",
 };
 
-export default function ProductManagementPage() {
+export default function ViewProductPage() {
   return <ViewProduct />;
 }
