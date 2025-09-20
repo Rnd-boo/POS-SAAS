@@ -23,24 +23,23 @@ import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
 import { FieldValues, Path, UseFormReturn } from "react-hook-form";
 import FormProductUnit from "./form-product-unit";
+import FormSelectData from "@/components/common/form-select-data";
 
 export default function FormProduct<T extends FieldValues>({
   form,
   onSubmit,
-  isLoading = false,
+  isPending = false,
   type,
 }: {
   form: UseFormReturn<T>;
   onSubmit?: (event: FormEvent<HTMLFormElement>) => void;
-  isLoading?: boolean;
+  isPending?: boolean;
   type: "Create" | "Update";
 }) {
   const supabase = createClient();
   const currentId = useAuthStore((state) => state.profile?.clients);
 
-  const router = useRouter();
-
-  const { data: categoriesResult } = useQuery({
+  const { data: categoriesResult, isLoading: isPendingCategories } = useQuery({
     queryKey: ["categories", currentId],
     queryFn: async () => {
       const result = await supabase
@@ -52,7 +51,10 @@ export default function FormProduct<T extends FieldValues>({
     },
     enabled: !!currentId,
   });
-
+  const router = useRouter();
+  useEffect(() => {
+    console.log("FormProduct received form values:", form.getValues());
+  }, [form]);
   return (
     <Card className="w-full">
       <Form {...form}>
@@ -74,11 +76,11 @@ export default function FormProduct<T extends FieldValues>({
               label="Product"
               placeholder="Insert Product name"
             />
-            <FormSelect
+            <FormSelectData
               form={form}
               name={"categories_id" as Path<T>}
               label="Category"
-              data={categoriesResult ?? undefined}
+              data={categoriesResult ?? []}
               valueKey="id"
               labelKey="name"
             />
@@ -119,7 +121,7 @@ export default function FormProduct<T extends FieldValues>({
               Cancel
             </Button>
             <Button type="submit">
-              {isLoading ? <Loader2 className="animate-spin" /> : type}
+              {isPending ? <Loader2 className="animate-spin" /> : type}
             </Button>
           </CardFooter>
         </form>

@@ -16,69 +16,84 @@ import {
   SelectValue,
 } from "../ui/select";
 import { cn } from "@/lib/utils";
-import React from "react";
+import { useEffect, useRef } from "react";
 
 export default function FormSelect<T extends FieldValues>({
   form,
   name,
   label,
   selectItem,
-  data,
-  valueKey = "id",
-  disabled = false,
-  labelKey = "name",
-  disabledKey,
-  className = "w-full",
 }: {
   form: UseFormReturn<T>;
   name: Path<T>;
   label?: string;
-  selectItem?: { value: string; label: string; disabled?: boolean }[];
-  data?: any[];
-  valueKey?: string;
-  disabled?: boolean;
-  labelKey?: string;
-  disabledKey?: string;
-  className?: string;
+  selectItem: { value: string; label: string; disabled?: boolean }[];
 }) {
-  const selectItems = React.useMemo(() => {
-    if (selectItem) {
-      // Use static options if provided
-      return selectItem;
-    } else if (data) {
-      // Transform dynamic data into SelectOption format
-      return data.map((item) => ({
-        value: item[valueKey].toString(),
-        label: item[labelKey],
-        disabled: disabledKey ? item[disabledKey] : false,
-      }));
-    }
-    return [];
-  }, [selectItem, data, valueKey, labelKey, disabledKey]);
+  const mountedRef = useRef(false);
+  const hasTriggeredOnChangeRef = useRef(false);
+
+  useEffect(() => {
+    // Mark as mounted after first render
+    const timer = setTimeout(() => {
+      mountedRef.current = true;
+    }, 0);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <FormField
       control={form.control}
       name={name}
-      render={({ field: { onChange, ...rest } }) => (
+      render={({ field }) => (
         <FormItem>
           <FormLabel>{label}</FormLabel>
           <FormControl>
-            <Select {...rest} onValueChange={onChange} disabled={disabled}>
+            <Select
+              value={field.value || ""}
+              onValueChange={(value) => {
+                console.log(`${name} onChange:`, {
+                  value,
+                  currentValue: field.value,
+                  mounted: mountedRef.current,
+                  hasTriggered: hasTriggeredOnChangeRef.current,
+                });
+
+                // Block onChange until component is fully mounted
+                if (!mountedRef.current) {
+                  console.log(`${name} blocked - not mounted yet`);
+                  return;
+                }
+
+                // Block first onChange if it's trying to clear a valid value
+                if (!hasTriggeredOnChangeRef.current && field.value && !value) {
+                  console.log(
+                    `${name} blocked - preventing clear on first change`
+                  );
+                  hasTriggeredOnChangeRef.current = true;
+                  return;
+                }
+
+                hasTriggeredOnChangeRef.current = true;
+                field.onChange(value);
+              }}
+            >
               <SelectTrigger
-                className={cn(className, {
+                className={cn("w-full", {
                   "border-red-500": form.formState.errors[name]?.message,
                 })}
               >
-                <SelectValue placeholder={`Select ${label}`}></SelectValue>
+                <SelectValue placeholder={`Select ${label}`} />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
                   <SelectLabel>{label}</SelectLabel>
-                  {selectItems.map((item) => (
+                  {selectItem.map((item) => (
                     <SelectItem
-                      key={item.label}
+                      key={item.value}
                       value={item.value}
                       disabled={item.disabled}
+                      className="capitalize"
                     >
                       {item.label}
                     </SelectItem>

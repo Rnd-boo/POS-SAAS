@@ -2,6 +2,7 @@
 
 import FormInput from "@/components/common/form-input";
 import FormSelect from "@/components/common/form-select";
+import FormSelectData from "@/components/common/form-select-data";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { useAuthStore } from "@/stores/auth-store";
@@ -68,7 +69,7 @@ export default function FormProductUnit<T extends FieldValues>({
     <div>
       {fields.map((field, index) => (
         <div className="flex w-full gap-2  items-start" key={field.id}>
-          <FormSelect
+          <FormSelectData
             form={form}
             name={`units.${index}.units_id` as Path<T>}
             label=""
@@ -76,7 +77,6 @@ export default function FormProductUnit<T extends FieldValues>({
             valueKey="id"
             labelKey="name"
             className="min-w-[150px]"
-            disabledKey="isDisabled"
           />
           <FormInput
             form={form}
