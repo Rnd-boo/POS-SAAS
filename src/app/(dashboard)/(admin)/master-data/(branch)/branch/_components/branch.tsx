@@ -5,23 +5,22 @@ import DropdownAction from "@/components/common/dropdown-action";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { HEADER_TABLE_CATEGORY } from "@/constants/category.constant";
 import useDataTable from "@/hooks/use-data-table";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { Pencil, Trash2 } from "lucide-react";
+import { Eye, Pencil, SquarePen, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import DialogCreateCategory from "./dialog-create-category";
-import DialogUpdateCategory from "./dialog-update-category";
-import { Category } from "@/validations/category-validation";
-import DialogDeleteCategory from "./dialog-delete-category";
 import { useAuthStore } from "@/stores/auth-store";
+import { Branch } from "@/validations/branch.validation";
+import { HEADER_TABLE_BRANCH } from "@/constants/branch.constant";
 
-export default function CategoryManagement() {
+export default function BranchManagement() {
   const supabase = createClient();
+
   const currentId = useAuthStore((state) => state.profile?.clients);
+
   const {
     currentLimit,
     currentPage,
@@ -32,28 +31,22 @@ export default function CategoryManagement() {
   } = useDataTable();
 
   const {
-    data: categories,
+    data: branch,
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: [
-      "categories",
-      currentPage,
-      currentLimit,
-      currentSearch,
-      currentId,
-    ],
+    queryKey: ["branch", currentPage, currentLimit, currentSearch, currentId],
     queryFn: async () => {
       const result = await supabase
-        .from("categories")
-        .select("id, name, description, status", { count: "exact" })
+        .from("branch")
+        .select("*", { count: "exact" })
         .eq("clients_id", currentId)
         .range((currentPage - 1) * currentLimit, currentPage * currentLimit - 1)
         .order("name")
         .ilike("name", `%${currentSearch}%`);
 
       if (result.error)
-        toast.error("Get Category Data Failed", {
+        toast.error("Get Branch Data Failed", {
           description: result.error.message,
         });
 
@@ -63,8 +56,8 @@ export default function CategoryManagement() {
   });
 
   const [selectedAction, setSelectedAction] = useState<{
-    data: Category;
-    type: "update" | "delete";
+    data: Branch;
+    type: "detail" | "update" | "delete";
   } | null>(null);
 
   const handleChangeAction = (open: boolean) => {
@@ -72,81 +65,88 @@ export default function CategoryManagement() {
   };
 
   const filteredData = useMemo(() => {
-    return (categories?.data || []).map((category, index) => {
+    return (branch?.data || []).map((branch, index) => {
       return [
         currentLimit * (currentPage - 1) + index + 1,
-        category.name,
-        <span className="block truncate max-w-xs">{category.description}</span>,
+        branch.name,
         <div
           className={cn(
             "px-2 py-1 rounded-full text-white w-fit",
-            category.status ? "bg-green-600" : "bg-red-500"
+            branch.status ? "bg-green-600" : "bg-red-500"
           )}
         >
-          {category.status ? "Active" : "Not Active"}
+          {branch.status ? "Active" : "Not Active"}
         </div>,
-        <DropdownAction
-          menu={[
-            {
-              label: (
-                <span className="flex items-center gap-2">
-                  <Pencil />
-                  Edit
-                </span>
-              ),
-              action: () => {
-                setSelectedAction({
-                  data: category,
-                  type: "update",
-                });
-              },
-            },
-            {
-              label: (
-                <span className="flex items-center gap-2">
-                  <Trash2 className="text-red-400" />
-                  Delete
-                </span>
-              ),
-              variant: "destructive",
-              action: () => {
-                setSelectedAction({
-                  data: category,
-                  type: "delete",
-                });
-              },
-            },
-          ]}
-        />,
+        <div className="flex items-center max-w-[40px] gap-x-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="cursor-pointer size-4 hover:text-muted-foreground"
+            onClick={() => {
+              setSelectedAction({
+                data: branch,
+                type: "detail",
+              });
+            }}
+          >
+            <Eye />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="cursor-pointer size-4 hover:text-muted-foreground"
+            onClick={() => {
+              setSelectedAction({
+                data: branch,
+                type: "update",
+              });
+            }}
+          >
+            <SquarePen />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="cursor-pointer size-4 text-destructive hover:text-muted-foreground"
+            onClick={() => {
+              setSelectedAction({
+                data: branch,
+                type: "delete",
+              });
+            }}
+          >
+            <Trash2 />
+          </Button>
+        </div>,
       ];
     });
-  }, [categories]);
+  }, [branch]);
 
   const totalPages = useMemo(() => {
-    return categories && categories.count !== null
-      ? Math.ceil(categories.count / currentLimit)
+    return branch && branch.count !== null
+      ? Math.ceil(branch.count / currentLimit)
       : 0;
-  }, [categories]);
+  }, [branch]);
 
   return (
     <div className="w-full">
       <div className="flex flex-col lg:flex-row mb-4 gap-2 justify-between w-full">
-        <h1 className="text-xl font-semibold">Category Management</h1>
+        <h1 className="text-xl font-semibold">Branch Management</h1>
         <div className="flex gap-2">
           <Input
-            placeholder="Search by category name"
+            placeholder="Search by branch name"
             onChange={(e) => handleChangeSearch(e.target.value)}
           />
           <Dialog>
             <DialogTrigger asChild>
               <Button variant="outline">Create</Button>
             </DialogTrigger>
-            <DialogCreateCategory refetch={refetch} />
+            {/* <DialogCreateCategory refetch={refetch} /> */}
           </Dialog>
         </div>
       </div>
       <DataTable
-        header={HEADER_TABLE_CATEGORY}
+        header={HEADER_TABLE_BRANCH}
         isLoading={isLoading}
         data={filteredData}
         totalPages={totalPages}
@@ -155,7 +155,7 @@ export default function CategoryManagement() {
         onChangePage={handleChangePage}
         onChangeLimit={handleChangeLimit}
       />
-      <DialogUpdateCategory
+      {/* <DialogUpdateCategory
         open={selectedAction !== null && selectedAction.type === "update"}
         refetch={refetch}
         currentData={selectedAction?.data}
@@ -166,7 +166,7 @@ export default function CategoryManagement() {
         refetch={refetch}
         currentData={selectedAction?.data}
         handleChangeAction={handleChangeAction}
-      />
+      /> */}
     </div>
   );
 }
