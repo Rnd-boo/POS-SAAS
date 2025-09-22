@@ -1,7 +1,6 @@
 "use client";
 
 import DataTable from "@/components/common/data-table";
-import DropdownAction from "@/components/common/dropdown-action";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -9,7 +8,7 @@ import useDataTable from "@/hooks/use-data-table";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { Eye, Pencil, SquarePen, Trash2 } from "lucide-react";
+import { Eye, SquarePen, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useAuthStore } from "@/stores/auth-store";
@@ -17,6 +16,7 @@ import { Branch } from "@/validations/branch.validation";
 import { HEADER_TABLE_BRANCH } from "@/constants/branch.constant";
 import DialogDetailBranch from "./dialog-detail-branch";
 import DialogDeleteBranch from "./dialog-delete-branch";
+import DialogCreateBranch from "./dialog-create-branch";
 
 export default function BranchManagement() {
   const supabase = createClient();
@@ -145,7 +145,7 @@ export default function BranchManagement() {
             <DialogTrigger asChild>
               <Button variant="outline">Create</Button>
             </DialogTrigger>
-            {/* <DialogCreateCategory refetch={refetch} /> */}
+            <DialogCreateBranch refetch={refetch} />
           </Dialog>
         </div>
       </div>
