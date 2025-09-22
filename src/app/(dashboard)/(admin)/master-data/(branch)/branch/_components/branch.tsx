@@ -17,6 +17,7 @@ import { HEADER_TABLE_BRANCH } from "@/constants/branch.constant";
 import DialogDetailBranch from "./dialog-detail-branch";
 import DialogDeleteBranch from "./dialog-delete-branch";
 import DialogCreateBranch from "./dialog-create-branch";
+import DialogUpdateBranch from "./dialog-update-branch";
 
 export default function BranchManagement() {
   const supabase = createClient();
@@ -183,6 +184,12 @@ export default function BranchManagement() {
       />
       <DialogDeleteBranch
         open={selectedAction !== null && selectedAction.type === "delete"}
+        refetch={refetch}
+        currentData={selectedAction?.data}
+        handleChangeAction={handleChangeAction}
+      />
+      <DialogUpdateBranch
+        open={selectedAction !== null && selectedAction.type === "update"}
         refetch={refetch}
         currentData={selectedAction?.data}
         handleChangeAction={handleChangeAction}

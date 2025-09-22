@@ -49,6 +49,51 @@ export async function createBranch(
   };
 }
 
+export async function updateBranch(
+  prevState: BranchFormState,
+  formData: FormData
+) {
+  const validatedFields = branchSchema.safeParse({
+    name: formData.get("name"),
+    description: formData.get("description"),
+    status: formData.get("status") === "true" ? true : false,
+  });
+
+  if (!validatedFields.success) {
+    return {
+      status: "error",
+      errors: {
+        ...validatedFields.error.flatten().fieldErrors,
+        _form: [],
+      },
+    };
+  }
+
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("branch")
+    .update({
+      name: validatedFields.data.name,
+      status: validatedFields.data.status,
+    })
+    .eq("id", formData.get("id"));
+
+  if (error) {
+    return {
+      status: "error",
+      errors: {
+        ...prevState.errors,
+        _form: [error.message],
+      },
+    };
+  }
+
+  return {
+    status: "success",
+  };
+}
+
 export async function deleteBranch(
   prevState: BranchFormState,
   formData: FormData
