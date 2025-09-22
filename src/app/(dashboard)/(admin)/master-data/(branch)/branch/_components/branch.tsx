@@ -16,6 +16,7 @@ import { useAuthStore } from "@/stores/auth-store";
 import { Branch } from "@/validations/branch.validation";
 import { HEADER_TABLE_BRANCH } from "@/constants/branch.constant";
 import DialogDetailBranch from "./dialog-detail-branch";
+import DialogDeleteBranch from "./dialog-delete-branch";
 
 export default function BranchManagement() {
   const supabase = createClient();
@@ -180,12 +181,12 @@ export default function BranchManagement() {
           },
         ]}
       />
-      {/* <DialogDeleteCategory
+      <DialogDeleteBranch
         open={selectedAction !== null && selectedAction.type === "delete"}
         refetch={refetch}
         currentData={selectedAction?.data}
         handleChangeAction={handleChangeAction}
-      /> */}
+      />
     </div>
   );
 }
