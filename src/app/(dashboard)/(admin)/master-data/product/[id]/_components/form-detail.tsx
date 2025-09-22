@@ -2,7 +2,6 @@
 
 import DialogInformation from "@/components/common/dialog-information";
 import FormInput from "@/components/common/form-input";
-import FormSelect from "@/components/common/form-select";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,7 +13,6 @@ import {
 
 import { Form } from "@/components/ui/form";
 import { Separator } from "@/components/ui/separator";
-import { STATUS_LIST } from "@/constants/general.constant";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import {
@@ -25,8 +23,6 @@ import {
   useForm,
   UseFormReturn,
 } from "react-hook-form";
-import FormProductUnit from "../../_components/form-product-unit";
-import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function FormDetail<T extends FieldValues>({

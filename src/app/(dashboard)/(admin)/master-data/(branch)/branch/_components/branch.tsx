@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { useAuthStore } from "@/stores/auth-store";
 import { Branch } from "@/validations/branch.validation";
 import { HEADER_TABLE_BRANCH } from "@/constants/branch.constant";
+import DialogDetailBranch from "./dialog-detail-branch";
 
 export default function BranchManagement() {
   const supabase = createClient();
@@ -39,7 +40,9 @@ export default function BranchManagement() {
     queryFn: async () => {
       const result = await supabase
         .from("branch")
-        .select("*", { count: "exact" })
+        .select("*,client_profiles:client_profiles_id(name)", {
+          count: "exact",
+        })
         .eq("clients_id", currentId)
         .range((currentPage - 1) * currentLimit, currentPage * currentLimit - 1)
         .order("name")
@@ -155,13 +158,29 @@ export default function BranchManagement() {
         onChangePage={handleChangePage}
         onChangeLimit={handleChangeLimit}
       />
-      {/* <DialogUpdateCategory
-        open={selectedAction !== null && selectedAction.type === "update"}
-        refetch={refetch}
-        currentData={selectedAction?.data}
+      <DialogDetailBranch
+        open={selectedAction !== null && selectedAction.type === "detail"}
         handleChangeAction={handleChangeAction}
+        informationData={[
+          {
+            label: "Created By",
+            value: (
+              selectedAction?.data?.client_profiles as unknown as {
+                name: string;
+              }
+            )?.name,
+          },
+          {
+            label: "Created At",
+            value: selectedAction?.data?.created_at,
+          },
+          {
+            label: "Updated At",
+            value: selectedAction?.data?.updated_at,
+          },
+        ]}
       />
-      <DialogDeleteCategory
+      {/* <DialogDeleteCategory
         open={selectedAction !== null && selectedAction.type === "delete"}
         refetch={refetch}
         currentData={selectedAction?.data}

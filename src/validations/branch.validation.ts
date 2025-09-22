@@ -11,4 +11,9 @@ export const branchFormSchema = z.object({
 });
 
 export type BranchForm = z.infer<typeof branchFormSchema>;
-export type Branch = z.infer<typeof branchSchema> & { id: string };
+export type Branch = z.infer<typeof branchSchema> & {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  client_profiles: string;
+};
