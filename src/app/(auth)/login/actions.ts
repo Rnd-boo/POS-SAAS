@@ -42,6 +42,7 @@ export async function login(
   }
 
   const supabase = await createClient();
+
   const { data: profile, error } = await supabase
     .from("client_profiles")
     .select(
@@ -62,7 +63,7 @@ export async function login(
       status: "error",
       errors: {
         ...prevState.errors,
-        _form: ["Username not found"],
+        _form: error ? [error.message] : ["Profile not found"],
       },
     };
   }
@@ -82,14 +83,19 @@ export async function login(
     };
   }
 
+  const { data: branches, error: branchError } = await supabase
+    .from("client_profile_branch")
+    .select(`*, branch!branch_id(name) `)
+    .eq("client_profiles_id", profile.id);
+
   try {
     // Create JWT using jose (Edge Runtime compatible)
     const token = await new SignJWT({
       id: profile.id,
       clients: profile.clients_id,
       name: profile.name,
-      branch: profile.branch,
       brand: profile.brand,
+      branch: branches?.map((b) => b.branch?.name) ?? [],
       role: profile.role_access.name,
       permissions: {
         dashboard: profile.role_access.dashboard,
@@ -109,7 +115,6 @@ export async function login(
       sameSite: "lax",
       maxAge: 60 * 60 * 24, // 24 hours
     });
-
     revalidatePath("/", "layout");
   } catch (error) {
     console.error("JWT creation error:", error);

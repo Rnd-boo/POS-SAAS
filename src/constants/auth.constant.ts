@@ -16,5 +16,5 @@ export const INITTIAL_STATE_PROFILE = {
   id: "",
   name: "",
   role: "",
-  branch: "",
+  branch: [],
 };

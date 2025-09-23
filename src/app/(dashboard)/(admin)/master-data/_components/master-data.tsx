@@ -6,12 +6,34 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { MASTER_POS, MASTER_PRODUCT } from "@/constants/master-data.constant";
+import {
+  MASTER_COMPANY,
+  MASTER_PRODUCT,
+} from "@/constants/master-data.constant";
 import Link from "next/link";
 
 export default function MasterData() {
   return (
     <>
+      <Card className="w-full">
+        <CardHeader>
+          <CardTitle className="text-lg">Company</CardTitle>
+          <CardDescription>
+            Manage company profile and configuration
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="w-full flex flex-wrap gap-6 overflow-hidden">
+          {MASTER_COMPANY.map((item, index) => (
+            <div key={`item-${index}`}>
+              <Link href={item.url}>
+                <Button className="cursor-pointer text-lg py-6 w-[120px] ">
+                  {item.title}
+                </Button>
+              </Link>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
       <Card className="w-full">
         <CardHeader>
           <CardTitle>Products</CardTitle>
@@ -23,23 +45,6 @@ export default function MasterData() {
               <Link href={product.url}>
                 <Button className="cursor-pointer text-lg py-6 w-[120px] ">
                   {product.title}
-                </Button>
-              </Link>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle>Point of Sale</CardTitle>
-          <CardDescription>Manage your POS</CardDescription>
-        </CardHeader>
-        <CardContent className="w-full flex flex-wrap gap-6 overflow-hidden">
-          {MASTER_POS.map((item, index) => (
-            <div key={`item-${index}`}>
-              <Link href={item.url}>
-                <Button className="cursor-pointer text-lg py-6 w-[120px] ">
-                  {item.title}
                 </Button>
               </Link>
             </div>

@@ -10,12 +10,17 @@ export type ClientProfilesFormState = {
   };
 };
 
+export type ProfileBranch = {
+  client_profiles_id?: string;
+  branch_id?: string;
+};
+
 export type Profile = {
   id?: string;
   clients?: string;
   name?: string;
   role?: string;
-  branch?: string;
+  branch?: ProfileBranch[];
   brand?: string;
   permissions?: {
     dashboard: boolean;

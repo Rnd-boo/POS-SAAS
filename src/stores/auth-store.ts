@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { INITTIAL_STATE_PROFILE } from "@/constants/auth.constant";
 import { Profile } from "@/types/profiles";
 
 type AuthState = {

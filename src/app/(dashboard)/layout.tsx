@@ -27,6 +27,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const profile = useAuthStore((state) => state.profile);
+  console.log("Profile in layout:", profile);
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -42,7 +43,7 @@ export default function DashboardLayout({
           </div>
           <div className="flex gap-4 items-center px-6">
             <h1 className="uppercase">{profile?.brand}</h1>
-            <h1 className="uppercase">{profile?.branch}</h1>
+            {/* <h1 className="uppercase">{profile?.branch}</h1> */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Avatar className="h-10 w-10 rounded-lg hover:bg-muted">
