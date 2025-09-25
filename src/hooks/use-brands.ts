@@ -12,7 +12,8 @@ export function useBrands(userId: string | null) {
       const { data, error } = await supabase
         .from("brand")
         .select("*")
-        .eq("client_profiles_id", userId);
+        .eq("client_profiles_id", userId)
+        .eq("status", true);
       if (error) throw error;
       return data ?? [];
     },

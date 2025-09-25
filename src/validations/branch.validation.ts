@@ -2,11 +2,13 @@ import z from "zod";
 
 export const branchSchema = z.object({
   name: z.string(),
+  brand_id: z.number(),
   status: z.boolean(),
 });
 
 export const branchFormSchema = z.object({
   name: z.string().min(1, "Branch Name is required"),
+  brand_id: z.string().min(1, "Brand is required"),
   status: z.string().min(1, "Status is required"),
 });
 

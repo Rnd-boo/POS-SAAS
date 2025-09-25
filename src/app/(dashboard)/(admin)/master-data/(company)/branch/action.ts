@@ -11,6 +11,7 @@ export async function createBranch(
 ) {
   const validatedFields = branchSchema.safeParse({
     name: formData.get("name"),
+    brand_id: Number(formData.get("brand_id")),
     status: formData.get("status") === "true" ? true : false,
   });
 
@@ -29,6 +30,7 @@ export async function createBranch(
     client_profiles_id: currentUserId,
     clients_id: currentClientId,
     name: validatedFields.data.name,
+    brand_id: validatedFields.data.brand_id,
     status: validatedFields.data.status,
   });
 
@@ -53,7 +55,7 @@ export async function updateBranch(
 ) {
   const validatedFields = branchSchema.safeParse({
     name: formData.get("name"),
-    description: formData.get("description"),
+    brand_id: Number(formData.get("brand_id")),
     status: formData.get("status") === "true" ? true : false,
   });
 
@@ -73,6 +75,7 @@ export async function updateBranch(
     .from("branch")
     .update({
       name: validatedFields.data.name,
+      brand_id: validatedFields.data.brand_id,
       status: validatedFields.data.status,
     })
     .eq("id", formData.get("id"));

@@ -11,6 +11,9 @@ import {
 } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
 import { STATUS_LIST } from "@/constants/general.constant";
+import { createClient } from "@/lib/supabase/client";
+import { useAuthStore } from "@/stores/auth-store";
+import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { FormEvent } from "react";
 import { FieldValues, Path, UseFormReturn } from "react-hook-form";
@@ -26,6 +29,21 @@ export default function FormBranch<T extends FieldValues>({
   isLoading: boolean;
   type: "Create" | "Update";
 }) {
+  const supabase = createClient();
+  const currentId = useAuthStore((state) => state.profile?.clients);
+
+  const { data: brands } = useQuery({
+    queryKey: ["brand", currentId],
+    queryFn: async () => {
+      const result = await supabase
+        .from("brand")
+        .select("id, name")
+        .eq("status", true)
+        .eq("clients_id", currentId);
+      return result?.data;
+    },
+    enabled: !!currentId,
+  });
   return (
     <DialogContent className="sm:max-w-[425px]">
       <Form {...form}>
@@ -44,6 +62,14 @@ export default function FormBranch<T extends FieldValues>({
               name={"name" as Path<T>}
               label="Branch"
               placeholder="Insert Branch name"
+            />
+            <FormSelect
+              form={form}
+              name={"brand_id" as Path<T>}
+              label="Brand"
+              data={brands ?? undefined}
+              valueKey="id"
+              labelKey="name"
             />
             <FormSelect
               form={form}

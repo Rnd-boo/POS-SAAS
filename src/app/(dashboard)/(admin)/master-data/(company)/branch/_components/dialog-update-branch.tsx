@@ -58,6 +58,7 @@ export default function DialogUpdateBranch({
   useEffect(() => {
     if (currentData) {
       form.setValue("name", currentData.name);
+      form.setValue("brand_id", String(currentData.brand_id));
       form.setValue("status", currentData.status.toString());
     }
   }, [currentData]);

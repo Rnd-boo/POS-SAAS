@@ -1,4 +1,10 @@
-export const HEADER_TABLE_BRANCH = ["NO", "Branch", "Status", "Action"];
+export const HEADER_TABLE_BRANCH = [
+  "NO",
+  "Branch Name",
+  "Brand",
+  "Status",
+  "Action",
+];
 
 export const INITIAL_BRANCH = {
   name: "",

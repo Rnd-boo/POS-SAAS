@@ -42,7 +42,7 @@ export default function BranchManagement() {
     queryFn: async () => {
       const result = await supabase
         .from("branch")
-        .select("*,client_profiles:client_profiles_id(name)", {
+        .select("*,client_profiles:client_profiles_id(name),brand(name)", {
           count: "exact",
         })
         .eq("clients_id", currentId)
@@ -74,6 +74,7 @@ export default function BranchManagement() {
       return [
         currentLimit * (currentPage - 1) + index + 1,
         branch.name,
+        (branch.brand as unknown as { name: string }).name,
         <div
           className={cn(
             "px-2 py-1 rounded-full text-white w-fit",
