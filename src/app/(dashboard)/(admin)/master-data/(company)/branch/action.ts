@@ -1,11 +1,9 @@
 "use server";
 
-import { getProfileFromToken } from "@/actions/auth-action";
 import { getCurrentProfile } from "@/lib/get-current-profile";
 import { createClient } from "@/lib/supabase/server";
 import { BranchFormState } from "@/types/branch";
 import { branchSchema } from "@/validations/branch.validation";
-import { cookies } from "next/headers";
 
 export async function createBranch(
   prevState: BranchFormState,

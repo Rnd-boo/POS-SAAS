@@ -1,3 +1,5 @@
+import { Brand } from "./brand";
+
 export type ClientProfilesFormState = {
   status?: string;
   errors?: {
@@ -21,7 +23,7 @@ export type Profile = {
   name?: string;
   role?: string;
   branch?: ProfileBranch[];
-  brand?: string;
+  brand?: Brand[];
   permissions?: {
     dashboard: boolean;
     inventory: boolean;

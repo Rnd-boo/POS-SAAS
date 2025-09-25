@@ -7,6 +7,7 @@ import { cookies } from "next/headers";
 import { Profile } from "@/types/profiles";
 import ReactQueryProvider from "@/providers/react-query-provider";
 import { getProfileFromToken } from "@/actions/auth-action";
+import BrandStoreProvider from "@/providers/brand-store-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,15 +40,17 @@ export default async function RootLayout({
       >
         <ReactQueryProvider>
           <AuthStoreProvider profile={profile || {}}>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-            >
-              {children}
-              <Toaster />
-            </ThemeProvider>
+            <BrandStoreProvider userId={profile?.id ?? null}>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
+                disableTransitionOnChange
+              >
+                {children}
+                <Toaster />
+              </ThemeProvider>
+            </BrandStoreProvider>
           </AuthStoreProvider>
         </ReactQueryProvider>
       </body>

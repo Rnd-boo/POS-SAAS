@@ -1,3 +1,5 @@
+"use server";
+
 import { getProfileFromToken } from "@/actions/auth-action";
 import { cookies } from "next/headers";
 export type CurrentProfile = {

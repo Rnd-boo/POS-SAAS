@@ -7,3 +7,9 @@ export type BrandFormState = {
     _form?: string[];
   };
 };
+
+export type Brand = {
+  id?: string;
+  name?: string;
+  status?: string;
+};

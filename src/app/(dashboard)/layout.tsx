@@ -9,6 +9,12 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
@@ -18,8 +24,20 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { useAuthStore } from "@/stores/auth-store";
-import { LogOut } from "lucide-react";
+import { ArrowLeftRight, LogOut } from "lucide-react";
 import DashboardBreadCrumb from "./_components/dashboard-breadcrumb";
+import { useBrandStore } from "@/stores/brand-store";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
+import { Button } from "@/components/ui/button";
 
 export default function DashboardLayout({
   children,
@@ -27,7 +45,10 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const profile = useAuthStore((state) => state.profile);
-  console.log("Profile in layout:", profile);
+  const brands = useBrandStore((s) => s.brands);
+  const currentBrandId = useBrandStore((s) => s.currentBrandId);
+  const setCurrentBrand = useBrandStore((s) => s.setCurrentBrand);
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -42,8 +63,21 @@ export default function DashboardLayout({
             <DashboardBreadCrumb />
           </div>
           <div className="flex gap-4 items-center px-6">
-            <h1 className="uppercase">{profile?.brand}</h1>
-            {/* <h1 className="uppercase">{profile?.branch}</h1> */}
+            <Drawer direction="right">
+              <DrawerTrigger asChild>
+                <Button variant="ghost" className="cursor-pointer">
+                  Branches <ArrowLeftRight />
+                </Button>
+              </DrawerTrigger>
+              <DrawerContent>
+                <DrawerHeader>
+                  <DrawerTitle>Are you absolutely sure?</DrawerTitle>
+                  <DrawerDescription>
+                    This action cannot be undone.
+                  </DrawerDescription>
+                </DrawerHeader>
+              </DrawerContent>
+            </Drawer>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Avatar className="h-10 w-10 rounded-lg hover:bg-muted">
@@ -60,8 +94,34 @@ export default function DashboardLayout({
                 <DropdownMenuLabel className="capitalize">
                   {profile?.name}
                 </DropdownMenuLabel>
-                <Separator />
+                <DropdownMenuSeparator />
                 <DropdownMenuItem>Profile</DropdownMenuItem>
+                <DropdownMenuGroup>
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>
+                      {
+                        brands.find(
+                          (brand) => String(brand.id) === currentBrandId
+                        )?.name
+                      }
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent>
+                      {Array.isArray(brands) && brands.length > 0 && (
+                        <DropdownMenuRadioGroup
+                          value={currentBrandId ?? ""}
+                          onValueChange={(value) => setCurrentBrand(value)}
+                        >
+                          {brands.map((b) => (
+                            <DropdownMenuRadioItem key={b.id} value={`${b.id}`}>
+                              {b.name}
+                            </DropdownMenuRadioItem>
+                          ))}
+                        </DropdownMenuRadioGroup>
+                      )}
+                    </DropdownMenuSubContent>
+                  </DropdownMenuSub>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                   <DropdownMenuItem
                     onClick={() => {
