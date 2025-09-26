@@ -7,7 +7,10 @@ export const branchSchema = z.object({
 });
 
 export const branchFormSchema = z.object({
-  name: z.string().min(1, "Branch Name is required"),
+  name: z
+    .string()
+    .min(1, "Branch Name is required")
+    .max(48, "Branch Name is too long"),
   brand_id: z.string().min(1, "Brand is required"),
   status: z.string().min(1, "Status is required"),
 });

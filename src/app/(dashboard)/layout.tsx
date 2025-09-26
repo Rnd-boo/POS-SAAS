@@ -38,6 +38,7 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
+import { useBranches } from "@/hooks/use-branches";
 
 export default function DashboardLayout({
   children,
@@ -48,6 +49,10 @@ export default function DashboardLayout({
   const brands = useBrandStore((s) => s.brands);
   const currentBrandId = useBrandStore((s) => s.currentBrandId);
   const setCurrentBrand = useBrandStore((s) => s.setCurrentBrand);
+  const currentBrandName = brands.find(
+    (brand) => String(brand.id) === currentBrandId
+  )?.name;
+  const { data: branches, isLoading } = useBranches();
 
   return (
     <SidebarProvider>
@@ -71,11 +76,18 @@ export default function DashboardLayout({
               </DrawerTrigger>
               <DrawerContent>
                 <DrawerHeader>
-                  <DrawerTitle>Are you absolutely sure?</DrawerTitle>
+                  <DrawerTitle>
+                    Multiple Branches in {currentBrandName}
+                  </DrawerTitle>
                   <DrawerDescription>
-                    This action cannot be undone.
+                    Overview of all active branches
                   </DrawerDescription>
                 </DrawerHeader>
+                <div className="capitalize grid list-inside mx-4">
+                  {branches?.map((b) => (
+                    <li key={b.id}>{b.name}</li>
+                  ))}
+                </div>
               </DrawerContent>
             </Drawer>
             <DropdownMenu>
@@ -99,11 +111,7 @@ export default function DashboardLayout({
                 <DropdownMenuGroup>
                   <DropdownMenuSub>
                     <DropdownMenuSubTrigger>
-                      {
-                        brands.find(
-                          (brand) => String(brand.id) === currentBrandId
-                        )?.name
-                      }
+                      {currentBrandName}
                     </DropdownMenuSubTrigger>
                     <DropdownMenuSubContent>
                       {Array.isArray(brands) && brands.length > 0 && (
