@@ -9,12 +9,15 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import FormBranch from "./form-branch";
 import { createBranch } from "../action";
+import { useBrandStore } from "@/stores/brand-store";
 
 export default function DialogCreateBranch({
   refetch,
 }: {
   refetch: () => void;
 }) {
+  const currentBrandId = useBrandStore((s) => s.currentBrandId);
+
   const form = useForm<BranchForm>({
     resolver: zodResolver(branchFormSchema),
     defaultValues: INITIAL_BRANCH,
@@ -49,6 +52,10 @@ export default function DialogCreateBranch({
       refetch();
     }
   }, [createBranchState]);
+
+  useEffect(() => {
+    form.setValue("brand_id", String(currentBrandId));
+  });
 
   return (
     <FormBranch

@@ -2,6 +2,7 @@
 
 import { getCurrentProfile } from "@/lib/get-current-profile";
 import { createClient } from "@/lib/supabase/server";
+import { useBrandStore } from "@/stores/brand-store";
 import { BranchFormState } from "@/types/branch";
 import { branchSchema } from "@/validations/branch.validation";
 
@@ -55,7 +56,6 @@ export async function updateBranch(
 ) {
   const validatedFields = branchSchema.safeParse({
     name: formData.get("name"),
-    brand_id: Number(formData.get("brand_id")),
     status: formData.get("status") === "true" ? true : false,
   });
 
@@ -75,7 +75,6 @@ export async function updateBranch(
     .from("branch")
     .update({
       name: validatedFields.data.name,
-      brand_id: validatedFields.data.brand_id,
       status: validatedFields.data.status,
     })
     .eq("id", formData.get("id"));

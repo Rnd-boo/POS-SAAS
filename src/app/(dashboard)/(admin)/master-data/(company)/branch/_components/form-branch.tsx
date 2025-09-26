@@ -13,6 +13,7 @@ import { Form } from "@/components/ui/form";
 import { STATUS_LIST } from "@/constants/general.constant";
 import { createClient } from "@/lib/supabase/client";
 import { useAuthStore } from "@/stores/auth-store";
+import { useBrandStore } from "@/stores/brand-store";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { FormEvent } from "react";
@@ -63,13 +64,12 @@ export default function FormBranch<T extends FieldValues>({
               label="Branch"
               placeholder="Insert Branch name"
             />
-            <FormSelect
+            <FormInput
               form={form}
               name={"brand_id" as Path<T>}
-              label="Brand"
-              data={brands ?? undefined}
-              valueKey="id"
-              labelKey="name"
+              disabled
+              label=""
+              className="hidden"
             />
             <FormSelect
               form={form}
