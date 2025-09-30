@@ -18,10 +18,11 @@ import DialogDetailBranch from "./dialog-detail-branch";
 import DialogDeleteBranch from "./dialog-delete-branch";
 import DialogCreateBranch from "./dialog-create-branch";
 import DialogUpdateBranch from "./dialog-update-branch";
+import { useBrandStore } from "@/stores/brand-store";
 
 export default function BranchManagement() {
   const supabase = createClient();
-
+  const currentBrandId = useBrandStore((s) => s.currentBrandId);
   const currentId = useAuthStore((state) => state.profile?.clients);
 
   const {
@@ -38,7 +39,14 @@ export default function BranchManagement() {
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ["branch", currentPage, currentLimit, currentSearch, currentId],
+    queryKey: [
+      "branch",
+      currentPage,
+      currentLimit,
+      currentSearch,
+      currentId,
+      currentBrandId,
+    ],
     queryFn: async () => {
       const result = await supabase
         .from("branch")
@@ -46,6 +54,7 @@ export default function BranchManagement() {
           count: "exact",
         })
         .eq("clients_id", currentId)
+        .eq("brand_id", currentBrandId)
         .range((currentPage - 1) * currentLimit, currentPage * currentLimit - 1)
         .order("name")
         .ilike("name", `%${currentSearch}%`);
