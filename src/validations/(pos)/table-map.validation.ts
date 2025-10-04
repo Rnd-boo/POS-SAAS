@@ -3,7 +3,7 @@ import z from "zod";
 export const tableMapSchema = z.object({
   name: z.string(),
   branch_id: z.string(),
-  brand_id: z.number(),
+  brand_id: z.string(),
   status: z.boolean(),
 });
 

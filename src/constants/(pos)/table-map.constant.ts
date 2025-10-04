@@ -9,6 +9,7 @@ export const HEADER_TABLE_TABLE_MAP = [
 export const INITIAL_TABLE_MAP = {
   name: "",
   branch_id: "",
+  brand_id: "",
   status: "",
 };
 
@@ -17,6 +18,7 @@ export const INITIAL_STATE_TABLE_MAP = {
   errors: {
     name: [],
     branch_id: [],
+    brand_id: [],
     status: [],
     _form: [],
   },

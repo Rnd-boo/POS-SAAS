@@ -50,3 +50,27 @@ export async function createTableMap(
     status: "success",
   };
 }
+
+export async function deleteTableMap(
+  prevState: TableMapFormState,
+  formData: FormData
+) {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("table_map")
+    .delete()
+    .eq("id", formData.get("id"));
+
+  if (error) {
+    return {
+      status: "error",
+      errors: {
+        ...prevState.errors,
+        _form: [error.message],
+      },
+    };
+  }
+
+  return { status: "success" };
+}

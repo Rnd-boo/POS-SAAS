@@ -12,10 +12,12 @@ import { Eye, SquarePen, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useAuthStore } from "@/stores/auth-store";
-import { Brand } from "@/validations/brand-validation";
 import { useBrandStore } from "@/stores/brand-store";
 import { HEADER_TABLE_TABLE_MAP } from "@/constants/(pos)/table-map.constant";
 import DialogCreateTableMap from "./dialog-create-table-map";
+import DialogDeleteTableMap from "./dialog-delete-table-map";
+import DialogDetailTableMap from "./dialog-detail-table-map";
+import { Table } from "@/validations/(pos)/table-map.validation";
 
 export default function TableMapManagement() {
   const supabase = createClient();
@@ -48,7 +50,7 @@ export default function TableMapManagement() {
       const result = await supabase
         .from("table_map")
         .select(
-          `id,name,branch_id,status,created_at,updated_at,client_profiles_id, branch(name), 
+          `id,name,branch_id,brand_id,status,created_at,updated_at,client_profiles_id, branch(name), 
           client_profiles:client_profiles_id(name)`,
           {
             count: "exact",
@@ -71,7 +73,7 @@ export default function TableMapManagement() {
   });
 
   const [selectedAction, setSelectedAction] = useState<{
-    data: Brand;
+    data: Table;
     type: "detail" | "update" | "delete";
   } | null>(null);
 
@@ -171,7 +173,7 @@ export default function TableMapManagement() {
         onChangePage={handleChangePage}
         onChangeLimit={handleChangeLimit}
       />
-      {/* <DialogDetailBrand
+      <DialogDetailTableMap
         open={selectedAction !== null && selectedAction.type === "detail"}
         handleChangeAction={handleChangeAction}
         informationData={[
@@ -193,18 +195,18 @@ export default function TableMapManagement() {
           },
         ]}
       />
-      <DialogUpdateBrand
+      {/* <DialogUpdateBrand
         open={selectedAction !== null && selectedAction.type === "update"}
         refetch={refetch}
         currentData={selectedAction?.data}
         handleChangeAction={handleChangeAction}
-      />
-      <DialogDeleteBrand
+      /> */}
+      <DialogDeleteTableMap
         open={selectedAction !== null && selectedAction.type === "delete"}
         refetch={refetch}
         currentData={selectedAction?.data}
         handleChangeAction={handleChangeAction}
-      /> */}
+      />
     </div>
   );
 }
