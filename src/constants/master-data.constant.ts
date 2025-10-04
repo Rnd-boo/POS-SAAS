@@ -21,8 +21,7 @@ export const MASTER_CARD = [
     title: "POS",
     description: "Configure your Point Of Sale settings",
     contents: [
-      { title: "Table Map", url: "/master-data/table-map" },
-      { title: "Table Management", url: "/master-data/table-management" },
+      { title: "Table", url: "/master-data/table" },
       { title: "User", url: "/master-data/pos-user" },
     ],
   },
