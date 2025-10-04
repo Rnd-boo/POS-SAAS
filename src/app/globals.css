@@ -122,6 +122,9 @@
   body {
     @apply bg-background text-foreground;
   }
+  .btn-icon-sm {
+    @apply h-10 w-10 flex items-center justify-center;
+  }
   input[type="number"]::-webkit-inner-spin-button,
   input[type="number"]::-webkit-outer-spin-button {
     -webkit-appearance: none;

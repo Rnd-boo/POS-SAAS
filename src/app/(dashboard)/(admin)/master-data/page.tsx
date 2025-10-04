@@ -26,7 +26,7 @@ export default function MasterDataPage() {
             {card.contents.map((content, contentIndex) => (
               <div key={`item-${contentIndex}`}>
                 <Link href={content.url}>
-                  <Button className="cursor-pointer text-lg py-6 w-[120px]">
+                  <Button className="cursor-pointer text-lg py-6 min-w-[120px]">
                     {content.title}
                   </Button>
                 </Link>

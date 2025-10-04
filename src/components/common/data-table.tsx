@@ -21,6 +21,7 @@ import {
 } from "../ui/select";
 import { LIMIT_LISTS } from "@/constants/datatable-constant";
 import { Input } from "../ui/input";
+import { cn } from "@/lib/utils";
 
 export default function DataTable({
   header,
@@ -68,7 +69,11 @@ export default function DataTable({
               <TableRow key={`tr-${rowIndex}`}>
                 {row.map((column, columnIndex) => (
                   <TableCell
-                    className="px-6 py-3 capitalize"
+                    className={cn(
+                      "px-6 py-3 capitalize",
+                      columnIndex === row.length - 1 &&
+                        "w-[120px] text-center px-2 whitespace-normal break-words"
+                    )}
                     key={`tc-${rowIndex}-${columnIndex}`}
                   >
                     {column}
