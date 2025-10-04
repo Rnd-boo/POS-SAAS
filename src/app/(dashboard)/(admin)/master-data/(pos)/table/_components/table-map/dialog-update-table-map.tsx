@@ -9,7 +9,7 @@ import {
   tableMapFormSchema,
 } from "@/validations/(pos)/table-map.validation";
 import { INITIAL_STATE_TABLE_MAP } from "@/constants/(pos)/table-map.constant";
-import { updateTableMap } from "../action";
+import { updateTableMap } from "../../action";
 import FormTableMap from "./form-table-map";
 
 export default function DialogUpdateTableMap({

@@ -2,8 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { startTransition, useActionState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { createTableMap } from "../action";
-import FormTableMap from "./form-table-map";
+import { createTableMap } from "../../action";
 import {
   TableForm,
   tableMapFormSchema,
@@ -13,6 +12,7 @@ import {
   INITIAL_TABLE_MAP,
 } from "@/constants/(pos)/table-map.constant";
 import { useBrandStore } from "@/stores/brand-store";
+import FormTableMap from "./form-table-map";
 
 export default function DialogCreateTableMap({
   refetch,

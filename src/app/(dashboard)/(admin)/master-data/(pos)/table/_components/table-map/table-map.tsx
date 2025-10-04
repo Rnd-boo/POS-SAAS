@@ -19,6 +19,8 @@ import DialogDeleteTableMap from "./dialog-delete-table-map";
 import DialogDetailTableMap from "./dialog-detail-table-map";
 import { Table } from "@/validations/(pos)/table-map.validation";
 import DialogUpdateTableMap from "./dialog-update-table-map";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 export default function TableMapManagement() {
   const supabase = createClient();
@@ -148,66 +150,68 @@ export default function TableMapManagement() {
   }, [tables]);
 
   return (
-    <div className="w-full">
-      <div className="flex flex-col lg:flex-row mb-4 gap-2 justify-between w-full">
-        <h1 className="text-xl font-semibold">POS Table Map</h1>
-        <div className="flex gap-2">
-          <Input
-            placeholder="Search by Table Map"
-            onChange={(e) => handleChangeSearch(e.target.value)}
-          />
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="outline">Create</Button>
-            </DialogTrigger>
-            <DialogCreateTableMap refetch={refetch} />
-          </Dialog>
+    <Card className="w-full">
+      <CardContent>
+        <div className=" flex lg:flex-row items-center  justify-between mb-4 w-full">
+          <h1 className="font-semibold text-2xl px-2">Table Managament</h1>
+          <div className="flex gap-2">
+            <Input
+              placeholder="Search by Table Map"
+              onChange={(e) => handleChangeSearch(e.target.value)}
+            />
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline">Create</Button>
+              </DialogTrigger>
+              <DialogCreateTableMap refetch={refetch} />
+            </Dialog>
+          </div>
         </div>
-      </div>
-      <DataTable
-        header={HEADER_TABLE_TABLE_MAP}
-        isLoading={isLoading}
-        data={filteredData}
-        totalPages={totalPages}
-        currentPage={currentPage}
-        currentLimit={currentLimit}
-        onChangePage={handleChangePage}
-        onChangeLimit={handleChangeLimit}
-      />
-      <DialogDetailTableMap
-        open={selectedAction !== null && selectedAction.type === "detail"}
-        handleChangeAction={handleChangeAction}
-        informationData={[
-          {
-            label: "Created By",
-            value: (
-              selectedAction?.data?.client_profiles as unknown as {
-                name: string;
-              }
-            )?.name,
-          },
-          {
-            label: "Created At",
-            value: selectedAction?.data?.created_at,
-          },
-          {
-            label: "Updated At",
-            value: selectedAction?.data?.updated_at,
-          },
-        ]}
-      />
-      <DialogUpdateTableMap
-        open={selectedAction !== null && selectedAction.type === "update"}
-        refetch={refetch}
-        currentData={selectedAction?.data}
-        handleChangeAction={handleChangeAction}
-      />
-      <DialogDeleteTableMap
-        open={selectedAction !== null && selectedAction.type === "delete"}
-        refetch={refetch}
-        currentData={selectedAction?.data}
-        handleChangeAction={handleChangeAction}
-      />
-    </div>
+        <DataTable
+          header={HEADER_TABLE_TABLE_MAP}
+          isLoading={isLoading}
+          data={filteredData}
+          totalPages={totalPages}
+          currentPage={currentPage}
+          currentLimit={currentLimit}
+          onChangePage={handleChangePage}
+          onChangeLimit={handleChangeLimit}
+        />
+        <DialogDetailTableMap
+          open={selectedAction !== null && selectedAction.type === "detail"}
+          handleChangeAction={handleChangeAction}
+          informationData={[
+            {
+              label: "Created By",
+              value: (
+                selectedAction?.data?.client_profiles as unknown as {
+                  name: string;
+                }
+              )?.name,
+            },
+            {
+              label: "Created At",
+              value: selectedAction?.data?.created_at,
+            },
+            {
+              label: "Updated At",
+              value: selectedAction?.data?.updated_at,
+            },
+          ]}
+        />
+        <DialogUpdateTableMap
+          open={selectedAction !== null && selectedAction.type === "update"}
+          refetch={refetch}
+          currentData={selectedAction?.data}
+          handleChangeAction={handleChangeAction}
+        />
+        <DialogDeleteTableMap
+          open={selectedAction !== null && selectedAction.type === "delete"}
+          refetch={refetch}
+          currentData={selectedAction?.data}
+          handleChangeAction={handleChangeAction}
+        />
+      </CardContent>
+    </Card>
   );
 }

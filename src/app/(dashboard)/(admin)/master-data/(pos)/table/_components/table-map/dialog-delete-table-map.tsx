@@ -1,7 +1,7 @@
 import { startTransition, useActionState, useEffect } from "react";
 import { toast } from "sonner";
 import DialogDelete from "@/components/common/dialog-delete";
-import { deleteTableMap } from "../action";
+import { deleteTableMap } from "../../action";
 import { INITIAL_STATE_TABLE_MAP } from "@/constants/(pos)/table-map.constant";
 import { Table } from "@/validations/(pos)/table-map.validation";
 
