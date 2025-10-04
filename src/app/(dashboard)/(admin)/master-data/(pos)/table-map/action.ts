@@ -51,6 +51,52 @@ export async function createTableMap(
   };
 }
 
+export async function updateTableMap(
+  prevState: TableMapFormState,
+  formData: FormData
+) {
+  const validatedFields = tableMapSchema.safeParse({
+    name: formData.get("name"),
+    branch_id: formData.get("branch_id"),
+    brand_id: formData.get("brand_id"),
+    status: formData.get("status") === "true" ? true : false,
+  });
+
+  if (!validatedFields.success) {
+    return {
+      status: "error",
+      errors: {
+        ...validatedFields.error.flatten().fieldErrors,
+        _form: [],
+      },
+    };
+  }
+
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("table_map")
+    .update({
+      name: validatedFields.data.name,
+      status: validatedFields.data.status,
+    })
+    .eq("id", formData.get("id"));
+
+  if (error) {
+    return {
+      status: "error",
+      errors: {
+        ...prevState.errors,
+        _form: [error.message],
+      },
+    };
+  }
+
+  return {
+    status: "success",
+  };
+}
+
 export async function deleteTableMap(
   prevState: TableMapFormState,
   formData: FormData

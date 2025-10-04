@@ -18,6 +18,7 @@ import DialogCreateTableMap from "./dialog-create-table-map";
 import DialogDeleteTableMap from "./dialog-delete-table-map";
 import DialogDetailTableMap from "./dialog-detail-table-map";
 import { Table } from "@/validations/(pos)/table-map.validation";
+import DialogUpdateTableMap from "./dialog-update-table-map";
 
 export default function TableMapManagement() {
   const supabase = createClient();
@@ -195,12 +196,12 @@ export default function TableMapManagement() {
           },
         ]}
       />
-      {/* <DialogUpdateBrand
+      <DialogUpdateTableMap
         open={selectedAction !== null && selectedAction.type === "update"}
         refetch={refetch}
         currentData={selectedAction?.data}
         handleChangeAction={handleChangeAction}
-      /> */}
+      />
       <DialogDeleteTableMap
         open={selectedAction !== null && selectedAction.type === "delete"}
         refetch={refetch}

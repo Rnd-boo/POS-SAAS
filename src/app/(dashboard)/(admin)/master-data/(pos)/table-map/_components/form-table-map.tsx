@@ -12,6 +12,7 @@ import {
 import { Form } from "@/components/ui/form";
 import { STATUS_LIST } from "@/constants/general.constant";
 import { createClient } from "@/lib/supabase/client";
+import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/auth-store";
 import { useBrandStore } from "@/stores/brand-store";
 import { useQuery } from "@tanstack/react-query";
@@ -81,6 +82,7 @@ export default function FormTableMap<T extends FieldValues>({
               valueKey="id"
               labelKey="name"
               data={branch ?? undefined}
+              disabled={type === "Update"}
             />
             <FormSelect
               form={form}
