@@ -12,7 +12,7 @@ import { useBrandStore } from "@/stores/brand-store";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import Tables from "./_components/tables";
+import Tables from "./tables";
 import { Button } from "@/components/ui/button";
 import { CirclePlus, SquarePen } from "lucide-react";
 
@@ -78,8 +78,6 @@ export default function TableLayout() {
   useEffect(() => {
     setselectedTableMap("");
   }, [selectedBranch]);
-
-  console.log(selectedTableMap);
 
   return (
     <Card>

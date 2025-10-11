@@ -12,9 +12,9 @@ import {
   INITIAL_TABLE_MAP,
 } from "@/constants/(pos)/table.constant";
 import { useBrandStore } from "@/stores/brand-store";
-import FormTableMap from "./form-table-map";
+import FormTableMap from "../table-map/form-table-map";
 
-export default function DialogCreateTableMap({
+export default function DialogCreateTables({
   refetch,
 }: {
   refetch: () => void;

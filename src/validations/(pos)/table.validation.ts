@@ -14,8 +14,8 @@ export const tableMapFormSchema = z.object({
   status: z.string().min(1, "Status is required"),
 });
 
-export type TableForm = z.infer<typeof tableMapFormSchema>;
-export type Table = z.infer<typeof tableMapSchema> & {
+export type TableMapForm = z.infer<typeof tableMapFormSchema>;
+export type TableMap = z.infer<typeof tableMapSchema> & {
   id: string;
   created_at: string;
   updated_at: string;

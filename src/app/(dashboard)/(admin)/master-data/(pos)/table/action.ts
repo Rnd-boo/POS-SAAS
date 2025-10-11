@@ -2,8 +2,8 @@
 
 import { getCurrentProfile } from "@/lib/get-current-profile";
 import { createClient } from "@/lib/supabase/server";
-import { TableMapFormState } from "@/types/(pos)/table-map";
-import { tableMapSchema } from "@/validations/(pos)/table-map.validation";
+import { TableMapFormState } from "@/types/(pos)/table";
+import { tableMapSchema } from "@/validations/(pos)/table.validation";
 
 export async function createTableMap(
   prevState: TableMapFormState,

@@ -4,11 +4,11 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Dialog } from "@/components/ui/dialog";
 import {
-  Table,
-  TableForm,
+  TableMap,
+  TableMapForm,
   tableMapFormSchema,
-} from "@/validations/(pos)/table-map.validation";
-import { INITIAL_STATE_TABLE_MAP } from "@/constants/(pos)/table-map.constant";
+} from "@/validations/(pos)/table.validation";
+import { INITIAL_STATE_TABLE_MAP } from "@/constants/(pos)/table.constant";
 import { updateTableMap } from "../../action";
 import FormTableMap from "./form-table-map";
 
@@ -19,11 +19,11 @@ export default function DialogUpdateTableMap({
   open,
 }: {
   refetch: () => void;
-  currentData?: Table;
+  currentData?: TableMap;
   open?: boolean;
   handleChangeAction?: (open: boolean) => void;
 }) {
-  const form = useForm<TableForm>({
+  const form = useForm<TableMapForm>({
     resolver: zodResolver(tableMapFormSchema),
   });
 

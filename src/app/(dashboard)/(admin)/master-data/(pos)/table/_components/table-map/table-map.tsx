@@ -13,13 +13,13 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useAuthStore } from "@/stores/auth-store";
 import { useBrandStore } from "@/stores/brand-store";
-import { HEADER_TABLE_TABLE_MAP } from "@/constants/(pos)/table-map.constant";
+import { HEADER_TABLE_TABLE_MAP } from "@/constants/(pos)/table.constant";
 import DialogCreateTableMap from "./dialog-create-table-map";
 import DialogDeleteTableMap from "./dialog-delete-table-map";
 import DialogDetailTableMap from "./dialog-detail-table-map";
-import { Table } from "@/validations/(pos)/table-map.validation";
 import DialogUpdateTableMap from "./dialog-update-table-map";
 import { Card, CardContent } from "@/components/ui/card";
+import { TableMap } from "@/validations/(pos)/table.validation";
 
 export default function TableMapManagement() {
   const supabase = createClient();
@@ -75,7 +75,7 @@ export default function TableMapManagement() {
   });
 
   const [selectedAction, setSelectedAction] = useState<{
-    data: Table;
+    data: TableMap;
     type: "detail" | "update" | "delete";
   } | null>(null);
 
