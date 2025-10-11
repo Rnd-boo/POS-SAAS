@@ -19,8 +19,7 @@ import DialogDeleteTableMap from "./dialog-delete-table-map";
 import DialogDetailTableMap from "./dialog-detail-table-map";
 import { Table } from "@/validations/(pos)/table-map.validation";
 import DialogUpdateTableMap from "./dialog-update-table-map";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function TableMapManagement() {
   const supabase = createClient();
@@ -37,12 +36,12 @@ export default function TableMapManagement() {
   } = useDataTable();
 
   const {
-    data: tables,
+    data: tableMap,
     isLoading,
     refetch,
   } = useQuery({
     queryKey: [
-      "table",
+      "table_map",
       currentPage,
       currentLimit,
       currentSearch,
@@ -66,7 +65,7 @@ export default function TableMapManagement() {
         .ilike("name", `%${currentSearch}%`);
 
       if (result.error)
-        toast.error("Get Brand Data Failed", {
+        toast.error("Get Table Map Data Failed", {
           description: result.error.message,
         });
 
@@ -85,7 +84,7 @@ export default function TableMapManagement() {
   };
 
   const filteredData = useMemo(() => {
-    return (tables?.data || []).map((table, index) => {
+    return (tableMap?.data || []).map((table, index) => {
       return [
         currentLimit * (currentPage - 1) + index + 1,
         table.name,
@@ -141,19 +140,19 @@ export default function TableMapManagement() {
         </div>,
       ];
     });
-  }, [tables]);
+  }, [tableMap]);
 
   const totalPages = useMemo(() => {
-    return tables && tables.count !== null
-      ? Math.ceil(tables.count / currentLimit)
+    return tableMap && tableMap.count !== null
+      ? Math.ceil(tableMap.count / currentLimit)
       : 0;
-  }, [tables]);
+  }, [tableMap]);
 
   return (
     <Card className="w-full">
       <CardContent>
         <div className=" flex lg:flex-row items-center  justify-between mb-4 w-full">
-          <h1 className="font-semibold text-2xl px-2">Table Managament</h1>
+          <h1 className="font-semibold text-2xl px-2">Table Map</h1>
           <div className="flex gap-2">
             <Input
               placeholder="Search by Table Map"

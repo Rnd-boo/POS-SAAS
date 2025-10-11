@@ -12,7 +12,7 @@ export async function createTableMap(
   const validatedFields = tableMapSchema.safeParse({
     name: formData.get("name"),
     branch_id: formData.get("branch_id"),
-    brand_id: Number(formData.get("brand_id")),
+    brand_id: formData.get("brand_id"),
     status: formData.get("status") === "true" ? true : false,
   });
 
