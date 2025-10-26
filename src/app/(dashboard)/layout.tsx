@@ -38,7 +38,7 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
-import { useBranches } from "@/hooks/use-branches";
+import { useBranchQuery } from "@/hooks/queries/use-branches";
 
 export default function DashboardLayout({
   children,
@@ -52,7 +52,7 @@ export default function DashboardLayout({
   const currentBrandName = brands.find(
     (brand) => String(brand.id) === currentBrandId
   )?.name;
-  const { data: branches, isLoading } = useBranches();
+  const { data: branches, isLoading } = useBranchQuery();
 
   return (
     <SidebarProvider>
