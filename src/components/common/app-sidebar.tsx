@@ -82,7 +82,7 @@ export function AppSidebar() {
               className="hover:bg-transparent py-8"
             >
               <Link href="/" className="font-semibold">
-                <div className="bg-ungu flex p-2 items-center justify-center rounded-md">
+                <div className=" flex p-2 items-center justify-center rounded-md">
                   <Coffee className="size-5 text-white" />
                 </div>
                 POS
@@ -109,7 +109,7 @@ export function AppSidebar() {
                             <SidebarMenuButton
                               tooltip={item.title}
                               className={cn("px-4 py-3 h-auto", {
-                                "bg-ungu text-white hover:bg-ungu hover:text-white":
+                                " text-white hover:text-primary-foreground hover:bg-primary/90":
                                   pathname === item.url ||
                                   pathname.startsWith(item.url + "/"),
                               })}
@@ -134,7 +134,7 @@ export function AppSidebar() {
                                     <a
                                       href={subItem.url}
                                       className={cn("px-4 py-3 h-auto", {
-                                        "bg-ungu text-white hover:bg-ungu hover:text-white":
+                                        " hover:text-primary-foreground ":
                                           pathname === subItem.url,
                                       })}
                                     >
@@ -151,8 +151,8 @@ export function AppSidebar() {
                       <SidebarMenuButton asChild tooltip={item.title}>
                         <a
                           href={item.url}
-                          className={cn("px-4 py-3 h-auto", {
-                            "bg-ungu text-white hover:bg-ungu hover:text-white":
+                          className={cn("ring-sidebar-ring px-4 py-3 h-auto ", {
+                            "bg-primary/90 text-white hover:text-white hover:!bg-primary/80 ":
                               pathname === item.url ||
                               pathname.startsWith(item.url + "/"),
                           })}

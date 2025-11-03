@@ -83,18 +83,12 @@ export async function login(
     };
   }
 
-  // const { data: branches, error: branchError } = await supabase
-  //   .from("client_profile_branch")
-  //   .select(`*, branch!branch_id(name) `)
-  //   .eq("client_profiles_id", profile.id);
-
   try {
     // Create JWT using jose (Edge Runtime compatible)
     const token = await new SignJWT({
       id: profile.id,
       clients: profile.clients_id,
       name: profile.name,
-      // branch: branches?.map((b) => b.branch?.name) ?? [],
       role: profile.role_access.name,
       permissions: {
         dashboard: profile.role_access.dashboard,

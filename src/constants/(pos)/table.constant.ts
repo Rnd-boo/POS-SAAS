@@ -23,3 +23,36 @@ export const INITIAL_STATE_TABLE_MAP = {
     _form: [],
   },
 };
+
+export const INITIAL_TABLE_LAYOUT = {
+  id: "",
+  name: "",
+  position_x: 0,
+  position_y: 0,
+  capacity: 0,
+  shape: "",
+  width: 48,
+  height: 48,
+  status: "",
+};
+
+export const INITIAL_STATE_TABLE_LAYOUT = {
+  status: "idle",
+  errors: {
+    name: [],
+    position_x: [],
+    position_y: [],
+    shape: [],
+    width: [],
+    height: [],
+    capacity: [],
+    status: [],
+    table_map_id: [],
+    _form: [],
+  },
+};
+
+export const SHAPE_LIST = [
+  { label: "Circle", value: "circle" },
+  { label: "Rectangle", value: "rectangle" },
+];

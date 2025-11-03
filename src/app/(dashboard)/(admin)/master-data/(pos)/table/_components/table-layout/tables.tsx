@@ -1,57 +1,30 @@
+"use client";
+
 import "@xyflow/react/dist/style.css";
-import { Background, ReactFlow } from "@xyflow/react";
-import { createClient } from "@/lib/supabase/client";
-import { useQuery } from "@tanstack/react-query";
-import { useAuthStore } from "@/stores/auth-store";
-import { toast } from "sonner";
-import { useMemo } from "react";
+import { Background, Node, ReactFlow, useReactFlow } from "@xyflow/react";
 import TableNode from "./table-node";
+import { useEffect } from "react";
 
 export default function Tables({
+  fields,
   selectedTableMap,
+  fitViewTrigger,
+  setSelectedIndex,
+  handleNodesChange,
+  enabled,
 }: {
   selectedTableMap: string;
+  setSelectedIndex: (index: number | null) => void;
+  fitViewTrigger: boolean;
+  fields: Node[];
+  handleNodesChange: (changes: any) => void;
+  enabled: boolean;
 }) {
-  const supabase = createClient();
-  const currentId = useAuthStore((state) => state.profile?.clients);
-
-  const { data: tables } = useQuery({
-    queryKey: ["tables", currentId, selectedTableMap],
-    queryFn: async () => {
-      if (!selectedTableMap) return []; // always return an array, never undefined
-      const result = await supabase
-        .from("table")
-        .select(
-          "id,name,status,position_x,position_y,capacity,shape,table_map_id"
-        )
-        .eq("clients_id", currentId)
-        .eq("table_map_id", selectedTableMap);
-
-      if (result.error)
-        toast.error("Get table Data Failed", {
-          description: result.error.message,
-        });
-
-      return result?.data ?? [];
-    },
-    enabled: !!currentId && !!selectedTableMap,
-  });
-
   const nodeTypes = { tableNode: TableNode };
-
-  const initialNodes = useMemo(() => {
-    return tables?.map((table) => ({
-      id: table.id,
-      position: { x: table.position_x, y: table.position_y },
-      data: {
-        label: table.name,
-        capacity: table.capacity,
-        shape: table.shape,
-        status: table.status,
-      },
-      type: "tableNode",
-    }));
-  }, [tables]);
+  const { fitView } = useReactFlow();
+  useEffect(() => {
+    fitView({ duration: 300, padding: 0.1 });
+  }, [fitViewTrigger, fitView]);
 
   return (
     <>
@@ -61,16 +34,26 @@ export default function Tables({
         </div>
       ) : (
         <ReactFlow
-          nodes={initialNodes}
+          nodes={fields}
+          panOnDrag={enabled}
+          zoomOnScroll={enabled}
           nodeTypes={nodeTypes}
+          onNodesChange={handleNodesChange}
+          onPaneClick={() => setSelectedIndex(null)}
           proOptions={{ hideAttribution: true }}
-          panOnDrag={false}
-          panOnScroll={false}
-          zoomOnScroll={false}
-          zoomOnPinch={false}
-          zoomOnDoubleClick={false}
           nodesConnectable={false}
-          preventScrolling={false}
+          nodeExtent={[
+            [0, 0],
+            [1800, 800],
+          ]}
+          translateExtent={[
+            [0, 0],
+            [1800, 800],
+          ]}
+          minZoom={0.55}
+          maxZoom={1.6}
+          fitView
+          fitViewOptions={{ padding: 0.1 }}
         >
           <Background />
         </ReactFlow>

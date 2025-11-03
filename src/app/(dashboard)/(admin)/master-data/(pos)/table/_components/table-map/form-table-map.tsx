@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
 import { STATUS_LIST } from "@/constants/general.constant";
+import { useBranchQuery } from "@/hooks/queries/use-branches";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/auth-store";
@@ -32,29 +33,7 @@ export default function FormTableMap<T extends FieldValues>({
   isLoading: boolean;
   type: "Create" | "Update";
 }) {
-  const supabase = createClient();
-  const currentBrandId = useBrandStore((s) => s.currentBrandId);
-  const currentId = useAuthStore((state) => state.profile?.clients);
-
-  const { data: branch } = useQuery({
-    queryKey: ["branch", currentId, currentBrandId],
-    queryFn: async () => {
-      const result = await supabase
-        .from("branch")
-        .select("id,name,status")
-        .eq("status", true)
-        .eq("clients_id", currentId)
-        .eq("brand_id", currentBrandId);
-
-      if (result.error)
-        toast.error("Get Branch Data Failed", {
-          description: result.error.message,
-        });
-
-      return result?.data;
-    },
-    enabled: !!currentId,
-  });
+  const { data: branch } = useBranchQuery();
 
   return (
     <DialogContent className="sm:max-w-[425px]">

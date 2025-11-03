@@ -21,3 +21,24 @@ export type TableMap = z.infer<typeof tableMapSchema> & {
   updated_at: string;
   client_profiles: { name: string }[];
 };
+
+// TABLE LAYOUT
+export const tableLayoutSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  position_x: z.number(),
+  position_y: z.number(),
+  capacity: z.number(),
+  shape: z.string(),
+  width: z.number(),
+  height: z.number(),
+  status: z.string(),
+});
+
+export const tableLayoutFormSchema = z.object({
+  tables: z
+    .array(tableLayoutSchema)
+    .min(1, "You must create at least one table"),
+});
+
+export type TableLayoutForm = z.infer<typeof tableLayoutFormSchema>;
