@@ -62,7 +62,10 @@ export default function DrawerTableLayout<T extends FieldValues>({
                   form={form}
                   name={`tables.${selectedIndex}.status`}
                   label="Status"
-                  selectItem={STATUS_LIST}
+                  selectItem={[
+                    { value: true, label: "Active" },
+                    { value: false, label: "Not Active" },
+                  ]}
                 />
               </div>
               <div className="mt-4 space-y-2">

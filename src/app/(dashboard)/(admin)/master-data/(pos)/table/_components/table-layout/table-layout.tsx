@@ -86,6 +86,9 @@ export default function TableLayout() {
     if (currentBrandId) {
       setSelectedBranch("");
       setSelectedTableMap("");
+      if (edit) {
+        handleDiscard();
+      }
     }
   }, [currentBrandId]);
 
@@ -93,6 +96,7 @@ export default function TableLayout() {
     queryKey: ["tables", currentId, selectedTableMap],
     queryFn: async () => {
       if (!selectedTableMap) return [];
+
       const result = await supabase
         .from("table")
         .select(
@@ -110,7 +114,6 @@ export default function TableLayout() {
     },
     enabled: !!currentId && !!selectedTableMap,
   });
-
   const [nodes, setNodes] = useNodesState<Node>([]);
 
   const mappedFields = fields?.map((field) => ({
@@ -129,10 +132,8 @@ export default function TableLayout() {
   }));
 
   useEffect(() => {
-    if (fields) {
-      setNodes(mappedFields ?? []);
-    }
-  }, [tables, setNodes, fields]);
+    setNodes(mappedFields ?? []);
+  }, [fields]);
 
   const onNodesChange = useCallback(
     (changes: any) => {
@@ -140,19 +141,36 @@ export default function TableLayout() {
 
       setNodes((nds) => {
         const updated = applyNodeChanges(changes, nds);
-        updated.forEach((n, i) => {
-          setValue(`tables.${i}.position_x`, Number(n.position.x.toFixed(0)), {
-            shouldDirty: true,
+        setTimeout(() => {
+          const draggedNode = changes.filter(
+            (c: any) => c.type === "position" && c.position
+          );
+          draggedNode.forEach((change: any) => {
+            const node = updated.find((n) => n.id === change.id);
+            if (!node) return;
+
+            const index = updated.indexOf(node);
+
+            setValue(
+              `tables.${index}.position_x`,
+              Math.round(node.position.x),
+              {
+                shouldDirty: true,
+              }
+            );
+            setValue(
+              `tables.${index}.position_y`,
+              Math.round(node.position.y),
+              {
+                shouldDirty: true,
+              }
+            );
           });
-          setValue(`tables.${i}.position_y`, Number(n.position.y.toFixed(0)), {
-            shouldDirty: true,
-          });
-        });
+        }, 0);
 
         const removedNodes = changes
           .filter((c: any) => c.type === "remove")
           .map((c: any) => c.id);
-
         removedNodes.forEach((id: string) => {
           const index = nds.findIndex((n) => n.id === id);
           if (index !== -1) {
@@ -225,19 +243,6 @@ export default function TableLayout() {
     setFitViewTrigger((prev) => !prev);
   }, [tables, form, setNodes]);
 
-  useEffect(() => {
-    if (selectedNode !== null && fields[selectedNode]) {
-      const selectedTable = fields[selectedNode];
-
-      const transformedTable = {
-        ...selectedTable,
-        status: String(selectedTable.status),
-      };
-
-      form.setValue(`tables.${selectedNode}`, transformedTable);
-    }
-  }, [selectedNode, fields, form]);
-
   return (
     <Card>
       <CardContent>
@@ -247,6 +252,7 @@ export default function TableLayout() {
             <div className="flex gap-2">
               <Select
                 value={selectedBranch}
+                disabled={edit}
                 onValueChange={(value) => {
                   setSelectedBranch(value);
                   setSelectedTableMap("");
@@ -265,7 +271,7 @@ export default function TableLayout() {
               </Select>
               <Select
                 value={selectedTableMap}
-                disabled={!selectedBranch}
+                disabled={!selectedBranch || edit}
                 onValueChange={(value) => setSelectedTableMap(value)}
               >
                 <SelectTrigger className="w-[200px]">

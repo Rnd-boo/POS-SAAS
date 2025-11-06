@@ -33,7 +33,7 @@ export default function FormSelect<T extends FieldValues>({
   form: UseFormReturn<T>;
   name: Path<T>;
   label?: string;
-  selectItem?: { value: string; label: string; disabled?: boolean }[];
+  selectItem?: { value: string | boolean; label: string; disabled?: boolean }[];
   data?: any[];
   valueKey?: string;
   disabled?: boolean;

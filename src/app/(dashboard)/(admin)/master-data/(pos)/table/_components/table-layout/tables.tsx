@@ -26,6 +26,11 @@ export default function Tables({
     fitView({ duration: 300, padding: 0.1 });
   }, [fitViewTrigger, fitView]);
 
+  const handleInit = () => {
+    setTimeout(() => {
+      fitView({ duration: 300, padding: 0.1 });
+    }, 200);
+  };
   return (
     <>
       {selectedTableMap === "" ? (
@@ -44,16 +49,15 @@ export default function Tables({
           nodesConnectable={false}
           nodeExtent={[
             [0, 0],
-            [1800, 800],
+            [1280, 600],
           ]}
           translateExtent={[
             [0, 0],
-            [1800, 800],
+            [1280, 600],
           ]}
-          minZoom={0.55}
+          minZoom={0.65}
           maxZoom={1.6}
-          fitView
-          fitViewOptions={{ padding: 0.1 }}
+          onInit={handleInit}
         >
           <Background />
         </ReactFlow>
