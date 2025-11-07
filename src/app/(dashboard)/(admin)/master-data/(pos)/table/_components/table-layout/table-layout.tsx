@@ -47,14 +47,13 @@ export default function TableLayout() {
   const { setOpen } = useSidebar();
   const [edit, setEdit] = useState(false);
   const [selectedNode, setSelectedNode] = useState<number | null>(null);
-
   const form = useForm<TableLayoutForm>({
     resolver: zodResolver(tableLayoutFormSchema),
     defaultValues: { tables: [INITIAL_TABLE_LAYOUT] },
   });
-  const { control, setValue, watch } = form;
+  const { control, setValue } = form;
 
-  const { fields, append, replace, update, remove } = useFieldArray({
+  const { fields, append, replace, remove } = useFieldArray({
     control,
     name: "tables",
   });
@@ -115,7 +114,6 @@ export default function TableLayout() {
     enabled: !!currentId && !!selectedTableMap,
   });
   const [nodes, setNodes] = useNodesState<Node>([]);
-
   const mappedFields = fields?.map((field) => ({
     id: field.id,
     type: "tableNode",
@@ -141,61 +139,48 @@ export default function TableLayout() {
 
       setNodes((nds) => {
         const updated = applyNodeChanges(changes, nds);
+
         setTimeout(() => {
           const draggedNode = changes.filter(
-            (c: any) => c.type === "position" && c.position
+            (c: any) =>
+              ((c.type === "position" || c.type === "selected") &&
+                c.position) ||
+              c.selected
           );
+
           draggedNode.forEach((change: any) => {
             const node = updated.find((n) => n.id === change.id);
             if (!node) return;
 
-            const index = updated.indexOf(node);
+            const idx = fields.findIndex((f) => f.id === node.id);
+            if (idx === -1) return;
 
-            setValue(
-              `tables.${index}.position_x`,
-              Math.round(node.position.x),
-              {
-                shouldDirty: true,
-              }
-            );
-            setValue(
-              `tables.${index}.position_y`,
-              Math.round(node.position.y),
-              {
-                shouldDirty: true,
-              }
-            );
+            setSelectedNode(idx);
+
+            setValue(`tables.${idx}.position_x`, Math.round(node.position.x), {
+              shouldDirty: true,
+            });
+            setValue(`tables.${idx}.position_y`, Math.round(node.position.y), {
+              shouldDirty: true,
+            });
           });
         }, 0);
 
-        const removedNodes = changes
-          .filter((c: any) => c.type === "remove")
-          .map((c: any) => c.id);
-        removedNodes.forEach((id: string) => {
-          const index = nds.findIndex((n) => n.id === id);
-          if (index !== -1) {
-            remove(index);
-            setSelectedNode(null);
-          }
-        });
+        // const removedNodes = changes
+        //   .filter((c: any) => c.type === "remove")
+        //   .map((c: any) => c.id);
+        // removedNodes.forEach((nodeId: string) => {
+        //   const idx = fields.findIndex((f) => f.id === nodeId);
 
-        const selectChange = changes.find(
-          (c: any) => c.type === "select" && c.selected
-        );
-        if (selectChange) {
-          if (selectChange.selected) {
-            const selectedIndex = updated.findIndex(
-              (n) => n.id === selectChange.id
-            );
-            setSelectedNode(selectedIndex !== -1 ? selectedIndex : null);
-          } else {
-            setSelectedNode(null);
-          }
-        }
+        //   if (idx !== -1) {
+        //     remove(idx);
+        //     setSelectedNode(null);
+        //   }
+        // });
         return updated;
       });
     },
-    [setNodes, setValue, edit]
+    [setNodes, setValue, edit, fields]
   );
 
   const onSubmit = async (data: TableLayoutForm) => {
@@ -209,13 +194,13 @@ export default function TableLayout() {
       console.error(error);
     }
   };
-
+  console.log(fields);
   const handleAddTable = useCallback(() => {
     const newTable = {
       id: crypto.randomUUID(),
       name: `New Table`,
-      position_x: Math.floor(Math.random() * 600),
-      position_y: Math.floor(Math.random() * 400),
+      position_x: Math.floor(Math.random() * 400),
+      position_y: Math.floor(Math.random() * 200),
       capacity: 0,
       shape: "rectangle",
       width: 80,
@@ -225,8 +210,7 @@ export default function TableLayout() {
     append(newTable);
 
     setNodes(mappedFields);
-    const newIndex = fields.length;
-    setSelectedNode(newIndex);
+    setSelectedNode(fields.length);
   }, [fields, append, setNodes]);
 
   const handleDiscard = useCallback(() => {
@@ -326,9 +310,9 @@ export default function TableLayout() {
                   </DrawerTrigger>
                   <DrawerTableLayout
                     form={form}
+                    remove={remove}
                     handleAddTable={handleAddTable}
                     selectedIndex={selectedNode}
-                    tables={watch("tables")}
                     fields={fields}
                   />
                 </Drawer>
@@ -338,7 +322,9 @@ export default function TableLayout() {
           <Form {...form}>
             <div className="w-full h-[70vh] border rounded-lg mt-4 ">
               <Tables
+                setNodes={setNodes}
                 enabled={edit}
+                control={control}
                 setSelectedIndex={setSelectedNode}
                 selectedTableMap={selectedTableMap}
                 fields={nodes}

@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/drawer";
 import { SHAPE_LIST } from "@/constants/(pos)/table.constant";
 import { Button } from "@/components/ui/button";
-import { CirclePlus } from "lucide-react";
+import { CirclePlus, Trash2 } from "lucide-react";
 import FormInput from "@/components/common/form-input";
 import FormSelect from "@/components/common/form-select";
 import { STATUS_LIST } from "@/constants/general.constant";
@@ -20,14 +20,24 @@ export default function DrawerTableLayout<T extends FieldValues>({
   form,
   fields,
   handleAddTable,
-  tables,
+  remove,
 }: {
   selectedIndex: number | null;
   form: UseFormReturn<TableLayoutForm>;
   fields: any[];
   handleAddTable: () => void;
-  tables?: any[];
+  remove: (index: number) => void;
 }) {
+  const shape =
+    selectedIndex !== null ? form.watch(`tables.${selectedIndex}.shape`) : "";
+  const width =
+    selectedIndex !== null ? form.watch(`tables.${selectedIndex}.width`) : 0;
+
+  useEffect(() => {
+    if (shape === "circle" && typeof selectedIndex === "number") {
+      form.setValue(`tables.${selectedIndex}.height`, width);
+    }
+  }, [shape, width, selectedIndex]);
   return (
     <DrawerContent className="!w-[16rem]">
       <DrawerHeader>
@@ -68,7 +78,7 @@ export default function DrawerTableLayout<T extends FieldValues>({
                   ]}
                 />
               </div>
-              <div className="mt-4 space-y-2">
+              <div className="mt-4 space-y-2 mb-2">
                 <DrawerDescription>Layout</DrawerDescription>
                 <div className="flex items-center gap-2 text-sm">
                   <p>Position</p>
@@ -99,13 +109,24 @@ export default function DrawerTableLayout<T extends FieldValues>({
                   label="Width"
                   placeholder="Insert Width of Table"
                 />
-                <FormInput
-                  form={form}
-                  name={`tables.${selectedIndex}.height`}
-                  label="Height"
-                  placeholder="Insert Height of Table"
-                />
+                {shape !== "circle" && (
+                  <FormInput
+                    form={form}
+                    name={`tables.${selectedIndex}.height`}
+                    label="Height"
+                    placeholder="Insert Height of Table"
+                  />
+                )}
               </div>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={() => {
+                  remove(selectedIndex);
+                }}
+              >
+                Remove
+              </Button>
             </div>
           </div>
         </div>

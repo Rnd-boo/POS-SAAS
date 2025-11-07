@@ -4,6 +4,7 @@ import "@xyflow/react/dist/style.css";
 import { Background, Node, ReactFlow, useReactFlow } from "@xyflow/react";
 import TableNode from "./table-node";
 import { useEffect } from "react";
+import { useWatch } from "react-hook-form";
 
 export default function Tables({
   fields,
@@ -12,6 +13,8 @@ export default function Tables({
   setSelectedIndex,
   handleNodesChange,
   enabled,
+  control,
+  setNodes,
 }: {
   selectedTableMap: string;
   setSelectedIndex: (index: number | null) => void;
@@ -19,7 +22,10 @@ export default function Tables({
   fields: Node[];
   handleNodesChange: (changes: any) => void;
   enabled: boolean;
+  control: any;
+  setNodes: React.Dispatch<React.SetStateAction<Node[]>>;
 }) {
+  const tables = useWatch({ control, name: "tables" });
   const nodeTypes = { tableNode: TableNode };
   const { fitView } = useReactFlow();
   useEffect(() => {
@@ -31,6 +37,33 @@ export default function Tables({
       fitView({ duration: 300, padding: 0.1 });
     }, 200);
   };
+
+  useEffect(() => {
+    if (!tables || !tables.length) return;
+
+    setNodes((nodes) =>
+      nodes.map((node, i) => {
+        const t = tables[i];
+        if (!t) return node;
+
+        return {
+          ...node,
+          data: {
+            ...node.data,
+            name: t.name ?? node.data.name,
+            width: Number(t.width ?? node.data.width),
+            height: Number(t.height ?? node.data.height),
+            shape: t.shape ?? node.data.shape,
+          },
+          position: {
+            x: Number(t.position_x ?? node.position.x),
+            y: Number(t.position_y ?? node.position.y),
+          },
+        };
+      })
+    );
+  }, [tables]);
+
   return (
     <>
       {selectedTableMap === "" ? (
