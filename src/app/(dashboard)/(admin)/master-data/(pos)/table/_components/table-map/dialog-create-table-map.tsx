@@ -6,11 +6,11 @@ import { createTableMap } from "../../action";
 import {
   TableMapForm,
   tableMapFormSchema,
-} from "@/validations/(pos)/table.validation";
+} from "@/validations/pos/table.validation";
 import {
   INITIAL_STATE_TABLE_MAP,
   INITIAL_TABLE_MAP,
-} from "@/constants/(pos)/table.constant";
+} from "@/constants/pos/table.constant";
 import { useBrandStore } from "@/stores/brand-store";
 import FormTableMap from "./form-table-map";
 

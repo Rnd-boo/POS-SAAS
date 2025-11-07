@@ -5,15 +5,14 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import { SHAPE_LIST } from "@/constants/(pos)/table.constant";
+import { SHAPE_LIST } from "@/constants/pos/table.constant";
 import { Button } from "@/components/ui/button";
-import { CirclePlus, Trash2 } from "lucide-react";
+import { CirclePlus } from "lucide-react";
 import FormInput from "@/components/common/form-input";
 import FormSelect from "@/components/common/form-select";
-import { STATUS_LIST } from "@/constants/general.constant";
-import { FieldValues, Path, UseFormReturn } from "react-hook-form";
+import { FieldValues, UseFormReturn } from "react-hook-form";
 import { useEffect } from "react";
-import { TableLayoutForm } from "@/validations/(pos)/table.validation";
+import { TableLayoutForm } from "@/validations/pos/table.validation";
 
 export default function DrawerTableLayout<T extends FieldValues>({
   selectedIndex,

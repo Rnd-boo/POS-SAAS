@@ -12,15 +12,9 @@ import {
 import { Form } from "@/components/ui/form";
 import { STATUS_LIST } from "@/constants/general.constant";
 import { useBranchQuery } from "@/hooks/queries/use-branches";
-import { createClient } from "@/lib/supabase/client";
-import { cn } from "@/lib/utils";
-import { useAuthStore } from "@/stores/auth-store";
-import { useBrandStore } from "@/stores/brand-store";
-import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { FormEvent } from "react";
 import { FieldValues, Path, UseFormReturn } from "react-hook-form";
-import { toast } from "sonner";
 
 export default function FormTableMap<T extends FieldValues>({
   form,

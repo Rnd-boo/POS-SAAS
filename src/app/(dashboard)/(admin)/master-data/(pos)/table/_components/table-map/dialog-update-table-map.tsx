@@ -7,8 +7,8 @@ import {
   TableMap,
   TableMapForm,
   tableMapFormSchema,
-} from "@/validations/(pos)/table.validation";
-import { INITIAL_STATE_TABLE_MAP } from "@/constants/(pos)/table.constant";
+} from "@/validations/pos/table.validation";
+import { INITIAL_STATE_TABLE_MAP } from "@/constants/pos/table.constant";
 import { updateTableMap } from "../../action";
 import FormTableMap from "./form-table-map";
 

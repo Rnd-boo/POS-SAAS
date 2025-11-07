@@ -13,13 +13,13 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useAuthStore } from "@/stores/auth-store";
 import { useBrandStore } from "@/stores/brand-store";
-import { HEADER_TABLE_TABLE_MAP } from "@/constants/(pos)/table.constant";
+import { HEADER_TABLE_TABLE_MAP } from "@/constants/pos/table.constant";
 import DialogCreateTableMap from "./dialog-create-table-map";
 import DialogDeleteTableMap from "./dialog-delete-table-map";
 import DialogDetailTableMap from "./dialog-detail-table-map";
 import DialogUpdateTableMap from "./dialog-update-table-map";
 import { Card, CardContent } from "@/components/ui/card";
-import { TableMap } from "@/validations/(pos)/table.validation";
+import { TableMap } from "@/validations/pos/table.validation";
 
 export default function TableMapManagement() {
   const supabase = createClient();

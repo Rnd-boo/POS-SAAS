@@ -22,19 +22,18 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   TableLayoutForm,
   tableLayoutFormSchema,
-} from "@/validations/(pos)/table.validation";
+} from "@/validations/pos/table.validation";
 import { Form } from "@/components/ui/form";
 import {
   applyNodeChanges,
   Node,
-  OnNodesChange,
   ReactFlowProvider,
   useNodesState,
 } from "@xyflow/react";
 import { cn } from "@/lib/utils";
 import { useSidebar } from "@/components/ui/sidebar";
 import { useBranchQuery } from "@/hooks/queries/use-branches";
-import { INITIAL_TABLE_LAYOUT } from "@/constants/(pos)/table.constant";
+import { INITIAL_TABLE_LAYOUT } from "@/constants/pos/table.constant";
 
 export default function TableLayout() {
   const supabase = createClient();
@@ -58,7 +57,7 @@ export default function TableLayout() {
     name: "tables",
   });
 
-  const { data: branch, isLoading } = useBranchQuery();
+  const { data: branch } = useBranchQuery();
 
   const { data: tableMap } = useQuery({
     queryKey: ["table_map", currentId, selectedBranch, currentBrandId],
@@ -166,17 +165,6 @@ export default function TableLayout() {
           });
         }, 0);
 
-        // const removedNodes = changes
-        //   .filter((c: any) => c.type === "remove")
-        //   .map((c: any) => c.id);
-        // removedNodes.forEach((nodeId: string) => {
-        //   const idx = fields.findIndex((f) => f.id === nodeId);
-
-        //   if (idx !== -1) {
-        //     remove(idx);
-        //     setSelectedNode(null);
-        //   }
-        // });
         return updated;
       });
     },
