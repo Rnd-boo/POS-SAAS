@@ -4,10 +4,10 @@ import { getCurrentProfile } from "@/lib/get-current-profile";
 import { createClient } from "@/lib/supabase/server";
 import { TableLayoutFormState, TableMapFormState } from "@/types/pos/table";
 import {
+  tableLayoutFormSchema,
   tableLayoutSchema,
   tableMapSchema,
 } from "@/validations/pos/table.validation";
-import { table } from "console";
 
 export async function createTableMap(
   prevState: TableMapFormState,
@@ -125,49 +125,61 @@ export async function deleteTableMap(
   return { status: "success" };
 }
 
-export async function createTableLayout(
+export async function tablesAction(
   prevState: TableLayoutFormState,
   formData: FormData
 ) {
-  const validatedFields = tableLayoutSchema.safeParse({
-    name: formData.get("name"),
-    capacity: Number(formData.get("capacity")),
-    shape: formData.get("shape"),
-    table_map_id: formData.get("table_map_id"),
-    status: formData.get("status") === "true" ? true : false,
+  const validatedFields = tableLayoutFormSchema.safeParse({
+    tables: JSON.parse(formData.get("tables") as string),
   });
-
+  const table_map = formData.get("table_map_id");
   if (!validatedFields.success) {
     return {
       status: "error",
       errors: { ...validatedFields.error.flatten().fieldErrors, _form: [] },
     };
   }
-
   const supabase = await createClient();
+  const { tables } = validatedFields.data;
+  // Delete all existing units for this product
+  const { error: deleteError } = await supabase
+    .from("table")
+    .delete()
+    .eq("table_map_id", table_map);
 
-  const { currentUserId, currentClientId } = await getCurrentProfile();
-
-  const { error } = await supabase.from("table").insert({
-    client_profiles_id: currentUserId,
-    clients_id: currentClientId,
-    name: validatedFields.data.name,
-    capacity: validatedFields.data.capacity,
-    shape: validatedFields.data.shape,
-    table_map_id: validatedFields.data.table_map_id,
-    status: validatedFields.data.status,
-  });
-
-  if (error) {
+  if (deleteError) {
     return {
       status: "error",
       errors: {
         ...prevState.errors,
-        _form: [error.message],
+        _form: [deleteError.message],
       },
     };
   }
+  const { currentUserId, currentClientId } = await getCurrentProfile();
 
+  // Insert new units (only if there are units to insert)
+  if (tables.length > 0) {
+    const tablesToInsert = tables.map((table) => ({
+      ...table,
+      table_map_id: table_map,
+      client_profiles_id: currentUserId,
+      clients_id: currentClientId,
+    }));
+    const { error: insertError } = await supabase
+      .from("table")
+      .insert(tablesToInsert);
+
+    if (insertError) {
+      return {
+        status: "error",
+        errors: {
+          ...prevState.errors,
+          _form: [insertError.message],
+        },
+      };
+    }
+  }
   return {
     status: "success",
   };

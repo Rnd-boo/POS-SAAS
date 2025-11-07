@@ -10,7 +10,13 @@ import { createClient } from "@/lib/supabase/client";
 import { useAuthStore } from "@/stores/auth-store";
 import { useBrandStore } from "@/stores/brand-store";
 import { useQuery } from "@tanstack/react-query";
-import { useCallback, useEffect, useState } from "react";
+import {
+  startTransition,
+  useActionState,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { toast } from "sonner";
 import Tables from "./tables";
 import { Button } from "@/components/ui/button";
@@ -33,12 +39,18 @@ import {
 import { cn } from "@/lib/utils";
 import { useSidebar } from "@/components/ui/sidebar";
 import { useBranchQuery } from "@/hooks/queries/use-branches";
-import { INITIAL_TABLE_LAYOUT } from "@/constants/pos/table.constant";
+import {
+  INITIAL_STATE_TABLE_LAYOUT,
+  INITIAL_TABLE_LAYOUT,
+} from "@/constants/pos/table.constant";
+import { tablesAction } from "../../action";
 
 export default function TableLayout() {
   const supabase = createClient();
   const currentBrandId = useBrandStore((s) => s.currentBrandId);
   const currentId = useAuthStore((state) => state.profile?.clients);
+
+  const [nodes, setNodes] = useNodesState<Node>([]);
 
   const [selectedBranch, setSelectedBranch] = useState<string>("");
   const [selectedTableMap, setSelectedTableMap] = useState<string>("");
@@ -46,9 +58,11 @@ export default function TableLayout() {
   const { setOpen } = useSidebar();
   const [edit, setEdit] = useState(false);
   const [selectedNode, setSelectedNode] = useState<number | null>(null);
+
   const form = useForm<TableLayoutForm>({
     resolver: zodResolver(tableLayoutFormSchema),
     defaultValues: { tables: [INITIAL_TABLE_LAYOUT] },
+    mode: "onChange",
   });
   const { control, setValue } = form;
 
@@ -56,7 +70,6 @@ export default function TableLayout() {
     control,
     name: "tables",
   });
-
   const { data: branch } = useBranchQuery();
 
   const { data: tableMap } = useQuery({
@@ -112,7 +125,6 @@ export default function TableLayout() {
     },
     enabled: !!currentId && !!selectedTableMap,
   });
-  const [nodes, setNodes] = useNodesState<Node>([]);
   const mappedFields = fields?.map((field) => ({
     id: field.id,
     type: "tableNode",
@@ -171,18 +183,6 @@ export default function TableLayout() {
     [setNodes, setValue, edit, fields]
   );
 
-  const onSubmit = async (data: TableLayoutForm) => {
-    console.log("Form data:", data);
-
-    try {
-      toast.success("Tables saved successfully!");
-      refetch();
-    } catch (error) {
-      toast.error("Failed to save tables");
-      console.error(error);
-    }
-  };
-  console.log(fields);
   const handleAddTable = useCallback(() => {
     const newTable = {
       id: crypto.randomUUID(),
@@ -193,7 +193,7 @@ export default function TableLayout() {
       shape: "rectangle",
       width: 80,
       height: 80,
-      status: "true",
+      status: true,
     };
     append(newTable);
 
@@ -214,6 +214,35 @@ export default function TableLayout() {
 
     setFitViewTrigger((prev) => !prev);
   }, [tables, form, setNodes]);
+
+  const [tableLayoutState, tableLayoutAction, isPendingTableLayout] =
+    useActionState(tablesAction, INITIAL_STATE_TABLE_LAYOUT);
+
+  const onSubmit = form.handleSubmit(async (data) => {
+    const formData = new FormData();
+    formData.append("tables", JSON.stringify(data.tables));
+
+    formData.append("table_map_id", selectedTableMap);
+
+    startTransition(() => {
+      tableLayoutAction(formData);
+    });
+  });
+
+  useEffect(() => {
+    if (tableLayoutState?.status === "error") {
+      toast.error("Failed to save tables", {
+        description: tableLayoutState.errors?._form?.[0],
+      });
+    }
+    if (tableLayoutState?.status === "success") {
+      toast.success("Tables saved successfully");
+      form.reset();
+      refetch();
+      setEdit(false);
+      setFitViewTrigger((prev) => !prev);
+    }
+  }, [tableLayoutState]);
 
   return (
     <Card>
@@ -270,7 +299,7 @@ export default function TableLayout() {
                   <Button variant="outline" onClick={handleDiscard}>
                     Discard
                   </Button>
-                  <Button type="button" onClick={form.handleSubmit(onSubmit)}>
+                  <Button type="button" onClick={onSubmit}>
                     Save Changes
                   </Button>
                 </>
@@ -310,6 +339,7 @@ export default function TableLayout() {
           <Form {...form}>
             <div className="w-full h-[70vh] border rounded-lg mt-4 ">
               <Tables
+                isPending={isPendingTableLayout}
                 setNodes={setNodes}
                 enabled={edit}
                 control={control}

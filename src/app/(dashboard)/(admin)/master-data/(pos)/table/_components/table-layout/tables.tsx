@@ -15,6 +15,7 @@ export default function Tables({
   enabled,
   control,
   setNodes,
+  isPending,
 }: {
   selectedTableMap: string;
   setSelectedIndex: (index: number | null) => void;
@@ -24,6 +25,7 @@ export default function Tables({
   enabled: boolean;
   control: any;
   setNodes: React.Dispatch<React.SetStateAction<Node[]>>;
+  isPending: boolean;
 }) {
   const tables = useWatch({ control, name: "tables" });
   const nodeTypes = { tableNode: TableNode };
@@ -70,6 +72,11 @@ export default function Tables({
         <div className="flex h-full w-full items-center justify-center">
           Please select table map
         </div>
+      ) : isPending ? (
+        // CASE 2: table map selected BUT pending
+        <div className="flex h-full w-full items-center justify-center">
+          Loading...
+        </div>
       ) : (
         <ReactFlow
           nodes={fields}
@@ -85,8 +92,8 @@ export default function Tables({
             [1280, 600],
           ]}
           translateExtent={[
-            [0, 0],
-            [1280, 600],
+            [-20, -20],
+            [1300, 600],
           ]}
           minZoom={0.65}
           maxZoom={1.6}

@@ -25,20 +25,24 @@ export type TableMap = z.infer<typeof tableMapSchema> & {
 // TABLE LAYOUT
 export const tableLayoutSchema = z.object({
   id: z.string(),
-  name: z.string(),
-  position_x: z.number(),
-  position_y: z.number(),
-  capacity: z.number(),
+  name: z.string().min(1, "Table Name is required"),
+  position_x: z.coerce.number().max(1232, "Position X is maximum 1232"),
+  position_y: z.coerce.number().max(552, "Position Y is maximum 552"),
+  capacity: z.coerce.number().min(1, "Capacity minimum 1"),
   shape: z.string(),
-  width: z.number(),
-  height: z.number(),
-  status: z.string(),
+  width: z.coerce
+    .number()
+    .min(24, "Width minimum 24")
+    .max(1280, "Width maximum 600"),
+  height: z.coerce
+    .number()
+    .min(24, "height minimum 24")
+    .max(600, "height maximum 600"),
+  status: z.boolean(),
 });
 
 export const tableLayoutFormSchema = z.object({
-  tables: z
-    .array(tableLayoutSchema)
-    .min(1, "You must create at least one table"),
+  tables: z.array(tableLayoutSchema),
 });
 
 export type TableLayoutForm = z.infer<typeof tableLayoutFormSchema>;

@@ -53,7 +53,9 @@ export default function DrawerTableLayout<T extends FieldValues>({
               key={`tables.${selectedIndex}.id`}
             >
               <div className="space-y-2">
-                <DrawerDescription>Table Description</DrawerDescription>
+                <p className="text-muted-foreground text-sm text-center">
+                  Table Description
+                </p>
                 <FormInput
                   form={form}
                   name={`tables.${selectedIndex}.name`}
@@ -61,7 +63,6 @@ export default function DrawerTableLayout<T extends FieldValues>({
                   placeholder="Insert Table name"
                 />
                 <FormInput
-                  type="number"
                   form={form}
                   name={`tables.${selectedIndex}.capacity`}
                   label="Capacity"
@@ -78,8 +79,10 @@ export default function DrawerTableLayout<T extends FieldValues>({
                 />
               </div>
               <div className="mt-4 space-y-2 mb-2">
-                <DrawerDescription>Layout</DrawerDescription>
-                <div className="flex items-center gap-2 text-sm">
+                <p className="text-muted-foreground text-sm text-center">
+                  Layout
+                </p>
+                <div className="flex items-center gap-3 text-sm">
                   <p>Position</p>
                   <div className="flex gap-2">
                     <FormInput

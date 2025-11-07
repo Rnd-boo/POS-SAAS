@@ -33,7 +33,7 @@ export const INITIAL_TABLE_LAYOUT = {
   shape: "",
   width: 48,
   height: 48,
-  status: "",
+  status: true,
 };
 
 export const INITIAL_STATE_TABLE_LAYOUT = {
