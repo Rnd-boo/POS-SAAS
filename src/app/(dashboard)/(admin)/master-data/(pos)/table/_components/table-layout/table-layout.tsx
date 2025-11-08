@@ -189,7 +189,7 @@ export default function TableLayout() {
       name: `New Table`,
       position_x: Math.floor(Math.random() * 400),
       position_y: Math.floor(Math.random() * 200),
-      capacity: 0,
+      capacity: 1,
       shape: "rectangle",
       width: 80,
       height: 80,
