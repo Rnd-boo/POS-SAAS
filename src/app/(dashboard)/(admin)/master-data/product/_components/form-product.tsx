@@ -20,7 +20,7 @@ import { useAuthStore } from "@/stores/auth-store";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent } from "react";
 import { FieldValues, Path, UseFormReturn } from "react-hook-form";
 import FormProductUnit from "./form-product-unit";
 import FormSelectData from "@/components/common/form-select-data";
@@ -52,9 +52,7 @@ export default function FormProduct<T extends FieldValues>({
     enabled: !!currentId,
   });
   const router = useRouter();
-  useEffect(() => {
-    console.log("FormProduct received form values:", form.getValues());
-  }, [form]);
+
   return (
     <Card className="w-full">
       <Form {...form}>

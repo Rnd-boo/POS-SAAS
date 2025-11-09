@@ -13,7 +13,7 @@ export const INITIAL_PRODUCT = {
   categories_id: "",
   status: "",
   upc: "",
-  units: [{ units_id: "", conversion_factor: "" }],
+  units: [{ units_id: "", conversion_factor: "", base_unit: "" }],
 };
 
 export const INITIAL_STATE_PRODUCT = {

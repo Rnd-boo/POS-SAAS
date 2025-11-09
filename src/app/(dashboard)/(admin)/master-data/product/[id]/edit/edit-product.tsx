@@ -16,8 +16,8 @@ import {
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { startTransition, useActionState, useEffect } from "react";
-import FormProduct from "../../../_components/form-product";
-import { updateProduct } from "../../../action";
+import { updateProduct } from "../../action";
+import FormProduct from "../../_components/form-product";
 
 export default function EditProduct() {
   const { id } = useParams();
@@ -98,14 +98,23 @@ export default function EditProduct() {
   useEffect(() => {
     if (product && productUnit) {
       // Format units data
-      let formattedUnits = [{ units_id: "", conversion_factor: "" }];
+      let formattedUnits = [
+        { units_id: "", conversion_factor: "", base_unit: "" },
+      ];
 
       if (productUnit && Array.isArray(productUnit)) {
         const filteredUnits = productUnit
-          .filter((unit) => unit && unit.units_id && unit.conversion_factor)
+          .filter(
+            (unit) =>
+              unit &&
+              unit.units_id &&
+              unit.conversion_factor &&
+              unit.is_base_unit
+          )
           .map((unit) => ({
             units_id: String(unit.units_id),
             conversion_factor: String(unit.conversion_factor),
+            base_unit: unit.is_base_unit,
           }));
 
         if (filteredUnits.length > 0) {

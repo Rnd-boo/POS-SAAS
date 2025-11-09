@@ -8,7 +8,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useAuthStore } from "@/stores/auth-store";
 import { useQuery } from "@tanstack/react-query";
 import { Plus, X } from "lucide-react";
-import { useCallback, useEffect } from "react";
+import { useEffect } from "react";
 import {
   ArrayPath,
   FieldValues,
@@ -48,6 +48,13 @@ export default function FormProductUnit<T extends FieldValues>({
   const selectedUnitId = form.watch("units.0.units_id" as Path<T>) || "";
   const selectedUnit = units?.find((unit) => unit.id == selectedUnitId);
 
+  const handleAppend = () => {
+    append({
+      units_id: "",
+      conversion_factor: "",
+      base_unit: "",
+    } as any);
+  };
   useEffect(() => {
     if (selectedUnit && fields.length > 0) {
       fields.forEach((_, fieldIndex) => {
@@ -112,13 +119,7 @@ export default function FormProductUnit<T extends FieldValues>({
         type="button"
         variant="outline"
         className="mt-2"
-        onClick={() =>
-          append({
-            units_id: "",
-            conversion_factor: "",
-            base_unit: "",
-          } as any)
-        }
+        onClick={handleAppend}
       >
         <Plus />
         Add Unit

@@ -64,7 +64,7 @@ export async function createProduct(
       products_id: insertedProduct.id,
       units_id: parseInt(unit.units_id),
       conversion_factor: parseFloat(unit.conversion_factor),
-      is_base_unit: index === 0, // First unit is base unit
+      is_base_unit: index === 0,
     })
   );
 
