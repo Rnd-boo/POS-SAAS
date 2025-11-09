@@ -55,7 +55,6 @@ export default function CreateProduct() {
     if (createProductState?.status === "success") {
       toast.success("Create Product Success");
       form.reset();
-      document.querySelector<HTMLButtonElement>('[data-state="open"]')?.click();
       queryClient.refetchQueries({ queryKey: ["products"] });
       router.push("/master-data/product");
     }
@@ -65,7 +64,7 @@ export default function CreateProduct() {
     <FormProduct
       form={form}
       onSubmit={onSubmit}
-      isLoading={isPendingcreateProduct}
+      isPending={isPendingcreateProduct}
       type="Create"
     />
   );

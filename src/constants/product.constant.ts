@@ -9,17 +9,11 @@ export const HEADER_TABLE_PRODUCT = [
 
 export const INITIAL_PRODUCT = {
   name: "",
-  categories_id: "",
-  upc: "",
   description: "",
+  categories_id: "",
   status: "",
-  units: [
-    {
-      units_id: "",
-      conversion_factor: "1",
-      base_unit: "",
-    },
-  ],
+  upc: "",
+  units: [{ units_id: "", conversion_factor: "", base_unit: "" }],
 };
 
 export const INITIAL_STATE_PRODUCT = {
