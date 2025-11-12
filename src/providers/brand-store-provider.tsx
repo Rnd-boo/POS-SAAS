@@ -1,5 +1,5 @@
 "use client";
-import { useBrands } from "@/hooks/use-brands";
+import { useBrands } from "@/hooks/queries/use-brands";
 import { useBrandStore } from "@/stores/brand-store";
 import { ReactNode, useEffect } from "react";
 
