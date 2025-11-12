@@ -20,18 +20,26 @@ export default function MasterDataPage() {
         <Card className="w-full" key={`card-${cardIndex}`}>
           <CardHeader>
             <CardTitle className="text-lg">{card.title}</CardTitle>
-            <CardDescription>{card.description}</CardDescription>
           </CardHeader>
-          <CardContent className="w-full flex flex-wrap gap-6 overflow-hidden">
-            {card.contents.map((content, contentIndex) => (
-              <div key={`item-${contentIndex}`}>
-                <Link href={content.url}>
-                  <Button className="cursor-pointer focus-visible:ring-ring text-primary-foreground bg-primary hover:bg-primary/90 text-lg py-6 min-w-[120px]">
-                    {content.title}
-                  </Button>
+          <CardContent className="w-full flex flex-wrap gap-4">
+            {card.contents.map((content, contentIndex) => {
+              const Icon = content?.icon;
+              return (
+                <Link href={content.url} key={`item-${contentIndex}`}>
+                  <Card className="max-w-xs hover:shadow-lg transition-shadow hover:bg-muted/60 ">
+                    <CardContent>
+                      <h1 className="font-semibold flex items-center gap-2">
+                        {Icon && <Icon className=" text-primary size-5" />}
+                        {content.title}
+                      </h1>
+                      <p className="text-sm text-muted-foreground mt-2">
+                        {content?.description}
+                      </p>
+                    </CardContent>
+                  </Card>
                 </Link>
-              </div>
-            ))}
+              );
+            })}
           </CardContent>
         </Card>
       ))}
