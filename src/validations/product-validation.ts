@@ -4,6 +4,7 @@ export const productUnitSchema = z.object({
   units_id: z.string().min(1, "Unit is required"),
   conversion_factor: z.string(),
   base_unit: z.string(),
+  is_sales_unit: z.boolean(),
 });
 
 export const productSchema = z.object({
@@ -11,7 +12,6 @@ export const productSchema = z.object({
   categories_id: z.string(),
   description: z.string(),
   upc: z.string(),
-  // base_price: z.number(),
   status: z.boolean(),
   units: z.array(productUnitSchema).optional(),
 });
@@ -21,7 +21,6 @@ export const productFormSchema = z.object({
   categories_id: z.string().min(1, "Category is required"),
   description: z.string(),
   upc: z.string().min(1, "Product Code is required"),
-  // base_price: z.string().min(1, "Base Price is required"),
   status: z.string().min(1, "Status is required"),
   // Product Unit Fields
   units: z.array(productUnitSchema).min(1, "At least one unit is required"),

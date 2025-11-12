@@ -9,7 +9,6 @@ import {
   productFormSchema,
 } from "@/validations/product-validation";
 
-import { Button } from "@/components/ui/button";
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
@@ -17,8 +16,6 @@ import { useAuthStore } from "@/stores/auth-store";
 import { toast } from "sonner";
 import { INITIAL_PRODUCT } from "@/constants/product.constant";
 import FormDetail from "./form-detail";
-import { Card } from "@/components/ui/card";
-import { id } from "zod/v4/locales";
 
 export default function ViewProduct() {
   const params = useParams();
@@ -31,7 +28,7 @@ export default function ViewProduct() {
     defaultValues: INITIAL_PRODUCT,
   });
   const { data: product, isLoading: isLoadingProduct } = useQuery({
-    queryKey: ["product", productId],
+    queryKey: ["products", productId],
     queryFn: async () => {
       const result = await supabase
         .from("products")
@@ -62,7 +59,7 @@ export default function ViewProduct() {
     );
     form.setValue("status", product?.status ? "Active" : "Not Active");
     form.setValue("upc", product?.upc);
-    form.setValue("categories_id", product?.categories?.name);
+    form.setValue("categories_id", product?.categories_id.toString());
   }, [product, form]);
 
   const { data: productUnit, isLoading: isLoadingProductUnit } = useQuery({
@@ -71,7 +68,7 @@ export default function ViewProduct() {
       const result = await supabase
         .from("product_units")
         .select(
-          `id,is_base_unit, products_id, units_id, conversion_factor, units(
+          `id,is_base_unit, products_id, units_id, conversion_factor, is_sales_unit, units(
             name
           )`
         )
@@ -95,6 +92,8 @@ export default function ViewProduct() {
         .map((unit) => ({
           units_id: (unit.units as unknown as { name: string }).name,
           conversion_factor: String(unit.conversion_factor),
+          base_unit: unit.is_base_unit,
+          is_sales_unit: unit.is_sales_unit,
         }));
 
       form.setValue("units", formattedUnits);

@@ -39,7 +39,7 @@ export default function FormProduct<T extends FieldValues>({
   const supabase = createClient();
   const currentId = useAuthStore((state) => state.profile?.clients);
 
-  const { data: categoriesResult, isLoading: isPendingCategories } = useQuery({
+  const { data: categoriesResult } = useQuery({
     queryKey: ["categories", currentId],
     queryFn: async () => {
       const result = await supabase
@@ -107,7 +107,7 @@ export default function FormProduct<T extends FieldValues>({
           <CardHeader className="flex justify-between">
             <CardTitle className="text-lg">Product Units</CardTitle>
           </CardHeader>
-          <CardContent className="flex gap-2">
+          <CardContent>
             <FormProductUnit form={form} />
           </CardContent>
           <CardFooter className="justify-end flex gap-2">

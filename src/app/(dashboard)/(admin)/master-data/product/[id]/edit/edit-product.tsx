@@ -52,8 +52,8 @@ export default function EditProduct() {
     });
   });
 
-  const { data: product, isLoading: isLoadingProduct } = useQuery({
-    queryKey: ["product", id],
+  const { data: product } = useQuery({
+    queryKey: ["products", id],
     queryFn: async () => {
       const result = await supabase
         .from("products")
@@ -72,13 +72,13 @@ export default function EditProduct() {
     enabled: !!currentId && !!id,
   });
 
-  const { data: productUnit, isLoading: isLoadingProductUnit } = useQuery({
+  const { data: productUnit } = useQuery({
     queryKey: ["product_units", product?.id],
     queryFn: async () => {
       const result = await supabase
         .from("product_units")
         .select(
-          `id,is_base_unit, products_id, units_id, conversion_factor, units:units_id(
+          `id,is_base_unit, products_id, units_id, conversion_factor,is_sales_unit, units:units_id(
             name
           )`
         )
@@ -96,40 +96,24 @@ export default function EditProduct() {
   });
 
   useEffect(() => {
-    if (product && productUnit) {
-      // Format units data
-      let formattedUnits = [
-        { units_id: "", conversion_factor: "", base_unit: "" },
-      ];
-
+    if (productUnit) {
       if (productUnit && Array.isArray(productUnit)) {
-        const filteredUnits = productUnit
-          .filter(
-            (unit) =>
-              unit &&
-              unit.units_id &&
-              unit.conversion_factor &&
-              unit.is_base_unit
-          )
-          .map((unit) => ({
-            units_id: String(unit.units_id),
-            conversion_factor: String(unit.conversion_factor),
-            base_unit: unit.is_base_unit,
-          }));
+        const formattedUnits = productUnit.map((unit) => ({
+          units_id: String(unit.units_id),
+          conversion_factor: String(unit.conversion_factor),
+          base_unit: unit.is_base_unit,
+          is_sales_unit: unit.is_sales_unit,
+        }));
 
-        if (filteredUnits.length > 0) {
-          formattedUnits = filteredUnits;
-        }
+        form.reset({
+          name: product.name || "",
+          description: product.description || "",
+          categories_id: product.categories_id?.toString() || "",
+          status: product.status?.toString() || "",
+          upc: product.upc || "",
+          units: formattedUnits,
+        });
       }
-
-      form.reset({
-        name: product.name || "",
-        description: product.description || "",
-        categories_id: product.categories_id?.toString() || "",
-        status: product.status?.toString() || "",
-        upc: product.upc || "",
-        units: formattedUnits,
-      });
     }
   }, [product, productUnit, form]);
 
@@ -141,28 +125,18 @@ export default function EditProduct() {
     }
     if (updateProductState?.status === "success") {
       toast.success("Update Product Success");
-      form.reset();
       queryClient.refetchQueries({ queryKey: ["products"] });
+      queryClient.refetchQueries({ queryKey: ["product_units"] });
       router.push("/master-data/product");
     }
   }, [updateProductState]);
 
-  const isDataReady =
-    product &&
-    productUnit !== undefined &&
-    !isLoadingProduct &&
-    !isLoadingProductUnit;
-
-  if (!isDataReady) {
-    return <div>Loading...</div>;
-  }
   return (
     <>
       <FormProduct
         form={form}
         onSubmit={onSubmit}
         isPending={isPendingUpdateProduct}
-        // isLoading={isLoadingProduct || isLoadingProductUnit}
         type="Update"
       />
     </>

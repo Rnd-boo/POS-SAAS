@@ -65,6 +65,7 @@ export async function createProduct(
       units_id: parseInt(unit.units_id),
       conversion_factor: parseFloat(unit.conversion_factor),
       is_base_unit: index === 0,
+      is_sales_unit: unit.is_sales_unit,
     })
   );
 
@@ -149,9 +150,10 @@ export async function updateProduct(
     (unit, index) => ({
       clients_id: currentClientId,
       products_id: updatedProduct.id,
-      units_id: unit.units_id,
+      units_id: parseInt(unit.units_id),
       conversion_factor: parseFloat(unit.conversion_factor),
       is_base_unit: index === 0, // First unit is base unit
+      is_sales_unit: unit.is_sales_unit,
     })
   );
 

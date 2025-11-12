@@ -1,14 +1,16 @@
 "use client";
 
 import FormInput from "@/components/common/form-input";
-import FormSelect from "@/components/common/form-select";
 import FormSelectData from "@/components/common/form-select-data";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/supabase/client";
 import { useAuthStore } from "@/stores/auth-store";
+import { ProductUnit } from "@/validations/product-validation";
 import { useQuery } from "@tanstack/react-query";
 import { Plus, X } from "lucide-react";
-import { useEffect } from "react";
+import { Fragment, useEffect } from "react";
 import {
   ArrayPath,
   FieldValues,
@@ -17,14 +19,11 @@ import {
   UseFormReturn,
 } from "react-hook-form";
 
-type FormProductUnitProps<T extends FieldValues> = {
-  form: UseFormReturn<T>;
-  units?: { id: string; name: string }[];
-};
-
 export default function FormProductUnit<T extends FieldValues>({
   form,
-}: FormProductUnitProps<T>) {
+}: {
+  form: UseFormReturn<T>;
+}) {
   const supabase = createClient();
   const currentId = useAuthStore((state) => state.profile?.clients);
   const { data: units } = useQuery({
@@ -53,6 +52,7 @@ export default function FormProductUnit<T extends FieldValues>({
       units_id: "",
       conversion_factor: "",
       base_unit: "",
+      is_sales_unit: "false",
     } as any);
   };
   useEffect(() => {
@@ -60,60 +60,95 @@ export default function FormProductUnit<T extends FieldValues>({
       fields.forEach((_, fieldIndex) => {
         form.setValue(
           `units.${fieldIndex}.base_unit` as Path<T>,
-          selectedUnit.name || ("" as any)
+          selectedUnit.name
         );
       });
     }
   }, [selectedUnit?.id, fields.length, form]);
-  // Set conversion_factor to "1" for the first unit (base unit)
+
   useEffect(() => {
     if (fields.length > 0) {
       form.setValue("units.0.conversion_factor" as Path<T>, "1" as any);
     }
   }, [fields, form]);
-
   return (
-    <div>
-      {fields.map((field, index) => (
-        <div className="flex w-full gap-2  items-start" key={field.id}>
-          <FormSelectData
-            form={form}
-            name={`units.${index}.units_id` as Path<T>}
-            label=""
-            data={units ?? undefined}
-            valueKey="id"
-            labelKey="name"
-            className="min-w-[150px]"
-          />
-          <FormInput
-            form={form}
-            name={`units.${index}.conversion_factor` as Path<T>}
-            label=""
-            placeholder="Conversion"
-            className="max-w-[100px]"
-            disabled={index === 0}
-          />
-          <FormInput
-            form={form}
-            name={`units.${index}.base_unit` as Path<T>}
-            label=""
-            placeholder="Base Unit"
-            className="max-w-[100px]"
-            disabled
-          />
-          {fields.length > 1 && index > 0 && (
-            <Button
-              type="button"
-              size="icon"
-              variant="destructive"
-              onClick={() => remove(index)}
-              className="cursor-pointer self-end"
-            >
-              <X />
-            </Button>
-          )}
-        </div>
-      ))}
+    <>
+      <div className="grid grid-cols-7 space-x-2 gap-y-1 mb-4">
+        {/* Header */}
+        <Label>Unit</Label>
+        <Label>Conversion Factor</Label>
+        <Label>Base Unit</Label>
+        <div></div>
+        <Label className="flex justify-center">Sales Unit</Label>
+        <div></div>
+        <div></div>
+
+        {/* Rows */}
+        {fields.map((field, index) => (
+          <Fragment key={field.id}>
+            <FormSelectData
+              form={form}
+              name={`units.${index}.units_id` as Path<T>}
+              label=""
+              data={units ?? undefined}
+              valueKey="id"
+              labelKey="name"
+            />
+            <FormInput
+              form={form}
+              name={`units.${index}.conversion_factor` as Path<T>}
+              label=""
+              placeholder="Conversion"
+              className=""
+              disabled={index === 0}
+            />
+            <FormInput
+              form={form}
+              name={`units.${index}.base_unit` as Path<T>}
+              label=""
+              placeholder="Base Unit"
+              className=""
+              disabled
+            />
+            <div>
+              {fields.length > 1 && index > 0 && (
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="destructive"
+                  onClick={() => remove(index)}
+                  className="cursor-pointer mt-2"
+                >
+                  <X />
+                </Button>
+              )}
+            </div>
+            <div className="flex justify-center">
+              <Checkbox
+                className="mt-4 size-6 "
+                checked={
+                  form.watch(`units.${index}.is_sales_unit` as Path<T>) === true
+                }
+                onCheckedChange={(checked) => {
+                  const currentUnits = form.getValues("units" as Path<T>);
+
+                  // Update all: only clicked one should be "true"
+                  const updatedUnits = currentUnits.map(
+                    (unit: ProductUnit, i: number) => ({
+                      ...unit,
+                      is_sales_unit: i === index && checked,
+                    })
+                  );
+
+                  form.setValue("units" as Path<T>, updatedUnits);
+                }}
+              />
+            </div>
+            <div></div>
+            <div></div>
+          </Fragment>
+        ))}
+      </div>
       <Button
         size="sm"
         type="button"
@@ -124,6 +159,6 @@ export default function FormProductUnit<T extends FieldValues>({
         <Plus />
         Add Unit
       </Button>
-    </div>
+    </>
   );
 }

@@ -5,7 +5,7 @@ export const MASTER_CARD = [
     contents: [
       { title: "Brand", url: "/master-data/brand" },
       { title: "Branch", url: "/master-data/branch" },
-      // { title: "Table", url: "/master-data/table" },
+      { title: "User", url: "/master-data/user" },
     ],
   },
   {
@@ -22,7 +22,8 @@ export const MASTER_CARD = [
     description: "Configure your Point Of Sale settings",
     contents: [
       { title: "Table", url: "/master-data/table" },
-      { title: "User", url: "/master-data/pos-user" },
+      { title: "User POS", url: "/master-data/pos-user" },
+      { title: "Menu", url: "/master-data/menu" },
     ],
   },
 ];

@@ -1,5 +1,6 @@
 import FormInput from "@/components/common/form-input";
 import FormSelect from "@/components/common/form-select";
+import FormSelectData from "@/components/common/form-select-data";
 import { Button } from "@/components/ui/button";
 import {
   DialogClose,
@@ -48,7 +49,7 @@ export default function FormTableMap<T extends FieldValues>({
               label="Table Map"
               placeholder="Insert Table Map name"
             />
-            <FormSelect
+            <FormSelectData
               form={form}
               name={"branch_id" as Path<T>}
               label="Branch"

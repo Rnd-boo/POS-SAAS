@@ -140,10 +140,10 @@ export default function ProductManagement() {
       <div className="flex flex-col lg:flex-row mb-4 gap-2 justify-between w-full">
         <h1 className="text-xl font-semibold">Product Management</h1>
         <div className="flex gap-2">
-          {/* <Input
+          <Input
             placeholder="Search by product name"
             onChange={(e) => handleChangeSearch(e.target.value)}
-          /> */}
+          />
           <Link href={`${pathname}/create`}>
             <Button variant="outline">Create</Button>
           </Link>

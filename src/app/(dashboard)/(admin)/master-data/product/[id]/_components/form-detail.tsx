@@ -14,7 +14,7 @@ import {
 import { Form } from "@/components/ui/form";
 import { Separator } from "@/components/ui/separator";
 import { useRouter } from "next/navigation";
-import { FormEvent, useState } from "react";
+import { FormEvent, Fragment, useState } from "react";
 import {
   ArrayPath,
   FieldValues,
@@ -24,6 +24,12 @@ import {
   UseFormReturn,
 } from "react-hook-form";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Checkbox } from "@/components/ui/checkbox";
+import { fi } from "zod/v4/locales";
+import { Label } from "@/components/ui/label";
+import FormSelectData from "@/components/common/form-select-data";
+import { useQuery } from "@tanstack/react-query";
+import { createClient } from "@/lib/supabase/client";
 
 export default function FormDetail<T extends FieldValues>({
   form,
@@ -42,7 +48,18 @@ export default function FormDetail<T extends FieldValues>({
     control: form.control,
     name: "units" as ArrayPath<T>,
   });
+  const supabase = createClient();
 
+  const { data: categoriesResult } = useQuery({
+    queryKey: ["categories"],
+    queryFn: async () => {
+      const result = await supabase
+        .from("categories")
+        .select("id, name")
+        .eq("status", true);
+      return result?.data;
+    },
+  });
   return (
     <Card className="w-full">
       <Form {...form}>
@@ -92,11 +109,14 @@ export default function FormDetail<T extends FieldValues>({
                 placeholder="Insert Product name"
                 disabled
               />
-              <FormInput
+              <FormSelectData
                 form={form}
                 name={"categories_id" as Path<T>}
                 label="Category"
                 disabled
+                data={categoriesResult ?? []}
+                valueKey="id"
+                labelKey="name"
               />
               <FormInput
                 form={form}
@@ -139,33 +159,59 @@ export default function FormDetail<T extends FieldValues>({
               </div>
             </CardContent>
           ) : (
-            <CardContent>
-              {fields.map((field, index) => {
-                return (
-                  <div className="flex w-full gap-2 mb-2" key={field.id}>
-                    <FormInput
-                      form={form}
-                      name={`units.${index}.units_id` as Path<T>}
-                      label=""
-                      disabled
-                    />
-                    <FormInput
-                      form={form}
-                      name={`units.${index}.conversion_factor` as Path<T>}
-                      label=""
-                      disabled
-                      className="w-[100px]"
-                    />
-                    <FormInput
-                      form={form}
-                      name={`units.0.units_id` as Path<T>}
-                      label=""
-                      disabled
-                    />
-                  </div>
-                );
-              })}
-            </CardContent>
+            <>
+              <CardHeader className="flex justify-between">
+                <CardTitle className="text-lg">Product Units</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-7 space-x-2 gap-y-1 mb-4">
+                  {/* Header */}
+                  <Label>Unit</Label>
+                  <Label>Conversion Factor</Label>
+                  <Label>Base Unit</Label>
+                  <div></div>
+                  <Label className="flex justify-center">Sales Unit</Label>
+                  <div></div>
+                  <div></div>
+
+                  {/* Data rows */}
+                  {fields.map((field, index) => (
+                    <Fragment key={field.id}>
+                      <FormInput
+                        form={form}
+                        name={`units.${index}.units_id` as Path<T>}
+                        label=""
+                        disabled
+                      />
+                      <FormInput
+                        form={form}
+                        name={`units.${index}.conversion_factor` as Path<T>}
+                        label=""
+                        disabled
+                      />
+                      <FormInput
+                        form={form}
+                        name={`units.0.units_id` as Path<T>}
+                        label=""
+                        disabled
+                      />
+                      <div></div>
+                      <div className="flex justify-center">
+                        <Checkbox
+                          className="mt-4 size-6 "
+                          checked={form.getValues(
+                            `units.${index}.is_sales_unit` as Path<T>
+                          )}
+                          disabled
+                        />
+                      </div>
+                      <div></div>
+                      <div></div>
+                    </Fragment>
+                  ))}
+                </div>
+              </CardContent>
+            </>
           )}
         </form>
       </Form>

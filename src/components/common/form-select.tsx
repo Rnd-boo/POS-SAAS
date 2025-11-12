@@ -52,24 +52,8 @@ export default function FormSelect<T extends FieldValues>({
             <Select
               value={field.value || ""}
               onValueChange={(value) => {
-                console.log(`${name} onChange:`, {
-                  value,
-                  currentValue: field.value,
-                  mounted: mountedRef.current,
-                  hasTriggered: hasTriggeredOnChangeRef.current,
-                });
-
-                // Block onChange until component is fully mounted
-                if (!mountedRef.current) {
-                  console.log(`${name} blocked - not mounted yet`);
-                  return;
-                }
-
                 // Block first onChange if it's trying to clear a valid value
                 if (!hasTriggeredOnChangeRef.current && field.value && !value) {
-                  console.log(
-                    `${name} blocked - preventing clear on first change`
-                  );
                   hasTriggeredOnChangeRef.current = true;
                   return;
                 }

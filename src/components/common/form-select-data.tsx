@@ -92,22 +92,11 @@ export default function FormSelectData<T extends FieldValues>({
               <Select
                 value={currentValue}
                 onValueChange={(value) => {
-                  console.log(`${name} onChange:`, {
-                    value,
-                    currentValue,
-                    mounted: mountedRef.current,
-                    initialValueSet: initialValueSetRef.current,
-                  });
-
-                  // Block onChange until fully mounted and data loaded
                   if (!mountedRef.current) {
-                    console.log(`${name} blocked - not mounted`);
                     return;
                   }
 
-                  // If this is the first onChange and it's trying to clear a value, block it
                   if (!initialValueSetRef.current && currentValue && !value) {
-                    console.log(`${name} blocked - preventing initial clear`);
                     initialValueSetRef.current = true;
                     return;
                   }
