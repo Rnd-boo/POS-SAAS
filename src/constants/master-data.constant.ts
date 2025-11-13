@@ -27,7 +27,7 @@ export const MASTER_CARD = [
         title: "Branch",
         url: "/master-data/branch",
         icon: VectorSquare,
-        description: "Manage company branches or store locations.",
+        description: "Manage brand branches or store locations.",
       },
       {
         title: "User",

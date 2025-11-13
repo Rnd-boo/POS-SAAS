@@ -19,11 +19,15 @@ import DialogDeleteBranch from "./dialog-delete-branch";
 import DialogCreateBranch from "./dialog-create-branch";
 import DialogUpdateBranch from "./dialog-update-branch";
 import { useBrandStore } from "@/stores/brand-store";
+import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function BranchManagement() {
   const supabase = createClient();
   const currentBrandId = useBrandStore((s) => s.currentBrandId);
   const currentId = useAuthStore((state) => state.profile?.clients);
+  const router = useRouter();
+  const pathname = usePathname();
 
   const {
     currentLimit,
@@ -76,6 +80,10 @@ export default function BranchManagement() {
 
   const handleChangeAction = (open: boolean) => {
     if (!open) setSelectedAction(null);
+  };
+
+  const handleClickAction = (type: string) => {
+    router.push(`${pathname}/${type}`);
   };
 
   const filteredData = useMemo(() => {
@@ -152,12 +160,9 @@ export default function BranchManagement() {
             placeholder="Search by branch name"
             onChange={(e) => handleChangeSearch(e.target.value)}
           />
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="outline">Create</Button>
-            </DialogTrigger>
-            <DialogCreateBranch refetch={refetch} />
-          </Dialog>
+          <Link href={`${pathname}/create`}>
+            <Button variant="outline">Create</Button>
+          </Link>
         </div>
       </div>
       <DataTable

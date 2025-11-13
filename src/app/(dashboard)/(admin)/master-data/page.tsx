@@ -26,7 +26,7 @@ export default function MasterDataPage() {
               const Icon = content?.icon;
               return (
                 <Link href={content.url} key={`item-${contentIndex}`}>
-                  <Card className="max-w-xs hover:shadow-lg transition-shadow hover:bg-muted/60 ">
+                  <Card className="max-w-xs min-h-32 hover:shadow-lg transition-shadow hover:bg-muted/60 ">
                     <CardContent>
                       <h1 className="font-semibold flex items-center gap-2">
                         {Icon && <Icon className=" text-primary size-5" />}
