@@ -203,12 +203,12 @@ export default function BranchManagement() {
         currentData={selectedAction?.data}
         handleChangeAction={handleChangeAction}
       />
-      <DialogUpdateBranch
+      {/* <DialogUpdateBranch
         open={selectedAction !== null && selectedAction.type === "update"}
         refetch={refetch}
         currentData={selectedAction?.data}
         handleChangeAction={handleChangeAction}
-      />
+      /> */}
     </div>
   );
 }

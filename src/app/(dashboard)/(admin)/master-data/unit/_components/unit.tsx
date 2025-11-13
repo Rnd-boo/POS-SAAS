@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import { Unit } from "@/validations/unit-validation";
 import { HEADER_TABLE_UNIT } from "@/constants/unit.constant";
 import DialogCreateUnit from "./dialog-create-unit";
-import DialogUpdateUnit from "./dialog-update-category";
+import DialogUpdateUnit from "./dialog-update-unit";
 import DialogDeleteUnit from "./dialog-delete-unit";
 import { useAuthStore } from "@/stores/auth-store";
 import { cn } from "@/lib/utils";
