@@ -1,6 +1,7 @@
 import {
   BookA,
   BookText,
+  ClipboardPenLine,
   Layers,
   PackageSearch,
   Ratio,
@@ -77,6 +78,12 @@ export const MASTER_CARD = [
         url: "/master-data/pos-user",
         icon: UsersRound,
         description: "Manage POS users ",
+      },
+      {
+        title: "Order Context",
+        url: "/master-data/order-context",
+        icon: ClipboardPenLine,
+        description: "Manage order purposes to classify visits",
       },
       {
         title: "Menu",
