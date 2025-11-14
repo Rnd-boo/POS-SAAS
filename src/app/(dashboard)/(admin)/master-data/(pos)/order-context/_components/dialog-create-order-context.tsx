@@ -38,7 +38,7 @@ export default function DialogCreateOrderContext({
 
     const formData = new FormData();
     Object.entries(data).forEach(([key, value]) => {
-      formData.append(key, value);
+      formData.append(key, value as string);
     });
     formData.append("brand_id", String(currentBrandId));
 

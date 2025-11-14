@@ -40,7 +40,7 @@ export default function DialogUpdateOrderContext({
   const onSubmit = form.handleSubmit(async (data) => {
     const formData = new FormData();
     Object.entries(data).forEach(([key, value]) => {
-      formData.append(key, value);
+      formData.append(key, value as string);
     });
     formData.append("brand_id", String(currentBrandId));
     formData.append("id", currentData?.id ?? "");
@@ -66,6 +66,10 @@ export default function DialogUpdateOrderContext({
   useEffect(() => {
     if (currentData) {
       form.setValue("name", currentData.name);
+      form.setValue("tax_value", String(currentData.tax_value));
+      form.setValue("tax_name", currentData.tax_name);
+      form.setValue("other_tax_value", String(currentData.other_tax_value));
+      form.setValue("other_tax_name", currentData.other_tax_name);
       form.setValue("status", currentData.status.toString());
     }
   }, [currentData]);

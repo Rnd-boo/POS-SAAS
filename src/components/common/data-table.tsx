@@ -24,6 +24,7 @@ import { Input } from "../ui/input";
 import { cn } from "@/lib/utils";
 
 export default function DataTable({
+  handleView,
   header,
   data,
   isLoading,
@@ -33,6 +34,7 @@ export default function DataTable({
   onChangePage,
   onChangeLimit,
 }: {
+  handleView?: (row: (string | ReactNode)[], rowIndex: number) => void;
   header: string[];
   data: (string | ReactNode)[][];
   isLoading?: boolean;
@@ -66,11 +68,15 @@ export default function DataTable({
           </TableHeader>
           <TableBody>
             {data?.map((row, rowIndex) => (
-              <TableRow key={`tr-${rowIndex}`}>
+              <TableRow
+                key={`tr-${rowIndex}`}
+                onClick={() => handleView?.(row, rowIndex)}
+                className="cursor-pointer"
+              >
                 {row.map((column, columnIndex) => (
                   <TableCell
                     className={cn(
-                      "px-6 py-3 capitalize",
+                      "px-6 py-3 capitalize ",
                       columnIndex === row.length - 1 &&
                         "w-[120px] text-center px-2 whitespace-normal break-words"
                     )}

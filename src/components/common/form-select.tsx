@@ -23,11 +23,13 @@ export default function FormSelect<T extends FieldValues>({
   name,
   label,
   selectItem,
+  disabled = false,
 }: {
   form: UseFormReturn<T>;
   name: Path<T>;
   label?: string;
   selectItem: { value: string; label: string; disabled?: boolean }[];
+  disabled?: boolean;
 }) {
   const mountedRef = useRef(false);
   const hasTriggeredOnChangeRef = useRef(false);
@@ -61,6 +63,7 @@ export default function FormSelect<T extends FieldValues>({
                 hasTriggeredOnChangeRef.current = true;
                 field.onChange(value);
               }}
+              disabled={disabled}
             >
               <SelectTrigger
                 className={cn("w-full", {
