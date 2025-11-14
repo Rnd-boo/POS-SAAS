@@ -11,6 +11,10 @@ export async function createOrderContext(
 ) {
   const validatedFields = orderContextSchema.safeParse({
     name: formData.get("name"),
+    tax_value: Number(formData.get("tax_value")),
+    tax_name: formData.get("tax_name"),
+    other_tax_value: Number(formData.get("other_tax_value")),
+    other_tax_name: formData.get("other_tax_name"),
     status: formData.get("status") === "true" ? true : false,
     brand_id: formData.get("brand_id"),
   });
@@ -29,6 +33,10 @@ export async function createOrderContext(
     client_profiles_id: currentUserId,
     clients_id: currentClientId,
     name: validatedFields.data.name,
+    tax_value: validatedFields.data.tax_value,
+    tax_name: validatedFields.data.tax_name,
+    other_tax_value: validatedFields.data.other_tax_value,
+    other_tax_name: validatedFields.data.other_tax_name,
     status: validatedFields.data.status,
     brand_id: validatedFields.data.brand_id,
   });
@@ -54,6 +62,10 @@ export async function updateOrderContext(
 ) {
   const validatedFields = orderContextSchema.safeParse({
     name: formData.get("name"),
+    tax_value: Number(formData.get("tax_value")),
+    tax_name: formData.get("tax_name"),
+    other_tax_value: Number(formData.get("other_tax_value")),
+    other_tax_name: formData.get("other_tax_name"),
     status: formData.get("status") === "true" ? true : false,
     brand_id: formData.get("brand_id"),
   });
@@ -74,6 +86,10 @@ export async function updateOrderContext(
     .from("order_context")
     .update({
       name: validatedFields.data.name,
+      tax_value: validatedFields.data.tax_value,
+      tax_name: validatedFields.data.tax_name,
+      other_tax_value: validatedFields.data.other_tax_value,
+      other_tax_name: validatedFields.data.other_tax_name,
       status: validatedFields.data.status,
       brand_id: validatedFields.data.brand_id,
     })

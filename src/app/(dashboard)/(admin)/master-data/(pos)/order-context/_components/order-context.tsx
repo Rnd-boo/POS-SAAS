@@ -11,13 +11,14 @@ import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/auth-store";
 import { useBrandStore } from "@/stores/brand-store";
 import { useQuery } from "@tanstack/react-query";
-import { Eye, SquarePen, Trash2 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { SquarePen, Trash2 } from "lucide-react";
+import { ReactNode, useMemo, useState } from "react";
 import { toast } from "sonner";
 import DialogDeleteOrderContext from "./dialog-delete-order-context";
 import type { OrderContext } from "@/validations/pos/order-context.validation";
 import DialogCreateOrderContext from "./dialog-create-order-context";
 import DialogUpdateOrderContext from "./dialog-update-order-context";
+import DialogDetailOrderContext from "./dialog-detail-order-context";
 
 export default function OrderContext() {
   const supabase = createClient();
@@ -49,9 +50,12 @@ export default function OrderContext() {
     queryFn: async () => {
       const result = await supabase
         .from("order_context")
-        .select("id,name,status,brand_id", {
-          count: "exact",
-        })
+        .select(
+          "id,name,status,brand_id,tax_value,tax_name,other_tax_value,other_tax_name",
+          {
+            count: "exact",
+          }
+        )
         .eq("clients_id", currentId)
         .eq("brand_id", currentBrandId)
         .order("name")
@@ -73,6 +77,18 @@ export default function OrderContext() {
   const handleChangeAction = (open: boolean) => {
     if (!open) setSelectedAction(null);
   };
+
+  const handleView = (row: (string | ReactNode)[], rowIndex: number) => {
+    // Get the raw data for this row
+    const data = orderContexts?.data?.[rowIndex];
+    if (data) {
+      setSelectedAction({
+        data,
+        type: "detail",
+      });
+    }
+  };
+
   const filteredData = useMemo(() => {
     return (orderContexts?.data || []).map((OrderContext, index) => {
       return [
@@ -129,7 +145,7 @@ export default function OrderContext() {
         <h1 className="text-xl font-semibold">Order Context Management</h1>
         <div className="flex gap-2">
           <Input
-            placeholder="Search by Order Context name"
+            placeholder="Search by Order Context"
             onChange={(e) => handleChangeSearch(e.target.value)}
           />
           <Dialog>
@@ -141,6 +157,7 @@ export default function OrderContext() {
         </div>
       </div>
       <DataTable
+        handleView={handleView}
         header={HEADER_TABLE_ORDER_CONTEXT}
         isLoading={isLoading}
         data={filteredData}
@@ -159,6 +176,11 @@ export default function OrderContext() {
       <DialogUpdateOrderContext
         open={selectedAction !== null && selectedAction.type === "update"}
         refetch={refetch}
+        currentData={selectedAction?.data}
+        handleChangeAction={handleChangeAction}
+      />
+      <DialogDetailOrderContext
+        open={selectedAction !== null && selectedAction.type === "detail"}
         currentData={selectedAction?.data}
         handleChangeAction={handleChangeAction}
       />
