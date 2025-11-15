@@ -64,11 +64,11 @@ export default function FormSelectData<T extends FieldValues>({
   // Don't render until data is available
   if (!data || data.length === 0) {
     return (
-      <FormItem>
+      <FormItem className={className}>
         <FormLabel>{label}</FormLabel>
         <FormControl>
           <Select disabled={true}>
-            <SelectTrigger className={className}>
+            <SelectTrigger className="w-full">
               <SelectValue placeholder="Loading..." />
             </SelectTrigger>
           </Select>
@@ -86,7 +86,7 @@ export default function FormSelectData<T extends FieldValues>({
         const currentValue = field.value?.toString() || "";
 
         return (
-          <FormItem>
+          <FormItem className={className}>
             <FormLabel>{label}</FormLabel>
             <FormControl>
               <Select
@@ -107,7 +107,7 @@ export default function FormSelectData<T extends FieldValues>({
                 disabled={disabled}
               >
                 <SelectTrigger
-                  className={cn(className, {
+                  className={cn("w-full", {
                     "border-red-500": form.formState.errors[name]?.message,
                   })}
                 >

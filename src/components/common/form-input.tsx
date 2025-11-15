@@ -31,7 +31,7 @@ export default function FormInput<T extends FieldValues>({
       control={form.control}
       name={name}
       render={({ field: { ...rest } }) => (
-        <FormItem>
+        <FormItem className={className}>
           <FormLabel>{label}</FormLabel>
           <FormControl>
             {type === "textarea" ? (
@@ -50,7 +50,6 @@ export default function FormInput<T extends FieldValues>({
                 placeholder={placeholder}
                 autoComplete="off"
                 disabled={disabled}
-                className={className}
               />
             )}
           </FormControl>

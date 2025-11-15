@@ -3,7 +3,8 @@ export type BranchFormState = {
   errors?: {
     id?: string[];
     name?: string[];
-    brand_id?: string[];
+    branch_location?: string[];
+    branch_order_context?: string[];
     status?: string[];
     _form?: string[];
   };

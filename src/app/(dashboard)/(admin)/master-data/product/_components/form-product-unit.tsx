@@ -70,7 +70,7 @@ export default function FormProductUnit<T extends FieldValues>({
     if (fields.length > 0) {
       form.setValue("units.0.conversion_factor" as Path<T>, "1" as any);
     }
-  }, [fields, form]);
+  }, [fields]);
   return (
     <>
       <div className="grid grid-cols-7 space-x-2 gap-y-1 mb-4">
