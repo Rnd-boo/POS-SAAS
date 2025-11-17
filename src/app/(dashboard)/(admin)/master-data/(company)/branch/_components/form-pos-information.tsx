@@ -22,10 +22,8 @@ import { toast } from "sonner";
 
 export default function FormPOSInformation({
   form,
-  onSubmit,
 }: {
   form: UseFormReturn<BranchForm>;
-  onSubmit?: (event: FormEvent<HTMLFormElement>) => void;
 }) {
   const supabase = createClient();
   const currentBrandId = useBrandStore((s) => s.currentBrandId);
@@ -59,76 +57,82 @@ export default function FormPOSInformation({
     });
   };
   return (
-    <Form {...form}>
-      <form onSubmit={onSubmit}>
-        <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_auto] gap-x-2">
-          <Label>Order Context</Label>
-          <Label>Tax Name</Label>
-          <Label>Tax Value</Label>
-          <Label>Other Tax Name</Label>
-          <Label>Other Tax Value</Label>
-          <div></div>
-          {fields.map((field: BranchOrderContext, index: number) => {
-            const selectedId = form.watch(
-              `branch_order_context.${index}.order_context`
-            );
-            const selectedContext = () => {
-              return orderContexts?.find((c) => c.id.toString() === selectedId);
-            };
-            return (
-              <Fragment key={field.id}>
-                <FormSelectData
-                  form={form}
-                  name={`branch_order_context.${index}.order_context`}
-                  label=""
-                  data={orderContexts ?? []}
-                />
-                <Input
-                  value={selectedContext()?.tax_name ?? "-"}
-                  disabled
-                  className="mt-2"
-                />
-                <Input
-                  value={selectedContext()?.tax_value ?? "-"}
-                  disabled
-                  className="mt-2"
-                />
-                <Input
-                  value={selectedContext()?.other_tax_name ?? "-"}
-                  disabled
-                  className="mt-2"
-                />
-                <Input
-                  value={selectedContext()?.other_tax_value ?? "-"}
-                  disabled
-                  className="mt-2"
-                />
+    <>
+      <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_auto] gap-x-2">
+        <Label>Order Context</Label>
+        <Label>Tax Name</Label>
+        <Label>Tax Value</Label>
+        <Label>Other Tax Name</Label>
+        <Label>Other Tax Value</Label>
+        <div></div>
+        {fields.map((field: BranchOrderContext, index: number) => {
+          const selectedId = form.watch(
+            `branch_order_context.${index}.order_context`
+          );
 
-                {fields.length > 1 && (
-                  <Button
-                    type="button"
-                    size="icon"
-                    variant="destructive"
-                    onClick={() => remove(index)}
-                    className="cursor-pointer mt-2"
-                  >
-                    <X />
-                  </Button>
-                )}
-              </Fragment>
-            );
-          })}
-        </div>
-        <Button
-          type="button"
-          onClick={handleAddBranchOrderContext}
-          className="col-start-1 mt-2"
-          variant="outline"
-        >
-          <Plus />
-          Add Location
-        </Button>
-      </form>
-    </Form>
+          const selectedOrderContext = orderContexts?.find(
+            (c) => c.id.toString() === selectedId
+          );
+
+          const filteredOrderContext = orderContexts?.filter((context) => {
+            const selected = form
+              .watch("branch_order_context")
+              ?.map((row) => row.order_context)
+              .filter((id, i) => i !== index);
+            return !selected?.includes(context.id.toString());
+          });
+          return (
+            <Fragment key={field.id}>
+              <FormSelectData
+                form={form}
+                name={`branch_order_context.${index}.order_context`}
+                label=""
+                data={filteredOrderContext ?? []}
+              />
+              <Input
+                value={selectedOrderContext?.tax_name ?? "-"}
+                disabled
+                className="mt-2"
+              />
+              <Input
+                value={selectedOrderContext?.tax_value ?? "-"}
+                disabled
+                className="mt-2"
+              />
+              <Input
+                value={selectedOrderContext?.other_tax_name ?? "-"}
+                disabled
+                className="mt-2"
+              />
+              <Input
+                value={selectedOrderContext?.other_tax_value ?? "-"}
+                disabled
+                className="mt-2"
+              />
+              {fields.length > 1 && (
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="destructive"
+                  onClick={() => remove(index)}
+                  className="cursor-pointer mt-2"
+                >
+                  <X />
+                </Button>
+              )}
+            </Fragment>
+          );
+        })}
+      </div>
+      <Button
+        type="button"
+        onClick={handleAddBranchOrderContext}
+        className="col-start-1 mt-2"
+        variant="outline"
+      >
+        <Plus />
+        Add Location
+      </Button>
+    </>
   );
 }

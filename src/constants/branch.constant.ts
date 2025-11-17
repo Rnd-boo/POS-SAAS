@@ -28,6 +28,8 @@ export const INITIAL_STATE_BRANCH = {
   errors: {
     name: [],
     status: [],
+    branch_location: [],
+    branch_order_context: [],
     _form: [],
   },
 };

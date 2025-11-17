@@ -1,11 +1,9 @@
 "use server";
 
-import { getProfileFromToken } from "@/actions/auth-action";
 import { getCurrentProfile } from "@/lib/get-current-profile";
 import { createClient } from "@/lib/supabase/server";
 import { ProductFormState } from "@/types/product";
 import { productSchema } from "@/validations/product-validation";
-import { cookies } from "next/headers";
 
 export async function createProduct(
   prevState: ProductFormState,

@@ -69,7 +69,7 @@ export default function FormSelectData<T extends FieldValues>({
         <FormControl>
           <Select disabled={true}>
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="Loading..." />
+              <SelectValue placeholder="No data..." />
             </SelectTrigger>
           </Select>
         </FormControl>

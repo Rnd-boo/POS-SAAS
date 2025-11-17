@@ -31,10 +31,8 @@ import { toast } from "sonner";
 
 export default function FormBranch({
   form,
-  onSubmit,
 }: {
   form: UseFormReturn<BranchForm>;
-  onSubmit?: (event: FormEvent<HTMLFormElement>) => void;
 }) {
   const {
     fields,
@@ -53,65 +51,63 @@ export default function FormBranch({
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={onSubmit}>
-        <div className="gap-4 grid grid-cols-2">
-          <FormInput
-            form={form}
-            name={"name"}
-            label="Branch"
-            placeholder="Insert Branch name"
-          />
-          <FormSelect
-            form={form}
-            name={"status"}
-            label="Status"
-            selectItem={STATUS_LIST}
-          />
-        </div>
-        <Separator className="my-4" />
-        <div className="grid grid-cols-[1fr_2fr_auto] gap-x-2">
-          <Label>Type</Label>
-          <Label>Location Name</Label>
-          <div></div>
-          {fields.map((field, index) => (
-            <Fragment key={field.id}>
-              <FormSelect
-                form={form}
-                label=""
-                name={`branch_location.${index}.type`}
-                selectItem={LOCATION_LIST}
-              />
-              <FormInput
-                form={form}
-                name={`branch_location.${index}.name`}
-                label=""
-                placeholder="Insert Location name"
-              />
-              {fields.length > 1 && (
-                <Button
-                  type="button"
-                  size="icon"
-                  variant="destructive"
-                  onClick={() => remove(index)}
-                  className="cursor-pointer mt-2"
-                >
-                  <X />
-                </Button>
-              )}
-            </Fragment>
-          ))}
-        </div>
-        <Button
-          type="button"
-          onClick={handleAddBranchLocation}
-          className="col-start-1 mt-2"
-          variant="outline"
-        >
-          <Plus />
-          Add Location
-        </Button>
-      </form>
-    </Form>
+    <>
+      <div className="gap-4 grid grid-cols-2">
+        <FormInput
+          form={form}
+          name={"name"}
+          label="Branch"
+          placeholder="Insert Branch name"
+        />
+        <FormSelect
+          form={form}
+          name={"status"}
+          label="Status"
+          selectItem={STATUS_LIST}
+        />
+      </div>
+      <Separator className="my-4" />
+      <div className="grid grid-cols-[1fr_2fr_auto] gap-x-2">
+        <Label>Type</Label>
+        <Label>Location Name</Label>
+        <div></div>
+        {fields.map((field, index) => (
+          <Fragment key={field.id}>
+            <FormSelect
+              form={form}
+              label=""
+              name={`branch_location.${index}.type`}
+              selectItem={LOCATION_LIST}
+            />
+            <FormInput
+              form={form}
+              name={`branch_location.${index}.name`}
+              label=""
+              placeholder="Insert Location name"
+            />
+            {fields.length > 1 && (
+              <Button
+                type="button"
+                size="icon"
+                variant="destructive"
+                onClick={() => remove(index)}
+                className="cursor-pointer mt-2"
+              >
+                <X />
+              </Button>
+            )}
+          </Fragment>
+        ))}
+      </div>
+      <Button
+        type="button"
+        onClick={handleAddBranchLocation}
+        className="col-start-1 mt-2"
+        variant="outline"
+      >
+        <Plus />
+        Add Location
+      </Button>
+    </>
   );
 }

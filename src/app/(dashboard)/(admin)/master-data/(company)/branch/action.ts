@@ -2,18 +2,24 @@
 
 import { getCurrentProfile } from "@/lib/get-current-profile";
 import { createClient } from "@/lib/supabase/server";
-import { useBrandStore } from "@/stores/brand-store";
 import { BranchFormState } from "@/types/branch";
-import { branchSchema } from "@/validations/branch.validation";
+import {
+  branchFormSchema,
+  branchSchema,
+} from "@/validations/branch.validation";
 
 export async function createBranch(
   prevState: BranchFormState,
   formData: FormData
 ) {
-  const validatedFields = branchSchema.safeParse({
+  const validatedFields = branchFormSchema.safeParse({
     name: formData.get("name"),
     brand_id: Number(formData.get("brand_id")),
-    status: formData.get("status") === "true" ? true : false,
+    status: formData.get("status"),
+    branch_location: JSON.parse(formData.get("branch_location") as string),
+    branch_order_context: JSON.parse(
+      formData.get("branch_order_context") as string
+    ),
   });
 
   if (!validatedFields.success) {
@@ -27,20 +33,68 @@ export async function createBranch(
 
   const { currentUserId, currentClientId } = await getCurrentProfile();
 
-  const { error } = await supabase.from("branch").insert({
-    client_profiles_id: currentUserId,
-    clients_id: currentClientId,
-    name: validatedFields.data.name,
-    brand_id: validatedFields.data.brand_id,
-    status: validatedFields.data.status,
-  });
+  const { data: branchData, error: branchError } = await supabase
+    .from("branch")
+    .insert({
+      client_profiles_id: currentUserId,
+      clients_id: currentClientId,
+      name: validatedFields.data.name,
+      brand_id: validatedFields.data.brand_id,
+      status: validatedFields.data.status,
+    })
+    .select("id")
+    .single();
 
-  if (error) {
+  if (branchError) {
     return {
       status: "error",
       errors: {
         ...prevState.errors,
-        _form: [error.message],
+        _form: [branchError.message],
+      },
+    };
+  }
+  const branchLocationData = validatedFields.data.branch_location.map(
+    (location) => ({
+      clients_id: currentClientId,
+      client_profiles_id: currentUserId,
+      branch_id: branchData.id,
+      name: location.name,
+      type: location.type,
+    })
+  );
+  const { error: branchLocationError } = await supabase
+    .from("branch_location")
+    .insert(branchLocationData);
+
+  if (branchLocationError) {
+    return {
+      status: "error",
+      errors: {
+        ...prevState.errors,
+        _form: [branchLocationError.message],
+      },
+    };
+  }
+
+  const branchOrderContextData = validatedFields.data.branch_order_context.map(
+    (order_context) => ({
+      clients_id: currentClientId,
+      client_profiles_id: currentUserId,
+      branch_id: branchData.id,
+      order_context_id: order_context.order_context,
+    })
+  );
+  const { error: branchOrderContextError } = await supabase
+    .from("branch_order_context")
+    .insert(branchOrderContextData);
+
+  if (branchOrderContextError) {
+    return {
+      status: "error",
+      errors: {
+        ...prevState.errors,
+        _form: [branchOrderContextError.message],
       },
     };
   }
