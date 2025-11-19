@@ -1,14 +1,5 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import FormBranch from "../_components/form-branch";
 import { BranchForm, branchFormSchema } from "@/validations/branch.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -16,17 +7,13 @@ import {
   INITIAL_STATE_BRANCH,
 } from "@/constants/branch.constant";
 import { useForm } from "react-hook-form";
-import FormPOSInformation from "../_components/form-pos-information";
-import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { startTransition, useActionState, useEffect } from "react";
 import { toast } from "sonner";
 import { useBrandStore } from "@/stores/brand-store";
 import { createBranch } from "../action";
-import { Form } from "@/components/ui/form";
+import CardFormBranch from "../_components/card-form-branch";
 
 export default function CreateBranch() {
   const router = useRouter();
@@ -72,43 +59,11 @@ export default function CreateBranch() {
   }, [createBranchState]);
 
   return (
-    <Form {...form}>
-      <form onSubmit={onSubmit}>
-        <Card className="w-full">
-          <CardHeader>
-            <CardTitle>Create Branch</CardTitle>
-            <CardDescription>
-              Fill the form below to create a new branch.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <FormBranch form={form} type="Create" />
-          </CardContent>
-          <Separator />
-          <CardHeader>
-            <CardTitle>POS Information</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <FormPOSInformation form={form} type="Create" />
-          </CardContent>
-          <CardFooter className="justify-end flex gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => router.back()}
-            >
-              Cancel
-            </Button>
-            <Button type="submit">
-              {isPendingcreateBranch ? (
-                <Loader2 className="animate-spin" />
-              ) : (
-                "Create"
-              )}
-            </Button>
-          </CardFooter>
-        </Card>
-      </form>
-    </Form>
+    <CardFormBranch
+      type="Create"
+      form={form}
+      isLoading={isPendingcreateBranch}
+      onSubmit={onSubmit}
+    />
   );
 }

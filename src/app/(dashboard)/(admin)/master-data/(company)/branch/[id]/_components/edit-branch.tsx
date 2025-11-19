@@ -1,19 +1,19 @@
 "use client";
 
 import { useForm } from "react-hook-form";
+import CardFormBranch from "../../_components/card-form-branch";
 import { BranchForm, branchFormSchema } from "@/validations/branch.validation";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { INITIAL_BRANCH } from "@/constants/branch.constant";
-import { useParams, useRouter } from "next/navigation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { useQuery } from "@tanstack/react-query";
 import { useAuthStore } from "@/stores/auth-store";
 import { useBrandStore } from "@/stores/brand-store";
+import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useEffect } from "react";
-import CardFormBranch from "../../_components/card-form-branch";
 
-export default function ViewBranch() {
+export default function EditBranch() {
   const params = useParams();
   const branchId = params?.id as string;
   const supabase = createClient();
@@ -113,5 +113,5 @@ export default function ViewBranch() {
     }
   }, [branch, branchOrderContext, branchLocation, form]);
 
-  return <CardFormBranch type="Detail" form={form} />;
+  return <CardFormBranch type="Update" form={form} />;
 }

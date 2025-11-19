@@ -4,6 +4,6 @@ export const metadata = {
   title: "POS | Branch Detail",
 };
 
-export default function ViewProductPage() {
+export default function ViewBranchPage() {
   return <ViewBranch />;
 }

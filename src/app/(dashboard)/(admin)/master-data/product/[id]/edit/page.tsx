@@ -1,4 +1,4 @@
-import EditProduct from "./edit-product";
+import EditProduct from "../_components/edit-product";
 
 export const metadata = {
   title: "POS | Edit Product",

@@ -78,9 +78,6 @@ export default function BranchManagement() {
     if (!open) setSelectedAction(null);
   };
 
-  const handleClickAction = (type: string) => {
-    router.push(`${pathname}/${type}`);
-  };
   const handleView = (row: (string | ReactNode)[], rowIndex: number) => {
     // Get the raw data for this row
     const data = branches?.data?.[rowIndex];
@@ -108,10 +105,7 @@ export default function BranchManagement() {
             size="icon"
             className="cursor-pointer size-4 hover:text-muted-foreground"
             onClick={() => {
-              setSelectedAction({
-                data: branch,
-                type: "update",
-              });
+              router.push(`${pathname}/${branch.id}/edit`);
             }}
           >
             <SquarePen />

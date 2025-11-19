@@ -78,18 +78,17 @@ export default function FormBranch({
               placeholder="Insert Location name"
               disabled={type === "Detail"}
             />
-            {fields.length > 1 ||
-              (type !== "Detail" && (
-                <Button
-                  type="button"
-                  size="icon"
-                  variant="destructive"
-                  onClick={() => remove(index)}
-                  className="cursor-pointer mt-2"
-                >
-                  <X />
-                </Button>
-              ))}
+            {fields.length > 1 && type !== "Detail" && (
+              <Button
+                type="button"
+                size="icon"
+                variant="destructive"
+                onClick={() => remove(index)}
+                className="cursor-pointer mt-2"
+              >
+                <X />
+              </Button>
+            )}
           </Fragment>
         ))}
       </div>
