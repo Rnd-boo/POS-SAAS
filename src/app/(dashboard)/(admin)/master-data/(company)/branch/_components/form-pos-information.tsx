@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { STATUS_LIST } from "@/constants/general.constant";
 import { createClient } from "@/lib/supabase/client";
+import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/auth-store";
 import { useBrandStore } from "@/stores/brand-store";
 import {
@@ -22,8 +23,10 @@ import { toast } from "sonner";
 
 export default function FormPOSInformation({
   form,
+  type,
 }: {
   form: UseFormReturn<BranchForm>;
+  type: "Detail" | "Create" | "Update";
 }) {
   const supabase = createClient();
   const currentBrandId = useBrandStore((s) => s.currentBrandId);
@@ -58,18 +61,24 @@ export default function FormPOSInformation({
   };
   return (
     <>
-      <div className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_auto] gap-x-2">
+      <div
+        className={cn(
+          "grid gap-x-2 ",
+          type === "Detail"
+            ? "grid-cols-[2fr_1fr_1fr_1fr_1fr]"
+            : "grid-cols-[2fr_1fr_1fr_1fr_1fr_auto]"
+        )}
+      >
         <Label>Order Context</Label>
         <Label>Tax Name</Label>
         <Label>Tax Value</Label>
         <Label>Other Tax Name</Label>
         <Label>Other Tax Value</Label>
-        <div></div>
+        {type !== "Detail" && <div></div>}
         {fields.map((field: BranchOrderContext, index: number) => {
           const selectedId = form.watch(
             `branch_order_context.${index}.order_context`
           );
-
           const selectedOrderContext = orderContexts?.find(
             (c) => c.id.toString() === selectedId
           );
@@ -88,28 +97,33 @@ export default function FormPOSInformation({
                 name={`branch_order_context.${index}.order_context`}
                 label=""
                 data={filteredOrderContext ?? []}
+                disabled={type === "Detail"}
               />
               <Input
                 value={selectedOrderContext?.tax_name ?? "-"}
                 disabled
+                name={"tax_name"}
                 className="mt-2"
               />
               <Input
                 value={selectedOrderContext?.tax_value ?? "-"}
                 disabled
+                name={"tax_value"}
                 className="mt-2"
               />
               <Input
                 value={selectedOrderContext?.other_tax_name ?? "-"}
                 disabled
+                name={"other_tax_name"}
                 className="mt-2"
               />
               <Input
                 value={selectedOrderContext?.other_tax_value ?? "-"}
                 disabled
+                name={"other_tax_value"}
                 className="mt-2"
               />
-              {fields.length > 1 && (
+              {type !== "Detail" && fields.length > 1 && (
                 <Button
                   type="button"
                   size="icon"
@@ -124,15 +138,17 @@ export default function FormPOSInformation({
           );
         })}
       </div>
-      <Button
-        type="button"
-        onClick={handleAddBranchOrderContext}
-        className="col-start-1 mt-2"
-        variant="outline"
-      >
-        <Plus />
-        Add Location
-      </Button>
+      {type !== "Detail" && (
+        <Button
+          type="button"
+          onClick={handleAddBranchOrderContext}
+          className="col-start-1 mt-2"
+          variant="outline"
+        >
+          <Plus />
+          Add Location
+        </Button>
+      )}
     </>
   );
 }

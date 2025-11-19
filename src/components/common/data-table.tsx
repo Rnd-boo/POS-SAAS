@@ -78,11 +78,15 @@ export default function DataTable({
                     className={cn(
                       "px-6 py-3 capitalize ",
                       columnIndex === row.length - 1 &&
-                        "w-[120px] text-center px-2 whitespace-normal break-words"
+                        "w-[100px] whitespace-normal break-words"
                     )}
                     key={`tc-${rowIndex}-${columnIndex}`}
                   >
-                    {column}
+                    {columnIndex === row.length - 1 ? (
+                      <div onClick={(e) => e.stopPropagation()}>{column}</div>
+                    ) : (
+                      column
+                    )}
                   </TableCell>
                 ))}
               </TableRow>

@@ -7,13 +7,12 @@ import useDataTable from "@/hooks/use-data-table";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { Eye, SquarePen, Trash2 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { SquarePen, Trash2 } from "lucide-react";
+import { ReactNode, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useAuthStore } from "@/stores/auth-store";
 import { Branch } from "@/validations/branch.validation";
 import { HEADER_TABLE_BRANCH } from "@/constants/branch.constant";
-import DialogDetailBranch from "./dialog-detail-branch";
 import DialogDeleteBranch from "./dialog-delete-branch";
 import { useBrandStore } from "@/stores/brand-store";
 import { usePathname, useRouter } from "next/navigation";
@@ -82,7 +81,13 @@ export default function BranchManagement() {
   const handleClickAction = (type: string) => {
     router.push(`${pathname}/${type}`);
   };
-
+  const handleView = (row: (string | ReactNode)[], rowIndex: number) => {
+    // Get the raw data for this row
+    const data = branches?.data?.[rowIndex];
+    if (data) {
+      router.push(`${pathname}/${data.id}`);
+    }
+  };
   const filteredData = useMemo(() => {
     return (branches?.data || []).map((branch, index) => {
       return [
@@ -97,20 +102,7 @@ export default function BranchManagement() {
         >
           {branch.status ? "Active" : "Not Active"}
         </div>,
-        <div className="flex items-center max-w-[40px] gap-x-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="cursor-pointer size-4 hover:text-muted-foreground"
-            onClick={() => {
-              setSelectedAction({
-                data: branch,
-                type: "detail",
-              });
-            }}
-          >
-            <Eye />
-          </Button>
+        <div className="flex items-center  gap-x-2">
           <Button
             variant="ghost"
             size="icon"
@@ -163,6 +155,7 @@ export default function BranchManagement() {
         </div>
       </div>
       <DataTable
+        handleView={handleView}
         header={HEADER_TABLE_BRANCH}
         isLoading={isLoading}
         data={filteredData}
@@ -172,40 +165,12 @@ export default function BranchManagement() {
         onChangePage={handleChangePage}
         onChangeLimit={handleChangeLimit}
       />
-      <DialogDetailBranch
-        open={selectedAction !== null && selectedAction.type === "detail"}
-        handleChangeAction={handleChangeAction}
-        informationData={[
-          {
-            label: "Created By",
-            value: (
-              selectedAction?.data?.client_profiles as unknown as {
-                name: string;
-              }
-            )?.name,
-          },
-          {
-            label: "Created At",
-            value: selectedAction?.data?.created_at,
-          },
-          {
-            label: "Updated At",
-            value: selectedAction?.data?.updated_at,
-          },
-        ]}
-      />
       <DialogDeleteBranch
         open={selectedAction !== null && selectedAction.type === "delete"}
         refetch={refetch}
         currentData={selectedAction?.data}
         handleChangeAction={handleChangeAction}
       />
-      {/* <DialogUpdateBranch
-        open={selectedAction !== null && selectedAction.type === "update"}
-        refetch={refetch}
-        currentData={selectedAction?.data}
-        handleChangeAction={handleChangeAction}
-      /> */}
     </div>
   );
 }

@@ -82,14 +82,14 @@ export default function CreateBranch() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <FormBranch form={form} />
+            <FormBranch form={form} type="Create" />
           </CardContent>
           <Separator />
           <CardHeader>
             <CardTitle>POS Information</CardTitle>
           </CardHeader>
           <CardContent>
-            <FormPOSInformation form={form} />
+            <FormPOSInformation form={form} type="Create" />
           </CardContent>
           <CardFooter className="justify-end flex gap-2">
             <Button
