@@ -20,12 +20,12 @@ import { FormEvent } from "react";
 export default function CardFormBranch({
   form,
   type,
-  isLoading,
+  isPending,
   onSubmit,
 }: {
   form: UseFormReturn<BranchForm>;
   type: "Detail" | "Create" | "Update";
-  isLoading?: boolean;
+  isPending?: boolean;
   onSubmit?: (event: FormEvent<HTMLFormElement>) => void;
 }) {
   const router = useRouter();
@@ -60,7 +60,7 @@ export default function CardFormBranch({
             </Button>
             {type !== "Detail" && (
               <Button type="submit">
-                {isLoading ? <Loader2 className="animate-spin" /> : type}
+                {isPending ? <Loader2 className="animate-spin" /> : type}
               </Button>
             )}
           </CardFooter>

@@ -62,7 +62,7 @@ export default function CreateBranch() {
     <CardFormBranch
       type="Create"
       form={form}
-      isLoading={isPendingcreateBranch}
+      isPending={isPendingcreateBranch}
       onSubmit={onSubmit}
     />
   );

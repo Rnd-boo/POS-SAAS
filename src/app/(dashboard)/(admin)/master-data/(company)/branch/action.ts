@@ -108,9 +108,14 @@ export async function updateBranch(
   prevState: BranchFormState,
   formData: FormData
 ) {
-  const validatedFields = branchSchema.safeParse({
+  const validatedFields = branchFormSchema.safeParse({
     name: formData.get("name"),
-    status: formData.get("status") === "true" ? true : false,
+    brand_id: Number(formData.get("brand_id")),
+    status: formData.get("status"),
+    branch_location: JSON.parse(formData.get("branch_location") as string),
+    branch_order_context: JSON.parse(
+      formData.get("branch_order_context") as string
+    ),
   });
 
   if (!validatedFields.success) {
@@ -125,13 +130,15 @@ export async function updateBranch(
 
   const supabase = await createClient();
 
-  const { error } = await supabase
+  const { data: branchData, error } = await supabase
     .from("branch")
     .update({
       name: validatedFields.data.name,
       status: validatedFields.data.status,
     })
-    .eq("id", formData.get("id"));
+    .eq("id", formData.get("id"))
+    .select()
+    .single();
 
   if (error) {
     return {
@@ -139,6 +146,84 @@ export async function updateBranch(
       errors: {
         ...prevState.errors,
         _form: [error.message],
+      },
+    };
+  }
+  const { currentUserId, currentClientId } = await getCurrentProfile();
+
+  const branchLocationData = validatedFields.data.branch_location.map(
+    (location) => ({
+      clients_id: currentClientId,
+      client_profiles_id: currentUserId,
+      branch_id: branchData.id,
+      name: location.name,
+      type: location.type,
+    })
+  );
+
+  const { error: deleteErrorBranchLocation } = await supabase
+    .from("branch_location")
+    .delete()
+    .eq("branch_id", branchData.id);
+
+  if (deleteErrorBranchLocation) {
+    return {
+      status: "error",
+      errors: {
+        ...prevState.errors,
+        _form: [deleteErrorBranchLocation.message],
+      },
+    };
+  }
+
+  const { error: insertBranchLocationError } = await supabase
+    .from("branch_location")
+    .insert(branchLocationData);
+
+  if (insertBranchLocationError) {
+    return {
+      status: "error",
+      errors: {
+        ...prevState.errors,
+        _form: [insertBranchLocationError.message],
+      },
+    };
+  }
+
+  const branchOrderContextData = validatedFields.data.branch_order_context.map(
+    (order_context) => ({
+      clients_id: currentClientId,
+      client_profiles_id: currentUserId,
+      branch_id: branchData.id,
+      order_context_id: order_context.order_context,
+    })
+  );
+
+  const { error: deleteErrorOrderContext } = await supabase
+    .from("branch_order_context")
+    .delete()
+    .eq("branch_id", branchData.id);
+
+  if (deleteErrorOrderContext) {
+    return {
+      status: "error",
+      errors: {
+        ...prevState.errors,
+        _form: [deleteErrorOrderContext.message],
+      },
+    };
+  }
+
+  const { error: insertOrderContextError } = await supabase
+    .from("branch_order_context")
+    .insert(branchOrderContextData);
+
+  if (insertOrderContextError) {
+    return {
+      status: "error",
+      errors: {
+        ...prevState.errors,
+        _form: [insertOrderContextError.message],
       },
     };
   }
