@@ -8,8 +8,8 @@ import useDataTable from "@/hooks/use-data-table";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { Eye, SquarePen, Trash2 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { Pencil, Trash2 } from "lucide-react";
+import { ReactNode, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useAuthStore } from "@/stores/auth-store";
 import { Brand } from "@/validations/brand-validation";
@@ -72,7 +72,15 @@ export default function BrandManagement() {
   const handleChangeAction = (open: boolean) => {
     if (!open) setSelectedAction(null);
   };
-
+  const handleView = (row: (string | ReactNode)[], rowIndex: number) => {
+    const data = brands?.data?.[rowIndex];
+    if (data) {
+      setSelectedAction({
+        data,
+        type: "detail",
+      });
+    }
+  };
   const filteredData = useMemo(() => {
     return (brands?.data || []).map((brand, index) => {
       return [
@@ -86,24 +94,11 @@ export default function BrandManagement() {
         >
           {brand.status ? "Active" : "Not Active"}
         </div>,
-        <div className="flex items-center max-w-[40px] gap-x-2">
+        <div className="flex gap-1">
           <Button
             variant="ghost"
             size="icon"
-            className="cursor-pointer size-4 hover:text-muted-foreground"
-            onClick={() => {
-              setSelectedAction({
-                data: brand,
-                type: "detail",
-              });
-            }}
-          >
-            <Eye />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="cursor-pointer size-4 hover:text-muted-foreground"
+            className="cursor-pointer size-6 hover:text-muted-foreground hover:!bg-muted-foreground/40"
             onClick={() => {
               setSelectedAction({
                 data: brand,
@@ -111,12 +106,12 @@ export default function BrandManagement() {
               });
             }}
           >
-            <SquarePen />
+            <Pencil />
           </Button>
           <Button
             variant="ghost"
             size="icon"
-            className="cursor-pointer size-4 text-destructive hover:text-muted-foreground"
+            className="cursor-pointer size-6 text-destructive hover:text-muted-foreground hover:!bg-muted-foreground/40"
             onClick={() => {
               setSelectedAction({
                 data: brand,
@@ -155,6 +150,7 @@ export default function BrandManagement() {
         </div>
       </div>
       <DataTable
+        handleView={handleView}
         header={HEADER_TABLE_BRAND}
         isLoading={isLoading}
         data={filteredData}

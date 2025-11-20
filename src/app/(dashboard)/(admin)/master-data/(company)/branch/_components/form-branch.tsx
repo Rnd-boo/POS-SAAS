@@ -14,9 +14,11 @@ import { useFieldArray, UseFormReturn } from "react-hook-form";
 export default function FormBranch({
   form,
   type,
+  isLoading,
 }: {
   form: UseFormReturn<BranchForm>;
   type: "Detail" | "Create" | "Update";
+  isLoading?: boolean;
 }) {
   const {
     fields,
@@ -43,6 +45,7 @@ export default function FormBranch({
           label="Branch"
           placeholder="Insert Branch name"
           disabled={type === "Detail"}
+          isLoading={isLoading}
         />
         <FormSelect
           form={form}
@@ -50,6 +53,7 @@ export default function FormBranch({
           label="Status"
           selectItem={STATUS_LIST}
           disabled={type === "Detail"}
+          isLoading={isLoading}
         />
       </div>
       <Separator className="my-4" />
@@ -70,6 +74,7 @@ export default function FormBranch({
               name={`branch_location.${index}.type`}
               selectItem={LOCATION_LIST}
               disabled={type === "Detail"}
+              isLoading={isLoading}
             />
             <FormInput
               form={form}
@@ -77,6 +82,7 @@ export default function FormBranch({
               label=""
               placeholder="Insert Location name"
               disabled={type === "Detail"}
+              isLoading={isLoading}
             />
             {fields.length > 1 && type !== "Detail" && (
               <Button

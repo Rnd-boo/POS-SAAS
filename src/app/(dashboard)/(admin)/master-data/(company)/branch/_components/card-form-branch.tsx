@@ -21,11 +21,13 @@ export default function CardFormBranch({
   form,
   type,
   isPending,
+  isLoading,
   onSubmit,
 }: {
   form: UseFormReturn<BranchForm>;
   type: "Detail" | "Create" | "Update";
   isPending?: boolean;
+  isLoading?: boolean;
   onSubmit?: (event: FormEvent<HTMLFormElement>) => void;
 }) {
   const router = useRouter();
@@ -41,7 +43,7 @@ export default function CardFormBranch({
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <FormBranch form={form} type={type} />
+            <FormBranch form={form} type={type} isLoading={isLoading} />
           </CardContent>
           <Separator />
           <CardHeader>

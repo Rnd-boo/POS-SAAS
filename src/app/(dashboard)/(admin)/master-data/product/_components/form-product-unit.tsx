@@ -73,7 +73,7 @@ export default function FormProductUnit<T extends FieldValues>({
   }, [fields]);
   return (
     <>
-      <div className="grid grid-cols-7 space-x-2 gap-y-1 mb-4">
+      <div className="grid grid-cols-7 gap-x-2 mb-4">
         {/* Header */}
         <Label>Unit</Label>
         <Label>Conversion Factor</Label>

@@ -79,39 +79,34 @@ export default function UnitManagement() {
         >
           {unit.status ? "Active" : "Not Active"}
         </div>,
-        <DropdownAction
-          menu={[
-            {
-              label: (
-                <span className="flex items-center gap-2">
-                  <Pencil />
-                  Edit
-                </span>
-              ),
-              action: () => {
-                setSelectedAction({
-                  data: unit,
-                  type: "update",
-                });
-              },
-            },
-            {
-              label: (
-                <span className="flex items-center gap-2">
-                  <Trash2 className="text-red-400" />
-                  Delete
-                </span>
-              ),
-              variant: "destructive",
-              action: () => {
-                setSelectedAction({
-                  data: unit,
-                  type: "delete",
-                });
-              },
-            },
-          ]}
-        />,
+        <div className="flex gap-x-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="cursor-pointer size-6 hover:text-muted-foreground hover:!bg-muted-foreground/40"
+            onClick={() => {
+              setSelectedAction({
+                data: unit,
+                type: "update",
+              });
+            }}
+          >
+            <Pencil />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="cursor-pointer size-6 text-destructive hover:text-muted-foreground hover:!bg-muted-foreground/40"
+            onClick={() => {
+              setSelectedAction({
+                data: unit,
+                type: "delete",
+              });
+            }}
+          >
+            <Trash2 />
+          </Button>
+        </div>,
       ];
     });
   }, [units]);

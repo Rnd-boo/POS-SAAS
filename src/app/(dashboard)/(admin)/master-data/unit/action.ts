@@ -64,7 +64,7 @@ export async function updateUnit(prevState: UnitFormState, formData: FormData) {
   const validatedFields = unitSchema.safeParse({
     name: formData.get("name"),
     notes: formData.get("notes"),
-    status: formData.get("status"),
+    status: formData.get("status") === "true" ? true : false,
   });
 
   if (!validatedFields.success) {

@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/auth-store";
 import { useBrandStore } from "@/stores/brand-store";
 import { useQuery } from "@tanstack/react-query";
-import { SquarePen, Trash2 } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import { ReactNode, useMemo, useState } from "react";
 import { toast } from "sonner";
 import DialogDeleteOrderContext from "./dialog-delete-order-context";
@@ -78,7 +78,7 @@ export default function OrderContext() {
     if (!open) setSelectedAction(null);
   };
 
-  const handleView = (row: (string | ReactNode)[], rowIndex: number) => {
+  const handleViewTable = (row: (string | ReactNode)[], rowIndex: number) => {
     // Get the raw data for this row
     const data = orderContexts?.data?.[rowIndex];
     if (data) {
@@ -102,11 +102,11 @@ export default function OrderContext() {
         >
           {OrderContext.status ? "Active" : "Inactive"}
         </div>,
-        <div className="flex items-center max-w-[40px] gap-x-2">
+        <div className="flex  gap-1">
           <Button
             variant="ghost"
             size="icon"
-            className="cursor-pointer size-4 hover:text-muted-foreground"
+            className="cursor-pointer size-6 hover:text-muted-foreground hover:!bg-muted-foreground/40"
             onClick={() => {
               setSelectedAction({
                 data: OrderContext,
@@ -114,12 +114,12 @@ export default function OrderContext() {
               });
             }}
           >
-            <SquarePen />
+            <Pencil />
           </Button>
           <Button
             variant="ghost"
             size="icon"
-            className="cursor-pointer size-4 text-destructive hover:text-muted-foreground"
+            className="cursor-pointer size-6 text-destructive hover:text-muted-foreground hover:!bg-muted-foreground/40"
             onClick={() => {
               setSelectedAction({
                 data: OrderContext,
@@ -157,7 +157,7 @@ export default function OrderContext() {
         </div>
       </div>
       <DataTable
-        handleView={handleView}
+        handleView={handleViewTable}
         header={HEADER_TABLE_ORDER_CONTEXT}
         isLoading={isLoading}
         data={filteredData}

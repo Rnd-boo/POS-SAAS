@@ -7,7 +7,7 @@ import useDataTable from "@/hooks/use-data-table";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { SquarePen, Trash2 } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import { ReactNode, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useAuthStore } from "@/stores/auth-store";
@@ -99,21 +99,21 @@ export default function BranchManagement() {
         >
           {branch.status ? "Active" : "Not Active"}
         </div>,
-        <div className="flex items-center  gap-x-2">
+        <div className="flex gap-1">
           <Button
             variant="ghost"
             size="icon"
-            className="cursor-pointer size-4 hover:text-muted-foreground"
+            className="cursor-pointer size-6 hover:text-muted-foreground hover:!bg-muted-foreground/40"
             onClick={() => {
               router.push(`${pathname}/${branch.id}/edit`);
             }}
           >
-            <SquarePen />
+            <Pencil />
           </Button>
           <Button
             variant="ghost"
             size="icon"
-            className="cursor-pointer size-4 text-destructive hover:text-muted-foreground"
+            className="cursor-pointer size-6 text-destructive hover:text-muted-foreground hover:!bg-muted-foreground/40"
             onClick={() => {
               setSelectedAction({
                 data: branch,

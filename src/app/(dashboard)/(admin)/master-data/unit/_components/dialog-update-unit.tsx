@@ -56,6 +56,7 @@ export default function DialogUpdateUnit({
     if (currentData) {
       form.setValue("name", currentData.name);
       form.setValue("notes", currentData.notes);
+      form.setValue("status", String(currentData.status));
     }
   }, [currentData]);
 

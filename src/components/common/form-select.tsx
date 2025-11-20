@@ -25,6 +25,7 @@ export default function FormSelect<T extends FieldValues>({
   name,
   label,
   selectItem,
+  isLoading,
   disabled = false,
 }: {
   form: UseFormReturn<T>;
@@ -32,6 +33,7 @@ export default function FormSelect<T extends FieldValues>({
   label?: string;
   selectItem: { value: string; label: string; disabled?: boolean }[];
   disabled?: boolean;
+  isLoading?: boolean;
 }) {
   const mountedRef = useRef(false);
   const hasTriggeredOnChangeRef = useRef(false);
@@ -44,7 +46,21 @@ export default function FormSelect<T extends FieldValues>({
 
     return () => clearTimeout(timer);
   }, []);
-
+  if (isLoading) {
+    return (
+      <FormItem>
+        <FormLabel>{label}</FormLabel>
+        <FormControl>
+          <Select disabled={true}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Loading..." />
+            </SelectTrigger>
+          </Select>
+        </FormControl>
+        <FormMessage className="text-xs" />
+      </FormItem>
+    );
+  }
   return (
     <FormField
       control={form.control}

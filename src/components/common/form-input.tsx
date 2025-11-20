@@ -8,6 +8,7 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
+import { Skeleton } from "../ui/skeleton";
 
 export default function FormInput<T extends FieldValues>({
   form,
@@ -17,6 +18,7 @@ export default function FormInput<T extends FieldValues>({
   type = "text",
   disabled = false,
   className,
+  isLoading,
 }: {
   form: UseFormReturn<T>;
   name: Path<T>;
@@ -25,6 +27,7 @@ export default function FormInput<T extends FieldValues>({
   type?: string;
   disabled?: boolean;
   className?: string;
+  isLoading?: boolean;
 }) {
   return (
     <FormField
@@ -34,7 +37,9 @@ export default function FormInput<T extends FieldValues>({
         <FormItem className={className}>
           <FormLabel>{label}</FormLabel>
           <FormControl>
-            {type === "textarea" ? (
+            {isLoading ? (
+              <Skeleton className="h-10 w-full" />
+            ) : type === "textarea" ? (
               <Textarea
                 {...rest}
                 placeholder={placeholder}
@@ -45,7 +50,6 @@ export default function FormInput<T extends FieldValues>({
             ) : (
               <Input
                 {...rest}
-                id="username"
                 type={type}
                 placeholder={placeholder}
                 autoComplete="off"

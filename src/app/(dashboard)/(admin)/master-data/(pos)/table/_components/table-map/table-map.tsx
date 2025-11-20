@@ -8,8 +8,8 @@ import useDataTable from "@/hooks/use-data-table";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { Eye, SquarePen, Trash2 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { Pencil, Trash2 } from "lucide-react";
+import { ReactNode, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useAuthStore } from "@/stores/auth-store";
 import { useBrandStore } from "@/stores/brand-store";
@@ -83,6 +83,16 @@ export default function TableMapManagement() {
     if (!open) setSelectedAction(null);
   };
 
+  const handleViewTable = (row: (string | ReactNode)[], rowIndex: number) => {
+    const data = tableMap?.data?.[rowIndex];
+    if (data) {
+      setSelectedAction({
+        data,
+        type: "detail",
+      });
+    }
+  };
+
   const filteredData = useMemo(() => {
     return (tableMap?.data || []).map((table, index) => {
       return [
@@ -97,24 +107,11 @@ export default function TableMapManagement() {
         >
           {table.status ? "Active" : "Not Active"}
         </div>,
-        <div className="flex justify-center gap-x-2">
+        <div className="flex  gap-1">
           <Button
             variant="ghost"
             size="icon"
-            className="cursor-pointer size-4 hover:text-muted-foreground"
-            onClick={() => {
-              setSelectedAction({
-                data: table,
-                type: "detail",
-              });
-            }}
-          >
-            <Eye />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="cursor-pointer size-4 hover:text-muted-foreground"
+            className="cursor-pointer size-6 hover:text-muted-foreground hover:!bg-muted-foreground/40"
             onClick={() => {
               setSelectedAction({
                 data: table,
@@ -122,12 +119,12 @@ export default function TableMapManagement() {
               });
             }}
           >
-            <SquarePen />
+            <Pencil />
           </Button>
           <Button
             variant="ghost"
             size="icon"
-            className="cursor-pointer size-4 text-destructive hover:text-muted-foreground"
+            className="cursor-pointer size-6 text-destructive hover:text-muted-foreground hover:!bg-muted-foreground/40"
             onClick={() => {
               setSelectedAction({
                 data: table,
@@ -167,6 +164,7 @@ export default function TableMapManagement() {
           </div>
         </div>
         <DataTable
+          handleView={handleViewTable}
           header={HEADER_TABLE_TABLE_MAP}
           isLoading={isLoading}
           data={filteredData}

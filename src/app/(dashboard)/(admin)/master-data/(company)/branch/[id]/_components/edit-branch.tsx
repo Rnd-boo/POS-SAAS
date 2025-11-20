@@ -31,7 +31,7 @@ export default function EditBranch() {
     defaultValues: INITIAL_BRANCH,
   });
 
-  const { data: branch } = useQuery({
+  const { data: branch, isLoading: isLoadingBranch } = useQuery({
     queryKey: ["branch", branchId],
     queryFn: async () => {
       const result = await supabase
@@ -52,45 +52,48 @@ export default function EditBranch() {
     enabled: !!currentId && !!branchId,
   });
 
-  const { data: branchLocation } = useQuery({
-    queryKey: ["branch_location", branchId],
-    queryFn: async () => {
-      const result = await supabase
-        .from("branch_location")
-        .select("id,name,type")
-        .eq("clients_id", currentId)
-        .eq("branch_id", branchId);
+  const { data: branchLocation, isLoading: isLoadingbranchLocation } = useQuery(
+    {
+      queryKey: ["branch_location", branchId],
+      queryFn: async () => {
+        const result = await supabase
+          .from("branch_location")
+          .select("id,name,type")
+          .eq("clients_id", currentId)
+          .eq("branch_id", branchId);
 
-      if (result.error)
-        toast.error("Get Branch Location Data Failed", {
-          description: result.error.message,
-        });
+        if (result.error)
+          toast.error("Get Branch Location Data Failed", {
+            description: result.error.message,
+          });
 
-      return result.data;
-    },
-    enabled: !!currentId && !!branchId,
-  });
+        return result.data;
+      },
+      enabled: !!currentId && !!branchId,
+    }
+  );
 
-  const { data: branchOrderContext } = useQuery({
-    queryKey: ["branch_order_context", branchId],
-    queryFn: async () => {
-      const result = await supabase
-        .from("branch_order_context")
-        .select(
-          "id,branch_id,order_context:order_context_id(id,name,tax_value,tax_name,other_tax_value,other_tax_name)"
-        )
-        .eq("clients_id", currentId)
-        .eq("branch_id", branchId);
+  const { data: branchOrderContext, isLoading: isLoadingbranchOrderContext } =
+    useQuery({
+      queryKey: ["branch_order_context", branchId],
+      queryFn: async () => {
+        const result = await supabase
+          .from("branch_order_context")
+          .select(
+            "id,branch_id,order_context:order_context_id(id,name,tax_value,tax_name,other_tax_value,other_tax_name)"
+          )
+          .eq("clients_id", currentId)
+          .eq("branch_id", branchId);
 
-      if (result.error)
-        toast.error("Get Branch Location Data Failed", {
-          description: result.error.message,
-        });
+        if (result.error)
+          toast.error("Get Branch Location Data Failed", {
+            description: result.error.message,
+          });
 
-      return result.data;
-    },
-    enabled: !!currentId && !!branchId,
-  });
+        return result.data;
+      },
+      enabled: !!currentId && !!branchId,
+    });
 
   useEffect(() => {
     form.setValue("name", branch?.name);
@@ -152,9 +155,15 @@ export default function EditBranch() {
       router.push("/master-data/branch");
     }
   }, [updateBranchState]);
+
   return (
     <CardFormBranch
       type="Update"
+      isLoading={
+        isLoadingBranch &&
+        isLoadingbranchOrderContext &&
+        isLoadingbranchLocation
+      }
       form={form}
       onSubmit={onSubmit}
       isPending={isPendingUpdateBranch}

@@ -56,15 +56,6 @@ export default function DataTable({
                 </TableHead>
               ))}
             </TableRow>
-            {/* <TableRow>
-              <TableHead className="px-6 py-3"></TableHead>
-              {header.slice(1, header.length - 1).map((column) => (
-                <TableHead key={`search-${column}`} className="px-6 py-3">
-                  <Input placeholder={`Search ${column}`} />
-                </TableHead>
-              ))}
-              <TableHead className="px-6 py-3"></TableHead>
-            </TableRow> */}
           </TableHeader>
           <TableBody>
             {data?.map((row, rowIndex) => (
@@ -76,9 +67,8 @@ export default function DataTable({
                 {row.map((column, columnIndex) => (
                   <TableCell
                     className={cn(
-                      "px-6 py-3 capitalize ",
-                      columnIndex === row.length - 1 &&
-                        "w-[100px] whitespace-normal break-words"
+                      "px-6 py-3",
+                      columnIndex === row.length - 1 && "w-[80px] break-words"
                     )}
                     key={`tc-${rowIndex}-${columnIndex}`}
                   >

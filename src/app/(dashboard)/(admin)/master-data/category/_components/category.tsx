@@ -10,7 +10,7 @@ import useDataTable from "@/hooks/use-data-table";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pen, Pencil, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import DialogCreateCategory from "./dialog-create-category";
@@ -85,39 +85,34 @@ export default function CategoryManagement() {
         >
           {category.status ? "Active" : "Not Active"}
         </div>,
-        <DropdownAction
-          menu={[
-            {
-              label: (
-                <span className="flex items-center gap-2">
-                  <Pencil />
-                  Edit
-                </span>
-              ),
-              action: () => {
-                setSelectedAction({
-                  data: category,
-                  type: "update",
-                });
-              },
-            },
-            {
-              label: (
-                <span className="flex items-center gap-2">
-                  <Trash2 className="text-red-400" />
-                  Delete
-                </span>
-              ),
-              variant: "destructive",
-              action: () => {
-                setSelectedAction({
-                  data: category,
-                  type: "delete",
-                });
-              },
-            },
-          ]}
-        />,
+        <div className="flex gap-x-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="cursor-pointer size-6 hover:text-muted-foreground hover:!bg-muted-foreground/40"
+            onClick={() => {
+              setSelectedAction({
+                data: category,
+                type: "update",
+              });
+            }}
+          >
+            <Pencil />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="cursor-pointer size-6 text-destructive hover:text-muted-foreground hover:!bg-muted-foreground/40"
+            onClick={() => {
+              setSelectedAction({
+                data: category,
+                type: "delete",
+              });
+            }}
+          >
+            <Trash2 />
+          </Button>
+        </div>,
       ];
     });
   }, [categories]);

@@ -98,6 +98,7 @@ export default function FormPOSInformation({
                 label=""
                 data={filteredOrderContext ?? []}
                 disabled={type === "Detail"}
+                isLoading={isLoading}
               />
               <Input
                 value={selectedOrderContext?.tax_name ?? "-"}

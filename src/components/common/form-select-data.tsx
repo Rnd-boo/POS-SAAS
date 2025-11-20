@@ -28,6 +28,7 @@ export default function FormSelectData<T extends FieldValues>({
   labelKey = "name",
   disabledKey,
   className = "w-full",
+  isLoading,
 }: {
   form: UseFormReturn<T>;
   name: Path<T>;
@@ -38,6 +39,7 @@ export default function FormSelectData<T extends FieldValues>({
   labelKey?: string;
   disabledKey?: string;
   className?: string;
+  isLoading?: boolean;
 }) {
   const mountedRef = useRef(false);
   const initialValueSetRef = useRef(false);
@@ -70,6 +72,23 @@ export default function FormSelectData<T extends FieldValues>({
           <Select disabled={true}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder="No data..." />
+            </SelectTrigger>
+          </Select>
+        </FormControl>
+        <FormMessage className="text-xs" />
+      </FormItem>
+    );
+  }
+
+  // Don't render until data is available
+  if (isLoading) {
+    return (
+      <FormItem className={className}>
+        <FormLabel>{label}</FormLabel>
+        <FormControl>
+          <Select disabled={true}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Loading..." />
             </SelectTrigger>
           </Select>
         </FormControl>

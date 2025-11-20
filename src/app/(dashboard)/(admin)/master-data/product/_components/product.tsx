@@ -7,8 +7,8 @@ import useDataTable from "@/hooks/use-data-table";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { Eye, SquarePen, Trash2 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { Eye, Pencil, Trash2 } from "lucide-react";
+import { ReactNode, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Product } from "@/validations/product-validation";
 import { HEADER_TABLE_PRODUCT } from "@/constants/product.constant";
@@ -75,6 +75,14 @@ export default function ProductManagement() {
     router.push(`${pathname}/${type}`);
   };
 
+  const handleView = (row: (string | ReactNode)[], rowIndex: number) => {
+    // Get the raw data for this row
+    const data = products?.data?.[rowIndex];
+    if (data) {
+      router.push(`${pathname}/${data.id}`);
+    }
+  };
+
   const filteredData = useMemo(() => {
     return (products?.data || []).map((product, index) => {
       return [
@@ -90,31 +98,21 @@ export default function ProductManagement() {
         >
           {product.status ? "Active" : "Not Active"}
         </div>,
-        <div className="flex items-center max-w-[40px] gap-x-2">
+        <div className="flex items-center gap-1">
           <Button
             variant="ghost"
             size="icon"
-            className="cursor-pointer size-4 hover:text-muted-foreground"
-            onClick={() => {
-              handleClickAction(product?.id ?? "");
-            }}
-          >
-            <Eye />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="cursor-pointer size-4 hover:text-muted-foreground"
+            className="cursor-pointer size-6 hover:text-muted-foreground hover:!bg-muted-foreground/40"
             onClick={() => {
               handleClickAction(`${product?.id}/edit`);
             }}
           >
-            <SquarePen />
+            <Pencil />
           </Button>
           <Button
             variant="ghost"
             size="icon"
-            className="cursor-pointer size-4 text-destructive hover:text-muted-foreground"
+            className="cursor-pointer size-6 text-destructive hover:text-muted-foreground hover:!bg-muted-foreground/40"
             onClick={() => {
               setSelectedAction({
                 data: product,
@@ -150,6 +148,7 @@ export default function ProductManagement() {
         </div>
       </div>
       <DataTable
+        handleView={handleView}
         header={HEADER_TABLE_PRODUCT}
         isLoading={isLoading}
         data={filteredData}
