@@ -16,6 +16,8 @@ import { toast } from "sonner";
 import type { MenuCategory } from "@/validations/pos/menu-category.validation";
 import { HEADER_TABLE_MENU_CATEGORY } from "@/constants/pos/menu-category";
 import DialogCreateMenuCategory from "./dialog-create-menu-category";
+import DialogDeleteMenuCategory from "./dialog-delete-menu-category";
+import DialogUpdateMenuCategory from "./dialog-update-menu-category";
 
 export default function MenuCategory() {
   const supabase = createClient();
@@ -160,6 +162,18 @@ export default function MenuCategory() {
         currentLimit={currentLimit}
         onChangePage={handleChangePage}
         onChangeLimit={handleChangeLimit}
+      />
+      <DialogUpdateMenuCategory
+        open={selectedAction !== null && selectedAction.type === "update"}
+        refetch={refetch}
+        currentData={selectedAction?.data}
+        handleChangeAction={handleChangeAction}
+      />
+      <DialogDeleteMenuCategory
+        open={selectedAction !== null && selectedAction.type === "delete"}
+        refetch={refetch}
+        currentData={selectedAction?.data}
+        handleChangeAction={handleChangeAction}
       />
     </div>
   );

@@ -47,3 +47,73 @@ export async function createMenuCategory(
     status: "success",
   };
 }
+
+export async function updateMenuCategory(
+  prevState: MenuCategoryFormState,
+  formData: FormData
+) {
+  const validatedFields = menuCategorySchema.safeParse({
+    name: formData.get("name"),
+    status: formData.get("status") === "true" ? true : false,
+    brand_id: Number(formData.get("brand_id")),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      status: "error",
+      errors: {
+        ...validatedFields.error.flatten().fieldErrors,
+        _form: [],
+      },
+    };
+  }
+
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("menu_category")
+    .update({
+      name: validatedFields.data.name,
+      status: validatedFields.data.status,
+      brand_id: validatedFields.data.brand_id,
+    })
+    .eq("id", formData.get("id"));
+
+  if (error) {
+    return {
+      status: "error",
+      errors: {
+        ...prevState.errors,
+        _form: [error.message],
+      },
+    };
+  }
+
+  return {
+    status: "success",
+  };
+}
+
+export async function deleteMenuCategory(
+  prevState: MenuCategoryFormState,
+  formData: FormData
+) {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("menu_category")
+    .delete()
+    .eq("id", formData.get("id"));
+
+  if (error) {
+    return {
+      status: "error",
+      errors: {
+        ...prevState.errors,
+        _form: [error.message],
+      },
+    };
+  }
+
+  return { status: "success" };
+}
