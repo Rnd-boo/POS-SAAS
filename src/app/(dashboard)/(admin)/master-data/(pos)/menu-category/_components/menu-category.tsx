@@ -15,6 +15,7 @@ import { ReactNode, useMemo, useState } from "react";
 import { toast } from "sonner";
 import type { MenuCategory } from "@/validations/pos/menu-category.validation";
 import { HEADER_TABLE_MENU_CATEGORY } from "@/constants/pos/menu-category";
+import DialogCreateMenuCategory from "./dialog-create-menu-category";
 
 export default function MenuCategory() {
   const supabase = createClient();
@@ -46,7 +47,7 @@ export default function MenuCategory() {
     queryFn: async () => {
       const result = await supabase
         .from("menu_category")
-        .select("id,name,status", {
+        .select("id,name,status,brand_id", {
           count: "exact",
         })
         .eq("clients_id", currentId)
@@ -83,17 +84,17 @@ export default function MenuCategory() {
   };
 
   const filteredData = useMemo(() => {
-    return (menuCategories?.data || []).map((OrderContext, index) => {
+    return (menuCategories?.data || []).map((menuCategory, index) => {
       return [
         currentLimit * (currentPage - 1) + index + 1,
-        OrderContext.name,
+        menuCategory.name,
         <div
           className={cn(
             "px-2 py-1 rounded-full text-white w-fit",
-            OrderContext.status ? "bg-green-600" : "bg-red-500"
+            menuCategory.status ? "bg-green-600" : "bg-red-500"
           )}
         >
-          {OrderContext.status ? "Active" : "Inactive"}
+          {menuCategory.status ? "Active" : "Inactive"}
         </div>,
         <div className="flex  gap-1">
           <Button
@@ -102,7 +103,7 @@ export default function MenuCategory() {
             className="cursor-pointer size-6 hover:text-muted-foreground hover:!bg-muted-foreground/40"
             onClick={() => {
               setSelectedAction({
-                data: OrderContext,
+                data: menuCategory,
                 type: "update",
               });
             }}
@@ -115,7 +116,7 @@ export default function MenuCategory() {
             className="cursor-pointer size-6 text-destructive hover:text-muted-foreground hover:!bg-muted-foreground/40"
             onClick={() => {
               setSelectedAction({
-                data: OrderContext,
+                data: menuCategory,
                 type: "delete",
               });
             }}
@@ -145,6 +146,7 @@ export default function MenuCategory() {
             <DialogTrigger asChild>
               <Button variant="outline">Create</Button>
             </DialogTrigger>
+            <DialogCreateMenuCategory refetch={refetch} />
           </Dialog>
         </div>
       </div>

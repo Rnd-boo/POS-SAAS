@@ -3,6 +3,7 @@ import z from "zod";
 export const menuCategorySchema = z.object({
   name: z.string(),
   status: z.boolean(),
+  brand_id: z.number(),
 });
 
 export const menuCategoryFormSchema = z.object({

@@ -8,6 +8,7 @@ export const HEADER_TABLE_MENU_CATEGORY = [
 export const INITIAL_MENU_CATEGORY = {
   name: "",
   status: "",
+  brand_id: "",
 };
 
 export const INITIAL_STATE_MENU_CATEGORY = {
@@ -15,6 +16,7 @@ export const INITIAL_STATE_MENU_CATEGORY = {
   errors: {
     name: [],
     status: [],
+    brand_id: [],
     _form: [],
   },
 };
