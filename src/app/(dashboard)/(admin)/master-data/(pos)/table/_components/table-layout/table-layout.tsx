@@ -193,7 +193,7 @@ export default function TableLayout() {
       shape: "rectangle",
       width: 80,
       height: 80,
-      status: true,
+      status: "true",
     };
     append(newTable);
 

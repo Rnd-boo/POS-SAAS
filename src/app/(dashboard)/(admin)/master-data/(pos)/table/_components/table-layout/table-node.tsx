@@ -41,7 +41,7 @@ export default function TableNode({
             Capacity: {data.capacity}
           </p>
           <p className="text-xs text-muted-foreground">
-            Status: {data.status === true || "true" ? "Active" : "Inactive"}
+            Status: {data.status === true ? "Active" : "Inactive"}
           </p>
         </div>
       </HoverCardContent>

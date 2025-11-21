@@ -141,7 +141,7 @@ export async function tablesAction(
   }
   const supabase = await createClient();
   const { tables } = validatedFields.data;
-  // Delete all existing units for this product
+  // Delete all existing tables
   const { error: deleteError } = await supabase
     .from("table")
     .delete()
@@ -158,7 +158,6 @@ export async function tablesAction(
   }
   const { currentUserId, currentClientId } = await getCurrentProfile();
 
-  // Insert new units (only if there are units to insert)
   if (tables.length > 0) {
     const tablesToInsert = tables.map((table) => ({
       ...table,

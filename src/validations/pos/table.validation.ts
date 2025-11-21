@@ -38,7 +38,7 @@ export const tableLayoutSchema = z.object({
     .number()
     .min(24, "height minimum 24")
     .max(600, "height maximum 600"),
-  status: z.boolean(),
+  status: z.string(),
 });
 
 export const tableLayoutFormSchema = z.object({

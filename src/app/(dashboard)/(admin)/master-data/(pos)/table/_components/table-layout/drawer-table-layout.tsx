@@ -13,6 +13,7 @@ import FormSelect from "@/components/common/form-select";
 import { FieldValues, UseFormReturn } from "react-hook-form";
 import { useEffect } from "react";
 import { TableLayoutForm } from "@/validations/pos/table.validation";
+import { STATUS_LIST } from "@/constants/general.constant";
 
 export default function DrawerTableLayout<T extends FieldValues>({
   selectedIndex,
@@ -72,10 +73,7 @@ export default function DrawerTableLayout<T extends FieldValues>({
                   form={form}
                   name={`tables.${selectedIndex}.status`}
                   label="Status"
-                  selectItem={[
-                    { value: true, label: "Active" },
-                    { value: false, label: "Not Active" },
-                  ]}
+                  selectItem={STATUS_LIST}
                 />
               </div>
               <div className="mt-4 space-y-2 mb-2">
