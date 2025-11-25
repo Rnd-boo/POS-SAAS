@@ -2,6 +2,7 @@ import {
   BookA,
   BookText,
   ClipboardPenLine,
+  DatabaseBackup,
   Layers,
   PackageSearch,
   Ratio,
@@ -60,6 +61,13 @@ export const MASTER_CARD = [
         icon: Ruler,
         url: "/master-data/unit",
         description: "Define and manage product UOM",
+      },
+      {
+        title: "Bill of Materials",
+        icon: DatabaseBackup,
+        url: "/master-data/bill-of-materials",
+        description:
+          "List of ingredients, and resources needed to assemble/manufacture a product.",
       },
     ],
   },
