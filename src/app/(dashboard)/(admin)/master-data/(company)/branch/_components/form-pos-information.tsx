@@ -1,12 +1,7 @@
-import FormInput from "@/components/common/form-input";
-import FormSelect from "@/components/common/form-select";
 import FormSelectData from "@/components/common/form-select-data";
 import { Button } from "@/components/ui/button";
-import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { STATUS_LIST } from "@/constants/general.constant";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/auth-store";
@@ -17,7 +12,7 @@ import {
 } from "@/validations/branch.validation";
 import { useQuery } from "@tanstack/react-query";
 import { Plus, X } from "lucide-react";
-import { FormEvent, Fragment, useMemo } from "react";
+import { Fragment } from "react";
 import { useFieldArray, UseFormReturn } from "react-hook-form";
 import { toast } from "sonner";
 

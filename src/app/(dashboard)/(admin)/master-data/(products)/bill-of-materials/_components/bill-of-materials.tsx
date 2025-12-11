@@ -90,9 +90,9 @@ export default function BillOfMaterials() {
         currentLimit * (currentPage - 1) + index + 1,
         bom.name,
         bom.code,
-        <p className="capitalize">{bom.type}</p>,
         (bom.products as unknown as { name: string }).name,
         (bom.product_units as unknown as { units: Unit }).units.name,
+        <p className="capitalize">{bom.type}</p>,
         <div
           className={cn(
             "px-2 py-1 rounded-full text-white w-fit",

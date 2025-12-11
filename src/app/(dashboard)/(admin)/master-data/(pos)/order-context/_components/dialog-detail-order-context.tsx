@@ -1,6 +1,5 @@
-import { FieldValues, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 
-import DialogInformation from "@/components/common/dialog-information";
 import { Dialog } from "@/components/ui/dialog";
 import FormOrderContext from "./form-order-context";
 import {

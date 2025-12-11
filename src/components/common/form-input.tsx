@@ -19,6 +19,8 @@ export default function FormInput<T extends FieldValues>({
   disabled = false,
   className,
   isLoading,
+  readOnly,
+  displayValue,
 }: {
   form: UseFormReturn<T>;
   name: Path<T>;
@@ -28,6 +30,8 @@ export default function FormInput<T extends FieldValues>({
   disabled?: boolean;
   className?: string;
   isLoading?: boolean;
+  readOnly?: boolean;
+  displayValue?: string | number;
 }) {
   return (
     <FormField
@@ -50,10 +54,12 @@ export default function FormInput<T extends FieldValues>({
             ) : (
               <Input
                 {...rest}
+                value={displayValue ?? rest.value}
                 type={type}
                 placeholder={placeholder}
                 autoComplete="off"
                 disabled={disabled}
+                readOnly={readOnly}
               />
             )}
           </FormControl>
