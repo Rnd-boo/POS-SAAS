@@ -20,7 +20,6 @@ import {
   SelectValue,
 } from "../ui/select";
 import { LIMIT_LISTS } from "@/constants/datatable-constant";
-import { Input } from "../ui/input";
 import { cn } from "@/lib/utils";
 
 export default function DataTable({

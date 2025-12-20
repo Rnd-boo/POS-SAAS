@@ -7,21 +7,26 @@ import useDataTable from "@/hooks/use-data-table";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { Eye, Pencil, Trash2 } from "lucide-react";
+import { Funnel, Pencil, Trash2 } from "lucide-react";
 import { ReactNode, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Product } from "@/validations/product-validation";
-import { HEADER_TABLE_PRODUCT } from "@/constants/product.constant";
+import {
+  FILTER_TABLE_PRODUCT,
+  HEADER_TABLE_PRODUCT,
+} from "@/constants/product.constant";
 import { useAuthStore } from "@/stores/auth-store";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import DialogDeleteProduct from "./dialog-delete-product";
+import DialogFilters from "@/components/common/dialog-filters";
 
 export default function ProductManagement() {
   const supabase = createClient();
   const currentId = useAuthStore((state) => state.profile?.clients);
   const pathname = usePathname();
   const router = useRouter();
+  const [openDialogFilters, setOpenDialogFilters] = useState<boolean>(false);
 
   const {
     currentLimit,
@@ -31,6 +36,19 @@ export default function ProductManagement() {
     currentSearch,
     handleChangeSearch,
   } = useDataTable();
+
+  const { data: categoriesResult } = useQuery({
+    queryKey: ["categories", currentId],
+    queryFn: async () => {
+      const result = await supabase
+        .from("categories")
+        .select("id, name")
+        .eq("status", true)
+        .eq("clients_id", currentId);
+      return result?.data;
+    },
+    enabled: !!currentId,
+  });
 
   const {
     data: products,
@@ -138,6 +156,21 @@ export default function ProductManagement() {
       <div className="flex flex-col lg:flex-row mb-4 gap-2 justify-between w-full">
         <h1 className="text-xl font-semibold">Product Management</h1>
         <div className="flex gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setOpenDialogFilters(true)}
+          >
+            <Funnel />
+            Filters
+          </Button>
+          <DialogFilters
+            title="Product"
+            selectData={categoriesResult ?? []}
+            data={FILTER_TABLE_PRODUCT}
+            onOpenChange={setOpenDialogFilters}
+            open={openDialogFilters}
+          />
           <Input
             placeholder="Search by product name"
             onChange={(e) => handleChangeSearch(e.target.value)}

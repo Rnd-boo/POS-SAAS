@@ -63,7 +63,6 @@ export default function FormSelectData<T extends FieldValues>({
     }
   }, [data]);
 
-  // Don't render until data is available
   if (!data || data.length === 0) {
     return (
       <FormItem className={className}>
@@ -80,7 +79,6 @@ export default function FormSelectData<T extends FieldValues>({
     );
   }
 
-  // Don't render until data is available
   if (isLoading) {
     return (
       <FormItem className={className}>
