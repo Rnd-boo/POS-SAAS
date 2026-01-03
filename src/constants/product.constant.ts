@@ -7,11 +7,34 @@ export const HEADER_TABLE_PRODUCT = [
   "Action",
 ];
 
-export const FILTER_TABLE_PRODUCT = [
-  { value: "Product Name", filter: "text" },
-  { value: "Category", filter: "select" },
-  { value: "Product Code", filter: "text" },
-  { value: "Status", filter: "status" },
+export interface FilterConfig {
+  key: string; // ⬅️ column supabase
+  label: string;
+  type: "select" | "combobox" | "text";
+  operator?: "eq" | "ilike";
+  options?: { value: string; label: string }[];
+}
+export const FILTER_TABLE_PRODUCT: Omit<FilterConfig, "options">[] = [
+  {
+    key: "name",
+    label: "Product Name",
+    type: "text",
+  },
+  {
+    key: "categories_id",
+    label: "Category",
+    type: "combobox",
+  },
+  {
+    key: "upc",
+    label: "Product Code",
+    type: "text",
+  },
+  {
+    key: "status",
+    label: "Status",
+    type: "select",
+  },
 ];
 
 export const INITIAL_PRODUCT = {

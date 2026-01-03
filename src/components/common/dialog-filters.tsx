@@ -1,7 +1,6 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogFooter,
   DialogHeader,
@@ -16,74 +15,57 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { STATUS_LIST } from "@/constants/general.constant";
 import { Button } from "../ui/button";
+import { Combobox } from "./combobox";
+import { FilterConfig } from "@/constants/product.constant";
 
 export default function DialogFilters({
   open,
   onOpenChange,
-  data,
-  selectData,
-  title,
+  configs,
+  onChange,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  data?: { value: string; filter: string }[];
-  selectData?: any[];
-  title: string;
+  configs?: FilterConfig[];
+  onChange?: (filters: Record<string, string>) => void;
 }) {
-  const [currentStatus, setCurrentStatus] = useState<string>("");
-  const [currentCategory, setCurrentCategory] = useState<string>("");
+  const [values, setValues] = useState<Record<string, string>>({});
 
-  const selectItems = useMemo(() => {
-    if (!selectData || selectData.length === 0) return [];
-    return selectData.map((item) => ({
-      value: item.id?.toString() || "",
-      label: item.name || "",
-    }));
-  }, [selectData]);
+  const handleReset = () => {
+    setValues({});
+    onChange?.({});
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent
+        onEscapeKeyDown={(e) => {
+          e.preventDefault();
+        }}
+      >
         <DialogHeader>
           <DialogTitle>Filter</DialogTitle>
         </DialogHeader>
-        {data?.map((item, index) => (
+        {configs?.map((config) => (
           <div
-            key={index}
+            key={config.key}
             className="grid grid-cols-[1fr_3fr] items-center gap-x-2"
           >
-            <div className="text-end">{item.value} :</div>
-            {item.filter === "status" ? (
+            <div className="text-end">{config.label} :</div>
+            {config.type === "select" ? (
               <Select
-                value={currentStatus}
-                onValueChange={(value) => setCurrentStatus(value)}
+                value={values[config.key] || ""}
+                onValueChange={(value) =>
+                  setValues({ ...values, [config.key]: value })
+                }
               >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select Limit" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    {STATUS_LIST.map((limit) => (
-                      <SelectItem key={limit.label} value={limit.value}>
-                        {limit.label}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            ) : item.filter === "select" ? (
-              <Select
-                value={currentCategory}
-                onValueChange={(value) => setCurrentCategory(value)}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select Limit" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {selectItems?.map((item) => (
+                    {config.options?.map((item) => (
                       <SelectItem
                         key={`${item.value}-${item.label}`}
                         value={item.value}
@@ -94,21 +76,43 @@ export default function DialogFilters({
                   </SelectGroup>
                 </SelectContent>
               </Select>
+            ) : config.type === "combobox" ? (
+              <Combobox
+                modal
+                items={config.options || []}
+                value={values[config.key] || ""}
+                onChange={(value) =>
+                  setValues({ ...values, [config.key]: value })
+                }
+              />
             ) : (
-              <Input />
+              <Input
+                value={values[config.key] ?? ""}
+                onChange={(e) =>
+                  setValues({ ...values, [config.key]: e.target.value })
+                }
+              />
             )}
           </div>
         ))}
         <DialogFooter className="!justify-between">
-          <div>
-            <Button variant="ghost">Reset</Button>
-          </div>
-          <div className="space-x-2">
-            <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
-            </DialogClose>
-            <Button type="submit">Apply</Button>
-          </div>
+          <Button
+            variant="ghost"
+            onClick={handleReset}
+            className="cursor-pointer"
+          >
+            Reset
+          </Button>
+          <Button
+            type="submit"
+            className="cursor-pointer"
+            onClick={() => {
+              onChange?.(values);
+              onOpenChange(false);
+            }}
+          >
+            Apply
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -7,7 +7,7 @@ import useDataTable from "@/hooks/use-data-table";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { Funnel, Pencil, Trash2 } from "lucide-react";
+import { Funnel, Pencil, Trash2, X } from "lucide-react";
 import { ReactNode, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Product } from "@/validations/product-validation";
@@ -20,6 +20,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import DialogDeleteProduct from "./dialog-delete-product";
 import DialogFilters from "@/components/common/dialog-filters";
+import { STATUS_LIST } from "@/constants/general.constant";
+import { applyFilterQuery } from "@/hooks/use-filter-query";
 
 export default function ProductManagement() {
   const supabase = createClient();
@@ -27,7 +29,7 @@ export default function ProductManagement() {
   const pathname = usePathname();
   const router = useRouter();
   const [openDialogFilters, setOpenDialogFilters] = useState<boolean>(false);
-
+  const [filters, setFilters] = useState<Record<string, string>>({});
   const {
     currentLimit,
     currentPage,
@@ -55,9 +57,9 @@ export default function ProductManagement() {
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ["products", currentPage, currentLimit, currentSearch],
+    queryKey: ["products", currentPage, currentLimit, currentSearch, filters],
     queryFn: async () => {
-      const result = await supabase
+      let query = supabase
         .from("products")
         .select(
           `id, name,upc,status, description, categories_id, categories (
@@ -70,6 +72,8 @@ export default function ProductManagement() {
         .order("name")
         .ilike("name", `%${currentSearch}%`);
 
+      query = applyFilterQuery(query, filters);
+      const result = await query;
       if (result.error)
         toast.error("Get Product Data Failed", {
           description: result.error.message,
@@ -150,7 +154,6 @@ export default function ProductManagement() {
       ? Math.ceil(products.count / currentLimit)
       : 0;
   }, [products]);
-
   return (
     <div className="w-full">
       <div className="flex flex-col lg:flex-row mb-4 gap-2 justify-between w-full">
@@ -163,13 +166,46 @@ export default function ProductManagement() {
           >
             <Funnel />
             Filters
+            {Object.keys(filters).length > 0 && (
+              <>
+                <span className="text-xs font-medium bg-accent rounded-full px-2 py-0.5">
+                  {Object.keys(filters).length}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="size-6 pb-1 ml-1"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setFilters({});
+                  }}
+                >
+                  x
+                </Button>
+              </>
+            )}
           </Button>
           <DialogFilters
-            title="Product"
-            selectData={categoriesResult ?? []}
-            data={FILTER_TABLE_PRODUCT}
+            configs={FILTER_TABLE_PRODUCT.map((config) => {
+              if (config.key === "categories_id") {
+                return {
+                  ...config,
+                  options: categoriesResult?.map((category) => ({
+                    value: category.id,
+                    label: category.name,
+                  })),
+                };
+              } else if (config.key === "status") {
+                return {
+                  ...config,
+                  options: STATUS_LIST,
+                };
+              }
+              return config;
+            })}
             onOpenChange={setOpenDialogFilters}
             open={openDialogFilters}
+            onChange={setFilters}
           />
           <Input
             placeholder="Search by product name"
