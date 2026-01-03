@@ -58,7 +58,7 @@ export default function DialogUpdateCategory({
   useEffect(() => {
     if (currentData) {
       form.setValue("name", currentData.name);
-      form.setValue("description", currentData.description);
+      form.setValue("description", currentData.description ?? "");
       form.setValue("status", currentData.status.toString());
     }
   }, [currentData]);

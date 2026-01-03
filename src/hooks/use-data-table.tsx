@@ -6,6 +6,7 @@ export default function useDataTable() {
   const [currentPage, setCurrentPage] = useState(DEFAULT_PAGE);
   const [currentLimit, setCurrentLimit] = useState(DEFAULT_LIMIT);
   const [currentSearch, setCurrentSearch] = useState("");
+  const [totalData, setTotalData] = useState(0);
   const debounce = useDebounce();
 
   const handleChangePage = (page: number) => {
@@ -31,5 +32,7 @@ export default function useDataTable() {
     handleChangeLimit,
     currentSearch,
     handleChangeSearch,
+    totalData,
+    setTotalData,
   };
 }
