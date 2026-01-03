@@ -171,17 +171,15 @@ export default function ProductManagement() {
                 <span className="text-xs font-medium bg-accent rounded-full px-2 py-0.5">
                   {Object.keys(filters).length}
                 </span>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="size-6 pb-1 ml-1"
+                <span
+                  className="ml-1 size-6 rounded hover:bg-muted cursor-pointer"
                   onClick={(e) => {
                     e.stopPropagation();
                     setFilters({});
                   }}
                 >
                   x
-                </Button>
+                </span>
               </>
             )}
           </Button>
