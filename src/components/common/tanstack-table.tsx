@@ -13,25 +13,14 @@ import {
   type SortingState,
   type VisibilityState,
 } from "@tanstack/react-table";
-import {
-  ArrowUpDown,
-  ChevronDown,
-  MoreHorizontal,
-  RotateCw,
-} from "lucide-react";
-
+import { ChevronDown, RotateCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -43,47 +32,7 @@ import {
 import PaginationDataTable from "./pagination-data-table";
 import { cn } from "@/lib/utils";
 
-const data: Payment[] = [
-  {
-    id: "m5gr84i9",
-    amount: 316,
-    status: "success",
-    email: "ken99@example.com",
-  },
-  {
-    id: "3u1reuv4",
-    amount: 242,
-    status: "success",
-    email: "Abe45@example.com",
-  },
-  {
-    id: "derv1ws0",
-    amount: 837,
-    status: "processing",
-    email: "Monserrat44@example.com",
-  },
-  {
-    id: "5kma53ae",
-    amount: 874,
-    status: "success",
-    email: "Silas22@example.com",
-  },
-  {
-    id: "bhqecj4p",
-    amount: 721,
-    status: "failed",
-    email: "carmella@example.com",
-  },
-];
-
-export type Payment = {
-  id: string;
-  amount: number;
-  status: "pending" | "processing" | "success" | "failed";
-  email: string;
-};
-
-export function DataTableDemo<TData>({
+export function DataTable<TData>({
   columns,
   data,
   totalPages,
@@ -127,8 +76,6 @@ export function DataTableDemo<TData>({
     },
   });
   const selectedRows = table.getSelectedRowModel().rows;
-  // console.log({ selectedRows: selectedRows.map((row) => row.original) });
-
   return (
     <div className="w-full">
       <div className="overflow-hidden rounded-md border">
@@ -164,22 +111,27 @@ export function DataTableDemo<TData>({
                       </DropdownMenuContent>
                     </DropdownMenu>
                   )}
-                  <Button size="icon" onClick={() => refetch()}>
+                  <Button
+                    size="icon"
+                    onClick={() => refetch()}
+                    variant="outline"
+                  >
                     <RotateCw />
                   </Button>
                 </div>
               </TableCell>
             </TableRow>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow
-                key={headerGroup.id}
-                className=" bg-primary/50 hover:!bg-primary/50"
-              >
-                {headerGroup.headers.map((header) => {
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header, index) => {
                   return (
                     <TableHead
                       key={header.id}
-                      className="hover:bg-primary/20 cursor-pointer transition-all"
+                      className={cn(
+                        "bg-muted hover:!bg-muted/50 cursor-pointer transition-all",
+                        header.column.id === "actions" &&
+                          "hover:!bg-muted cursor-default"
+                      )}
                     >
                       {header.isPlaceholder
                         ? null
@@ -199,10 +151,9 @@ export function DataTableDemo<TData>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  className="cursor-pointer"
                   onClick={() => {
                     table.resetRowSelection();
-                    row.toggleSelected();
+                    row.toggleSelected(true);
                   }}
                 >
                   {row.getVisibleCells().map((cell) => (
