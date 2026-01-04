@@ -1,12 +1,3 @@
-export const HEADER_TABLE_PRODUCT = [
-  "NO",
-  "Product",
-  "Category",
-  "Product Code",
-  "Status",
-  "Action",
-];
-
 export interface FilterConfig {
   key: string; // ⬅️ column supabase
   label: string;
