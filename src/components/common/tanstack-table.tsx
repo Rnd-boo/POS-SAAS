@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import {
-  ColumnOrderState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -33,8 +32,9 @@ import {
 } from "@/components/ui/table";
 import PaginationDataTable from "./pagination-data-table";
 import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
-export function DataTable<TData>({
+export function DataTable<TData extends { id: string | number }>({
   columns,
   data,
   totalPages,
@@ -44,6 +44,7 @@ export function DataTable<TData>({
   onSortingChange,
   sorting,
   refetch,
+  pathname,
 }: {
   columns: ColumnDef<TData>[];
   data: TData[];
@@ -54,6 +55,7 @@ export function DataTable<TData>({
   onSortingChange: OnChangeFn<SortingState>;
   sorting: SortingState;
   refetch: () => void;
+  pathname?: string;
 }) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -61,7 +63,7 @@ export function DataTable<TData>({
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-
+  const router = useRouter();
   const table = useReactTable({
     data,
     columns,
@@ -82,7 +84,7 @@ export function DataTable<TData>({
       rowSelection,
     },
   });
-  const selectedRows = table.getSelectedRowModel().rows;
+
   return (
     <div className="w-full">
       <div className="overflow-hidden rounded-md border">
@@ -159,9 +161,11 @@ export function DataTable<TData>({
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                   onClick={() => {
-                    table.resetRowSelection();
-                    row.toggleSelected(true);
+                    if (pathname) {
+                      router.push(`${pathname}/${row.original.id}`);
+                    }
                   }}
+                  className={cn(pathname && "cursor-pointer")}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell

@@ -129,12 +129,6 @@ export default function ProductManagement() {
     router.push(`${pathname}/${type}`);
   };
 
-  const handleView = (row: (string | ReactNode)[], rowIndex: number) => {
-    const data = products?.data?.[rowIndex];
-    if (data) {
-      router.push(`${pathname}/${data.id}`);
-    }
-  };
   const data: Product[] = products?.data || [];
   const columns: ColumnDef<Product>[] = [
     {
@@ -305,6 +299,7 @@ export default function ProductManagement() {
         sorting={sorting}
         onSortingChange={setSorting}
         refetch={refetch}
+        pathname={pathname}
       />
       <DialogDeleteProduct
         open={selectedAction !== null && selectedAction.type === "delete"}
