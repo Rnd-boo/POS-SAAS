@@ -25,6 +25,7 @@ export default function DropdownAction({
           variant="ghost"
           className="text-muted-foreground size-8"
           size="icon"
+          onClick={(e) => e.stopPropagation()}
         >
           <EllipsisVertical />
         </Button>
@@ -35,7 +36,10 @@ export default function DropdownAction({
             key={`dropdown-action-${index}`}
             variant={item.variant || "default"}
             asChild={item.type === "link"}
-            onClick={item.action}
+            onClick={(e) => {
+              e.stopPropagation();
+              item.action?.();
+            }}
           >
             {item.label}
           </DropdownMenuItem>

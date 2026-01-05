@@ -45,6 +45,7 @@ export function DataTable<TData extends { id: string | number }>({
   sorting,
   refetch,
   pathname,
+  setSelectedAction,
 }: {
   columns: ColumnDef<TData>[];
   data: TData[];
@@ -52,10 +53,16 @@ export function DataTable<TData extends { id: string | number }>({
   currentPage: number;
   onChangePage: (page: number) => void;
   totalData: number;
-  onSortingChange: OnChangeFn<SortingState>;
-  sorting: SortingState;
+  onSortingChange?: OnChangeFn<SortingState>;
+  sorting?: SortingState;
   refetch: () => void;
   pathname?: string;
+  setSelectedAction?: React.Dispatch<
+    React.SetStateAction<{
+      data: TData;
+      type: "detail" | "update" | "delete";
+    } | null>
+  >;
 }) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -163,6 +170,11 @@ export function DataTable<TData extends { id: string | number }>({
                   onClick={() => {
                     if (pathname) {
                       router.push(`${pathname}/${row.original.id}`);
+                    } else {
+                      setSelectedAction?.({
+                        data: row.original,
+                        type: "detail",
+                      });
                     }
                   }}
                   className={cn(pathname && "cursor-pointer")}
