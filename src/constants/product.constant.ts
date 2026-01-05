@@ -1,10 +1,5 @@
-export interface FilterConfig {
-  key: string; // ⬅️ column supabase
-  label: string;
-  type: "select" | "combobox" | "text";
-  operator?: "eq" | "ilike";
-  options?: { value: string; label: string }[];
-}
+import { FilterConfig } from "@/types/general";
+
 export const FILTER_TABLE_PRODUCT: Omit<FilterConfig, "options">[] = [
   {
     key: "name",

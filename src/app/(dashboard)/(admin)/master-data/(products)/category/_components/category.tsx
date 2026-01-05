@@ -7,7 +7,14 @@ import useDataTable from "@/hooks/use-data-table";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowDown, ArrowUp, Pencil, SearchIcon, Trash2 } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUp,
+  Funnel,
+  Pencil,
+  SearchIcon,
+  Trash2,
+} from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import DialogCreateCategory from "./dialog-create-category";
@@ -16,17 +23,25 @@ import { Category } from "@/validations/category-validation";
 import DialogDeleteCategory from "./dialog-delete-category";
 import { useAuthStore } from "@/stores/auth-store";
 import { DataTable } from "@/components/common/tanstack-table";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, SortingState } from "@tanstack/react-table";
 
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
+import { applyFilterQuery } from "@/hooks/use-filter-query";
+import { CATEGORY_TABLE_PRODUCT } from "@/constants/category.constant";
+import { STATUS_LIST } from "@/constants/general.constant";
+import DialogFilters from "@/components/common/dialog-filters";
 
 export default function CategoryManagement() {
   const supabase = createClient();
   const currentId = useAuthStore((state) => state.profile?.clients);
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [openDialogFilters, setOpenDialogFilters] = useState<boolean>(false);
+  const [filters, setFilters] = useState<Record<string, string>>({});
+
   const {
     currentLimit,
     currentPage,
@@ -49,14 +64,25 @@ export default function CategoryManagement() {
       currentLimit,
       currentSearch,
       currentId,
+      sorting,
+      filters,
     ],
     queryFn: async () => {
-      const result = await supabase
+      let query = supabase
         .from("categories")
         .select("id, name, description, status", { count: "exact" })
         .eq("clients_id", currentId)
         .range((currentPage - 1) * currentLimit, currentPage * currentLimit - 1)
         .ilike("name", `%${currentSearch}%`);
+
+      const sort = sorting[0];
+
+      if (sort) {
+        query.order(sort.id, { ascending: sort.desc ? false : true });
+      }
+      query = applyFilterQuery(query, filters);
+
+      const result = await query;
 
       setTotalData(result.count ?? 0);
 
@@ -84,7 +110,6 @@ export default function CategoryManagement() {
       : 0;
   }, [categories]);
 
-  // tanstack section
   const data: Category[] = categories?.data || [];
   const columns: ColumnDef<Category>[] = [
     {
@@ -186,15 +211,41 @@ export default function CategoryManagement() {
         <h1 className="text-2xl font-semibold">Category Management</h1>
       </div>
       <div className="mb-2 flex justify-between">
-        <InputGroup className="max-w-sm">
-          <InputGroupInput
-            placeholder="Search by category name"
-            onChange={(e) => handleChangeSearch(e.target.value)}
-          />
-          <InputGroupAddon>
-            <SearchIcon />
-          </InputGroupAddon>
-        </InputGroup>
+        <div className="flex gap-2 w-full max-w-md">
+          <InputGroup className="max-w-sm">
+            <InputGroupInput
+              placeholder="Search by category name"
+              onChange={(e) => handleChangeSearch(e.target.value)}
+            />
+            <InputGroupAddon>
+              <SearchIcon />
+            </InputGroupAddon>
+          </InputGroup>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setOpenDialogFilters(true)}
+          >
+            <Funnel />
+            Filters
+            {Object.keys(filters).length > 0 && (
+              <>
+                <span className="text-xs font-medium bg-accent rounded-full px-2 py-0.5">
+                  {Object.keys(filters).length}
+                </span>
+                <span
+                  className="ml-1 size-6 rounded hover:bg-muted cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setFilters({});
+                  }}
+                >
+                  x
+                </span>
+              </>
+            )}
+          </Button>
+        </div>
         <Dialog>
           <DialogTrigger asChild>
             <Button variant="outline">Create</Button>
@@ -209,6 +260,8 @@ export default function CategoryManagement() {
         currentPage={currentPage}
         onChangePage={handleChangePage}
         totalData={totalData}
+        sorting={sorting}
+        onSortingChange={setSorting}
         refetch={refetch}
       />
       <DialogUpdateCategory
@@ -222,6 +275,20 @@ export default function CategoryManagement() {
         refetch={refetch}
         currentData={selectedAction?.data}
         handleChangeAction={handleChangeAction}
+      />
+      <DialogFilters
+        configs={CATEGORY_TABLE_PRODUCT.map((config) => {
+          if (config.key === "status") {
+            return {
+              ...config,
+              options: STATUS_LIST,
+            };
+          }
+          return config;
+        })}
+        onOpenChange={setOpenDialogFilters}
+        open={openDialogFilters}
+        onChange={setFilters}
       />
     </div>
   );

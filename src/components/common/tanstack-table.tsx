@@ -2,11 +2,13 @@
 
 import * as React from "react";
 import {
+  ColumnOrderState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  OnChangeFn,
   useReactTable,
   type ColumnDef,
   type ColumnFiltersState,
@@ -39,6 +41,8 @@ export function DataTable<TData>({
   currentPage,
   onChangePage,
   totalData,
+  onSortingChange,
+  sorting,
   refetch,
 }: {
   columns: ColumnDef<TData>[];
@@ -47,9 +51,10 @@ export function DataTable<TData>({
   currentPage: number;
   onChangePage: (page: number) => void;
   totalData: number;
+  onSortingChange: OnChangeFn<SortingState>;
+  sorting: SortingState;
   refetch: () => void;
 }) {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
@@ -60,7 +65,9 @@ export function DataTable<TData>({
   const table = useReactTable({
     data,
     columns,
-    onSortingChange: setSorting,
+    onSortingChange: onSortingChange,
+    enableMultiSort: false,
+    manualSorting: true,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),

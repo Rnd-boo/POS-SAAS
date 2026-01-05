@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import useDataTable from "@/hooks/use-data-table";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
@@ -25,7 +24,11 @@ import DialogDeleteProduct from "./dialog-delete-product";
 import DialogFilters from "@/components/common/dialog-filters";
 import { STATUS_LIST } from "@/constants/general.constant";
 import { applyFilterQuery } from "@/hooks/use-filter-query";
-import { ColumnDef } from "@tanstack/react-table";
+import {
+  ColumnDef,
+  ColumnOrderState,
+  SortingState,
+} from "@tanstack/react-table";
 import DropdownAction from "@/components/common/dropdown-action";
 import { DataTable } from "@/components/common/tanstack-table";
 import {
@@ -33,7 +36,6 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
-import { config } from "@/middleware";
 
 export default function ProductManagement() {
   const supabase = createClient();
@@ -42,6 +44,8 @@ export default function ProductManagement() {
   const router = useRouter();
   const [openDialogFilters, setOpenDialogFilters] = useState<boolean>(false);
   const [filters, setFilters] = useState<Record<string, string>>({});
+  const [sorting, setSorting] = useState<SortingState>([]);
+
   const {
     currentLimit,
     currentPage,
@@ -71,7 +75,14 @@ export default function ProductManagement() {
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ["products", currentPage, currentLimit, currentSearch, filters],
+    queryKey: [
+      "products",
+      currentPage,
+      currentLimit,
+      currentSearch,
+      filters,
+      sorting,
+    ],
     queryFn: async () => {
       let query = supabase
         .from("products")
@@ -83,9 +94,14 @@ export default function ProductManagement() {
         )
         .eq("clients_id", currentId)
         .range((currentPage - 1) * currentLimit, currentPage * currentLimit - 1)
-        .order("name")
         .ilike("name", `%${currentSearch}%`);
 
+      const sort = sorting[0];
+      if (sort) {
+        query = query.order(sort.id, {
+          ascending: !sort.desc,
+        });
+      }
       query = applyFilterQuery(query, filters);
 
       const result = await query;
@@ -119,7 +135,6 @@ export default function ProductManagement() {
       router.push(`${pathname}/${data.id}`);
     }
   };
-
   const data: Product[] = products?.data || [];
   const columns: ColumnDef<Product>[] = [
     {
@@ -287,6 +302,8 @@ export default function ProductManagement() {
         currentPage={currentPage}
         onChangePage={handleChangePage}
         totalData={totalData}
+        sorting={sorting}
+        onSortingChange={setSorting}
         refetch={refetch}
       />
       <DialogDeleteProduct
@@ -296,23 +313,23 @@ export default function ProductManagement() {
         handleChangeAction={handleChangeAction}
       />{" "}
       <DialogFilters
-      configs={FILTER_TABLE_PRODUCT.map((config) => {
-        if (config.key === "categories_id") {
-          return {
-            ...config,
-            options: categoriesResult?.map((category) => ({
-              value: category.id,
-              label: category.name,
-            })),
-          };
-        } else if (config.key === "status") {
-          return {
-            ...config,
-            options: STATUS_LIST,
-          };
-        }
-        return config;
-      })}
+        configs={FILTER_TABLE_PRODUCT.map((config) => {
+          if (config.key === "categories_id") {
+            return {
+              ...config,
+              options: categoriesResult?.map((category) => ({
+                value: category.id,
+                label: category.name,
+              })),
+            };
+          } else if (config.key === "status") {
+            return {
+              ...config,
+              options: STATUS_LIST,
+            };
+          }
+          return config;
+        })}
         onOpenChange={setOpenDialogFilters}
         open={openDialogFilters}
         onChange={setFilters}
