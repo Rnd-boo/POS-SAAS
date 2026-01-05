@@ -1,13 +1,38 @@
-export const HEADER_TABLE_BOM = [
-  "NO",
-  "Bill Of Material",
-  "Code",
-  "Product",
-  "Unit",
-  "Type",
-  "Status",
-  "Action",
+import { FilterConfig } from "@/types/general";
+
+export const FILTER_TABLE_BOM: Omit<FilterConfig, "options">[] = [
+  {
+    key: "name",
+    label: "BOM Name",
+    type: "text",
+  },
+  {
+    key: "code",
+    label: "BOM Code",
+    type: "text",
+  },
+  {
+    key: "products",
+    label: "Product",
+    type: "combobox",
+  },
+  {
+    key: "product_units",
+    label: "Product Unit",
+    type: "combobox",
+  },
+   {
+    key: "type",
+    label: "Type",
+    type: "select",
+  },
+  {
+    key: "status",
+    label: "Status",
+    type: "select",
+  },
 ];
+
 
 export const INITIAL_BOM = {
   name: "",

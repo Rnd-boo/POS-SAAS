@@ -13,7 +13,7 @@ import {
   SearchIcon,
   Trash2,
 } from "lucide-react";
-import { ReactNode, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Product } from "@/validations/product-validation";
 import { FILTER_TABLE_PRODUCT } from "@/constants/product.constant";
@@ -24,11 +24,7 @@ import DialogDeleteProduct from "./dialog-delete-product";
 import DialogFilters from "@/components/common/dialog-filters";
 import { STATUS_LIST } from "@/constants/general.constant";
 import { applyFilterQuery } from "@/hooks/use-filter-query";
-import {
-  ColumnDef,
-  ColumnOrderState,
-  SortingState,
-} from "@tanstack/react-table";
+import { ColumnDef, SortingState } from "@tanstack/react-table";
 import DropdownAction from "@/components/common/dropdown-action";
 import { DataTable } from "@/components/common/tanstack-table";
 import {
@@ -49,7 +45,6 @@ export default function ProductManagement() {
   const {
     currentLimit,
     currentPage,
-    handleChangeLimit,
     handleChangePage,
     currentSearch,
     handleChangeSearch,
@@ -306,7 +301,7 @@ export default function ProductManagement() {
         refetch={refetch}
         currentData={selectedAction?.data}
         handleChangeAction={handleChangeAction}
-      />{" "}
+      />
       <DialogFilters
         configs={FILTER_TABLE_PRODUCT.map((config) => {
           if (config.key === "categories_id") {
