@@ -34,6 +34,7 @@ import { applyFilterQuery } from "@/hooks/use-filter-query";
 import { CATEGORY_TABLE_PRODUCT } from "@/constants/category.constant";
 import { STATUS_LIST } from "@/constants/general.constant";
 import DialogFilters from "@/components/common/dialog-filters";
+import PageHeader from "@/components/common/page-header";
 
 export default function CategoryManagement() {
   const supabase = createClient();
@@ -79,6 +80,8 @@ export default function CategoryManagement() {
 
       if (sort) {
         query.order(sort.id, { ascending: sort.desc ? false : true });
+      } else {
+        query.order("created_at", { ascending: false });
       }
       query = applyFilterQuery(query, filters);
 
@@ -207,52 +210,14 @@ export default function CategoryManagement() {
 
   return (
     <div className="w-full">
-      <div className="flex flex-col lg:flex-row mb-4 gap-2 justify-between w-full">
-        <h1 className="text-2xl font-semibold">Category Management</h1>
-      </div>
-      <div className="mb-2 flex justify-between">
-        <div className="flex gap-2 w-full max-w-md">
-          <InputGroup className="max-w-sm">
-            <InputGroupInput
-              placeholder="Search by category name"
-              onChange={(e) => handleChangeSearch(e.target.value)}
-            />
-            <InputGroupAddon>
-              <SearchIcon />
-            </InputGroupAddon>
-          </InputGroup>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setOpenDialogFilters(true)}
-          >
-            <Funnel />
-            Filters
-            {Object.keys(filters).length > 0 && (
-              <>
-                <span className="text-xs font-medium bg-accent rounded-full px-2 py-0.5">
-                  {Object.keys(filters).length}
-                </span>
-                <span
-                  className="ml-1 size-6 rounded hover:bg-muted cursor-pointer"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setFilters({});
-                  }}
-                >
-                  x
-                </span>
-              </>
-            )}
-          </Button>
-        </div>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button variant="outline">Create</Button>
-          </DialogTrigger>
-          <DialogCreateCategory refetch={refetch} />
-        </Dialog>
-      </div>
+      <PageHeader
+        handleChangeSearch={handleChangeSearch}
+        title="category"
+        filters={filters}
+        setFilters={setFilters}
+        setOpenDialogFilters={setOpenDialogFilters}
+        DialogCreateComponent={<DialogCreateCategory refetch={refetch} />}
+      />
       <DataTable
         data={data}
         columns={columns}

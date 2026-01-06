@@ -40,6 +40,7 @@ export default function DialogFilters({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
+        className="w-full"
         onEscapeKeyDown={(e) => {
           e.preventDefault();
         }}
@@ -50,7 +51,7 @@ export default function DialogFilters({
         {configs?.map((config) => (
           <div
             key={config.key}
-            className="grid grid-cols-[1fr_3fr] items-center gap-x-2"
+            className=" grid grid-cols-[1fr_2fr] items-center gap-x-2"
           >
             <div className="text-end">{config.label} :</div>
             {config.type === "select" ? (
