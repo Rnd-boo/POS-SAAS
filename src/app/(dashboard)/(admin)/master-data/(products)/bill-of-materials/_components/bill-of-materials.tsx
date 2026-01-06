@@ -61,7 +61,7 @@ export default function BillOfMaterials() {
       const result = await supabase
         .from("bill_of_materials")
         .select(
-          `id, name, code, type, products_id, product_units_id, status, description, products(name), 
+          `id, name, code, type, products_id, product_units_id, status, description, products(id,name), 
             product_units (
               id,products_id,units_id,
               units (id, name)
@@ -94,13 +94,6 @@ export default function BillOfMaterials() {
 
   const handleClickAction = (type: string) => {
     router.push(`${pathname}/${type}`);
-  };
-
-  const handleView = (row: (string | ReactNode)[], rowIndex: number) => {
-    const data = billOfMaterials?.data?.[rowIndex];
-    if (data) {
-      router.push(`${pathname}/${data.id}`);
-    }
   };
 
   const data: BillOfMaterials[] = billOfMaterials?.data || [];
@@ -300,6 +293,24 @@ export default function BillOfMaterials() {
             return {
               ...config,
               options: STATUS_LIST,
+            };
+          } else if (config.key === "products") {
+            return {
+              ...config,
+              options: billOfMaterials?.data?.map((bom) => ({
+                value: (bom.products as unknown as { id: string }).id,
+                label: (bom.products as unknown as { name: string }).name,
+              })),
+            };
+          } else if (config.key === "product_units") {
+            return {
+              ...config,
+              options: billOfMaterials?.data?.map((bom) => ({
+                value: (bom.product_units as unknown as { units: Unit }).units
+                  .id,
+                label: (bom.product_units as unknown as { units: Unit }).units
+                  .name,
+              })),
             };
           } else if (config.key === "type") {
             return {
