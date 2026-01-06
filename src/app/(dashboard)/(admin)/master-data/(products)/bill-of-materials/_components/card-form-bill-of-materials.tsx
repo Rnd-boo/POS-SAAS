@@ -48,7 +48,7 @@ export default function CardFormBillOfMaterials({
               setActiveMapping={setActiveMapping}
               form={form}
               setOpen={setOpenDialog}
-              type="Create"
+              type={type}
             />
           </CardContent>
         </Card>
@@ -60,7 +60,7 @@ export default function CardFormBillOfMaterials({
             <FormProductBOM
               displayNames={displayNames}
               form={form}
-              type="Create"
+              type={type}
               setOpen={setOpenDialog}
               setActiveMapping={setActiveMapping}
             />
@@ -71,7 +71,7 @@ export default function CardFormBillOfMaterials({
               variant="outline"
               onClick={() => router.back()}
             >
-              Cancel
+              {type === "Detail" ? "Back" : "Cancel"}
             </Button>
             {type !== "Detail" && (
               <Button type="submit">

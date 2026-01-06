@@ -115,12 +115,14 @@ export default function FormProductBOM({
               disabled
             />
             <FormInput
+              readOnly={type === "Detail"}
               form={form}
               label=""
               name={`product_bom.${index}.qty`}
               placeholder="Quantity"
             />
             <FormInput
+              readOnly={type === "Detail"}
               form={form}
               label=""
               name={`product_bom.${index}.wastePercentage`}
@@ -158,6 +160,7 @@ export default function FormProductBOM({
       )}
       <Separator className="my-4" />
       <FormInput
+        readOnly={type === "Detail"}
         type="textarea"
         form={form}
         label="Description"

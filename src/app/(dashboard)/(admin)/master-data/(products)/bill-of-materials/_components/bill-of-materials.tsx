@@ -31,6 +31,7 @@ import { DataTable } from "@/components/common/tanstack-table";
 import DialogFilters from "@/components/common/dialog-filters";
 import { FILTER_TABLE_BOM } from "@/constants/products/bill-of-materials.constant";
 import { STATUS_LIST } from "@/constants/general.constant";
+import PageHeader from "@/components/common/page-header";
 
 export default function BillOfMaterials() {
   const supabase = createClient();
@@ -233,49 +234,14 @@ export default function BillOfMaterials() {
 
   return (
     <div className="w-full">
-      <div className="flex flex-col lg:flex-row mb-4 gap-2 justify-between w-full">
-        <h1 className="text-2xl font-semibold">Bill Of Materials Management</h1>
-      </div>
-      <div className="mb-2 flex justify-between ">
-        <div className="flex gap-2 w-full max-w-md">
-          <InputGroup className="max-w-sm">
-            <InputGroupInput
-              placeholder="Search by BOM name"
-              onChange={(e) => handleChangeSearch(e.target.value)}
-            />
-            <InputGroupAddon>
-              <SearchIcon />
-            </InputGroupAddon>
-          </InputGroup>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setOpenDialogFilters(true)}
-          >
-            <Funnel />
-            Filters
-            {Object.keys(filters).length > 0 && (
-              <>
-                <span className="text-xs font-medium bg-accent rounded-full px-2 py-0.5">
-                  {Object.keys(filters).length}
-                </span>
-                <span
-                  className="ml-1 size-6 rounded hover:bg-muted cursor-pointer"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setFilters({});
-                  }}
-                >
-                  x
-                </span>
-              </>
-            )}
-          </Button>
-        </div>
-        <Link href={`${pathname}/create`}>
-          <Button variant="outline">Create</Button>
-        </Link>
-      </div>
+      <PageHeader
+        handleChangeSearch={handleChangeSearch}
+        title="bill of materials"
+        filters={filters}
+        setFilters={setFilters}
+        setOpenDialogFilters={setOpenDialogFilters}
+        pathname={pathname}
+      />
       <DataTable
         data={data}
         columns={columns}

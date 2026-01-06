@@ -50,6 +50,7 @@ export default function FormInput<T extends FieldValues>({
                 autoComplete="off"
                 className="resize-none"
                 disabled={disabled}
+                readOnly={readOnly}
               />
             ) : (
               <Input

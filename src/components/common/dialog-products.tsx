@@ -3,7 +3,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Input } from "../ui/input";
 import DataTable from "./data-table";
-import { ReactNode, useMemo, useState } from "react";
+import { ReactNode, useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useAuthStore } from "@/stores/auth-store";
 import useDataTable from "@/hooks/use-data-table";
@@ -126,6 +126,17 @@ export default function DialogProducts({
     onOpenChange(false);
   };
 
+  const productId = form.watch("products_id");
+  const productUnitId = form.watch("product_units_id");
+  useEffect(() => {
+    if (!productId || !productUnitId) return;
+
+    setDisplayNames({
+      ...displayNames,
+      products_id: productId,
+      product_units_id: productUnitId,
+    });
+  }, [productId]);
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent
