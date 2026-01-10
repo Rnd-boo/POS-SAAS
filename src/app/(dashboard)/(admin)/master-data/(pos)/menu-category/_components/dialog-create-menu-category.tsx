@@ -11,7 +11,7 @@ import {
 import {
   INITIAL_MENU_CATEGORY,
   INITIAL_STATE_MENU_CATEGORY,
-} from "@/constants/pos/menu-category";
+} from "@/constants/pos/menu-category.constant";
 import { createMenuCategory } from "../action";
 
 export default function DialogCreateMenuCategory({

@@ -1,9 +1,4 @@
-export const HEADER_TABLE_MENU_CATEGORY = [
-  "NO",
-  "Menu Category",
-  "Status",
-  "Action",
-];
+
 
 export const INITIAL_MENU_CATEGORY = {
   name: "",
