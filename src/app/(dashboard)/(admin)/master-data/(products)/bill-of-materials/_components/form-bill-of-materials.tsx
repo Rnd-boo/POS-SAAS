@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { STATUS_LIST } from "@/constants/general.constant";
+import { UnitProduct } from "@/types/products/product-dialog";
 import { BillOfMaterialsForm } from "@/validations/products/bill-of-materials-validation";
 import { UseFormReturn } from "react-hook-form";
 
@@ -18,13 +19,13 @@ export default function FormBillOfMaterial({
   form,
   type,
   setOpen,
-  displayNames,
+  selectedProduct,
   setActiveMapping,
 }: {
   form: UseFormReturn<BillOfMaterialsForm>;
   type: "Create" | "Detail" | "Update";
   setOpen: (open: boolean) => void;
-  displayNames: Record<string, string>;
+  selectedProduct: Record<string, UnitProduct | null>;
   setActiveMapping: (mapping: Record<string, string>) => void;
 }) {
   const TYPE_LIST = [
@@ -32,7 +33,9 @@ export default function FormBillOfMaterial({
     { value: "diassembly", label: "Diassembly" },
     { value: "menu", label: "Menu" },
   ];
-
+  const selectedProducts = selectedProduct["products_id"];
+  const productId = form.watch("products_id");
+  const productUnitId = form.watch("product_units_id");
   return (
     <>
       <div className="w-full gap-4 grid grid-cols-[1fr_1fr_2fr]">
@@ -59,39 +62,35 @@ export default function FormBillOfMaterial({
         />
       </div>
       <div className="w-full gap-4 grid grid-cols-[2fr_2fr_1fr] mt-4">
-        <FormField
-          control={form.control}
-          name="products_id"
-          render={({ field: { ...rest } }) => (
-            <FormItem className="w-full">
-              <FormLabel>Product</FormLabel>
-              <FormControl>
-                <Input
-                  {...rest}
-                  value={displayNames["products_id"] || ""}
-                  onClick={() => {
-                    setActiveMapping({
-                      products_id: "products_id",
-                      units_id: "product_units_id",
-                    });
-                    setOpen(true);
-                  }}
-                  placeholder="Click for searching products"
-                  disabled={type === "Detail"}
-                />
-              </FormControl>
-              <FormMessage className="text-xs" />
-            </FormItem>
-          )}
-        />
-        <FormInput
-          displayValue={displayNames["product_units_id"] || ""}
-          form={form}
-          label="Unit"
-          name="product_units_id"
-          placeholder="Select product"
-          disabled
-        />
+        <FormItem>
+          <FormLabel>Product</FormLabel>
+          <FormControl>
+            <Input
+              value={selectedProducts?.products?.name ?? productId ?? ""}
+              placeholder="Click for searching products"
+              readOnly
+              disabled={type === "Detail"}
+              onClick={() => {
+                setActiveMapping({
+                  key: "products_id",
+                  products_id: "products_id",
+                  units_id: "product_units_id",
+                });
+                setOpen(true);
+              }}
+            />
+          </FormControl>
+        </FormItem>
+        <FormItem>
+          <FormLabel>Unit</FormLabel>
+          <FormControl>
+            <Input
+              value={selectedProducts?.units?.name ?? productUnitId ?? ""}
+              placeholder="Select product"
+              disabled
+            />
+          </FormControl>
+        </FormItem>
         <FormSelect
           form={form}
           name="status"

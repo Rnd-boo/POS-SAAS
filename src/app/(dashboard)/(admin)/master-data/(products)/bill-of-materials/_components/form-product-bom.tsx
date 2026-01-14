@@ -11,21 +11,26 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+import { UnitProduct } from "@/types/products/product-dialog";
 import { BillOfMaterialsForm } from "@/validations/products/bill-of-materials-validation";
 import { Plus, X } from "lucide-react";
-import { Fragment, useEffect } from "react";
-import { useFieldArray, UseFormReturn } from "react-hook-form";
+import { Dispatch, Fragment, SetStateAction, useEffect } from "react";
+import { useFieldArray, UseFormReturn, useWatch } from "react-hook-form";
 
 export default function FormProductBOM({
   form,
   type,
-  displayNames,
+  selectedProduct,
+  setSelectedProduct,
   setOpen,
   setActiveMapping,
 }: {
   form: UseFormReturn<BillOfMaterialsForm>;
   type: "Detail" | "Create" | "Update";
-  displayNames: Record<string, string>;
+  selectedProduct: Record<string, UnitProduct | null>;
+  setSelectedProduct: Dispatch<
+    SetStateAction<Record<string, UnitProduct | null>>
+  >;
   setOpen: (open: boolean) => void;
   setActiveMapping: (mapping: Record<string, string>) => void;
 }) {
@@ -43,22 +48,6 @@ export default function FormProductBOM({
     });
   };
 
-  useEffect(() => {
-    fields.forEach((item, index) => {
-      const qty = Number(form.watch(`product_bom.${index}.qty`)) || 0;
-      const waste =
-        Number(form.watch(`product_bom.${index}.wastePercentage`)) || 0;
-
-      const wastePercentage = waste / 100;
-
-      const handleWaste = wastePercentage === 0 ? 0 : qty * wastePercentage;
-      form.setValue(
-        `product_bom.${index}.waste`,
-        Number(handleWaste.toFixed(2))
-      );
-    });
-  }, [fields]);
-
   return (
     <>
       <div
@@ -75,77 +64,107 @@ export default function FormProductBOM({
         <Label>Waste%</Label>
         <Label>Waste QTY</Label>
         {type !== "Detail" && <div></div>}
-        {fields.map((field, index) => (
-          <Fragment key={field.id}>
-            <FormField
-              control={form.control}
-              name={`product_bom.${index}.products_id`}
-              render={({ field: { ...rest } }) => (
-                <FormItem className="w-full">
-                  <FormLabel></FormLabel>
-                  <FormControl>
-                    <Input
-                      {...rest}
-                      value={
-                        displayNames[`product_bom.${index}.products_id`] || ""
-                      }
-                      placeholder="Click for searching products"
-                      disabled={type === "Detail"}
-                      onClick={() => {
-                        setActiveMapping({
-                          products_id: `product_bom.${index}.products_id`,
-                          units_id: `product_bom.${index}.product_units_id`,
-                        });
-                        setOpen(true);
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage className="text-xs" />
-                </FormItem>
+        {fields.map((field, index) => {
+          const selectedProducts = selectedProduct[field.id];
+          const productId = form.watch(`product_bom.${index}.products_id`);
+          const productUnitId = form.watch(
+            `product_bom.${index}.product_units_id`
+          );
+          return (
+            <Fragment key={field.id}>
+              <FormItem>
+                <FormLabel></FormLabel>
+                <FormControl>
+                  <Input
+                    value={selectedProducts?.products?.name ?? productId ?? ""}
+                    placeholder="Click for searching products"
+                    readOnly
+                    disabled={type === "Detail"}
+                    onClick={() => {
+                      setActiveMapping({
+                        key: field.id,
+                        products_id: `product_bom.${index}.products_id`,
+                        units_id: `product_bom.${index}.product_units_id`,
+                      });
+                      setOpen(true);
+                    }}
+                  />
+                </FormControl>
+              </FormItem>
+              <FormItem>
+                <FormLabel></FormLabel>
+                <FormControl>
+                  <Input
+                    value={selectedProducts?.units?.name ?? productUnitId ?? ""}
+                    placeholder="Select product"
+                    disabled
+                  />
+                </FormControl>
+              </FormItem>
+              <FormInput
+                readOnly={type === "Detail"}
+                form={form}
+                label=""
+                name={`product_bom.${index}.qty`}
+                placeholder="Quantity"
+                onChange={(e) => {
+                  const qty = Number(e) || 0;
+                  const wastePercentage =
+                    Number(
+                      form.getValues(`product_bom.${index}.wastePercentage`)
+                    ) || 0;
+
+                  const waste = qty * (wastePercentage / 100);
+
+                  form.setValue(
+                    `product_bom.${index}.waste`,
+                    Number(waste.toFixed(2)),
+                    { shouldDirty: false }
+                  );
+                }}
+              />
+              <FormInput
+                readOnly={type === "Detail"}
+                form={form}
+                label=""
+                name={`product_bom.${index}.wastePercentage`}
+                onChange={(e) => {
+                  const wastePercentage = Number(e) || 0;
+                  const qty =
+                    Number(form.getValues(`product_bom.${index}.qty`)) || 0;
+
+                  const waste = qty * (wastePercentage / 100);
+
+                  form.setValue(
+                    `product_bom.${index}.waste`,
+                    Number(waste.toFixed(2)),
+                    { shouldDirty: false }
+                  );
+                }}
+              />
+              <FormInput
+                form={form}
+                label=""
+                name={`product_bom.${index}.waste`}
+                disabled
+              />
+              {fields.length > 1 && type !== "Detail" && (
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="destructive"
+                  onClick={() => {
+                    remove(index);
+                    setSelectedProduct(({ [field.id]: _, ...rest }) => rest);
+                  }}
+                  className="cursor-pointer mt-2"
+                >
+                  <X />
+                </Button>
               )}
-            />
-            <FormInput
-              displayValue={
-                displayNames[`product_bom.${index}.product_units_id`] || ""
-              }
-              form={form}
-              label=""
-              name={`product_bom.${index}.product_units_id`}
-              placeholder="Select product"
-              disabled
-            />
-            <FormInput
-              readOnly={type === "Detail"}
-              form={form}
-              label=""
-              name={`product_bom.${index}.qty`}
-              placeholder="Quantity"
-            />
-            <FormInput
-              readOnly={type === "Detail"}
-              form={form}
-              label=""
-              name={`product_bom.${index}.wastePercentage`}
-            />
-            <FormInput
-              form={form}
-              label=""
-              name={`product_bom.${index}.waste`}
-              disabled
-            />
-            {fields.length > 1 && type !== "Detail" && (
-              <Button
-                type="button"
-                size="icon"
-                variant="destructive"
-                onClick={() => remove(index)}
-                className="cursor-pointer mt-2"
-              >
-                <X />
-              </Button>
-            )}
-          </Fragment>
-        ))}
+            </Fragment>
+          );
+        })}
       </div>
       {type !== "Detail" && (
         <Button

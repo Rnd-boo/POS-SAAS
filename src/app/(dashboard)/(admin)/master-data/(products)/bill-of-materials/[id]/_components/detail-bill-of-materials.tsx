@@ -29,7 +29,7 @@ export default function DetailBillOfMaterials() {
     defaultValues: INITIAL_BOM,
   });
 
-  const { data: billOfMaterials, isLoading: isLoadingbillOfMaterials } =
+  const { data: billOfMaterials, isLoading: isLoadingBillOfMaterials } =
     useQuery({
       queryKey: ["billOfMaterials", billOfMaterialsId],
       queryFn: async () => {
@@ -56,10 +56,39 @@ export default function DetailBillOfMaterials() {
       enabled: !!currentId && !!billOfMaterialsId,
     });
 
+  const {
+    data: productBillOfMaterials,
+    isLoading: isLoadingProductBillOfMaterials,
+  } = useQuery({
+    queryKey: ["productBillOfMaterials", billOfMaterialsId],
+    queryFn: async () => {
+      const result = await supabase
+        .from("product_bill_of_materials")
+        .select(
+          `id, qty, waste, bill_of_materials(id), products(name), 
+            product_units (
+              id,products_id,units_id,
+              units (name)
+              )`
+        )
+        .eq("clients_id", currentId)
+        .eq("bill_of_materials.id", billOfMaterialsId);
+
+      if (result.error)
+        toast.error("Get billOfMaterials Data Failed", {
+          description: result.error.message,
+        });
+
+      return result.data;
+    },
+    enabled: !!currentId && !!billOfMaterialsId,
+  });
+
   useEffect(() => {
     form.setValue("name", billOfMaterials?.name);
     form.setValue("type", billOfMaterials?.type);
     form.setValue("code", billOfMaterials?.code);
+    form.setValue("description", billOfMaterials?.description);
     form.setValue(
       "products_id",
       (billOfMaterials?.products as { name?: string })?.name ?? ""
@@ -72,8 +101,23 @@ export default function DetailBillOfMaterials() {
 
     form.setValue("code", billOfMaterials?.code);
     form.setValue("status", billOfMaterials?.status ? "true" : "false");
-  }, [billOfMaterials, form]);
 
-  console.log(form.getValues());
+    if (productBillOfMaterials) {
+      const formattedproductBillOfMaterials = productBillOfMaterials.map(
+        (item) => ({
+          products_id: String(
+            (item.products as unknown as { name: string }).name
+          ),
+          product_units_id: String(
+            (item.product_units as unknown as { units: Unit }).units.name
+          ),
+          qty: item.qty,
+          waste: item.waste,
+          wastePercentage: (item.waste / item.qty) * 100,
+        })
+      );
+      form.setValue("product_bom", formattedproductBillOfMaterials);
+    }
+  }, [billOfMaterials, form]);
   return <CardFormBillOfMaterials type="Detail" form={form} />;
 }

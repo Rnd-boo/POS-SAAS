@@ -15,6 +15,7 @@ import DialogProducts from "@/components/common/dialog-products";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { UnitProduct } from "@/types/products/product-dialog";
 
 export default function CardFormBillOfMaterials({
   form,
@@ -31,8 +32,11 @@ export default function CardFormBillOfMaterials({
   const [activeMapping, setActiveMapping] = useState<Record<string, string>>(
     {}
   );
-  const [displayNames, setDisplayNames] = useState({});
+  const [selectedProduct, setSelectedProduct] = useState<
+    Record<string, UnitProduct | null>
+  >({});
   const router = useRouter();
+
   return (
     <Form {...form}>
       <form onSubmit={onSubmit} className="w-full">
@@ -44,7 +48,7 @@ export default function CardFormBillOfMaterials({
           </CardHeader>
           <CardContent>
             <FormBillOfMaterial
-              displayNames={displayNames}
+              selectedProduct={selectedProduct}
               setActiveMapping={setActiveMapping}
               form={form}
               setOpen={setOpenDialog}
@@ -58,7 +62,8 @@ export default function CardFormBillOfMaterials({
           </CardHeader>
           <CardContent>
             <FormProductBOM
-              displayNames={displayNames}
+              setSelectedProduct={setSelectedProduct}
+              selectedProduct={selectedProduct}
               form={form}
               type={type}
               setOpen={setOpenDialog}
@@ -81,8 +86,7 @@ export default function CardFormBillOfMaterials({
           </CardFooter>
         </Card>
         <DialogProducts
-          displayNames={displayNames}
-          setDisplayNames={setDisplayNames}
+          setSelectedProduct={setSelectedProduct}
           open={openDialog}
           onOpenChange={setOpenDialog}
           form={form}
