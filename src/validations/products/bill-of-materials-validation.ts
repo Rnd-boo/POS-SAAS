@@ -27,6 +27,7 @@ export const billOfMaterialsFormSchema = z.object({
   product_units_id: z.string().min(1, "Product Unit is required"),
   status: z.string().min(1, "Status is required"),
   description: z.string().optional(),
+  brand_id: z.string().optional(),
   product_bom: z.array(productBOMSchema),
 });
 

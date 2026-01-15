@@ -14,7 +14,7 @@ import {
   type SortingState,
   type VisibilityState,
 } from "@tanstack/react-table";
-import { ChevronDown, RotateCw } from "lucide-react";
+import { ChevronDown, RefreshCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -45,6 +45,7 @@ export function DataTable<TData extends { id: string | number }>({
   sorting,
   refetch,
   pathname,
+  onRowClick,
   setSelectedAction,
 }: {
   columns: ColumnDef<TData>[];
@@ -57,6 +58,7 @@ export function DataTable<TData extends { id: string | number }>({
   sorting?: SortingState;
   refetch: () => void;
   pathname?: string;
+  onRowClick?: (data: TData) => void;
   setSelectedAction?: React.Dispatch<
     React.SetStateAction<{
       data: TData;
@@ -132,7 +134,7 @@ export function DataTable<TData extends { id: string | number }>({
                     onClick={() => refetch()}
                     variant="outline"
                   >
-                    <RotateCw />
+                    <RefreshCcw />
                   </Button>
                 </div>
               </TableCell>
@@ -168,7 +170,9 @@ export function DataTable<TData extends { id: string | number }>({
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                   onClick={() => {
-                    if (pathname) {
+                    if (onRowClick) {
+                      onRowClick(row.original);
+                    } else if (pathname) {
                       router.push(`${pathname}/${row.original.id}`);
                     } else {
                       setSelectedAction?.({

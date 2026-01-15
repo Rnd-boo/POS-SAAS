@@ -33,7 +33,7 @@ export default function FormBillOfMaterial({
     { value: "diassembly", label: "Diassembly" },
     { value: "menu", label: "Menu" },
   ];
-  const selectedProducts = selectedProduct["products_id"];
+  const selectedProducts = selectedProduct["bill_of_materials"];
   const productId = form.watch("products_id");
   const productUnitId = form.watch("product_units_id");
   return (
@@ -72,7 +72,7 @@ export default function FormBillOfMaterial({
               disabled={type === "Detail"}
               onClick={() => {
                 setActiveMapping({
-                  key: "products_id",
+                  key: "bill_of_materials",
                   products_id: "products_id",
                   units_id: "product_units_id",
                 });

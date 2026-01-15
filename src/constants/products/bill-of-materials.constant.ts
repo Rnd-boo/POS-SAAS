@@ -21,7 +21,7 @@ export const FILTER_TABLE_BOM: Omit<FilterConfig, "options">[] = [
     label: "Product Unit",
     type: "combobox",
   },
-   {
+  {
     key: "type",
     label: "Type",
     type: "select",
@@ -32,7 +32,6 @@ export const FILTER_TABLE_BOM: Omit<FilterConfig, "options">[] = [
     type: "select",
   },
 ];
-
 
 export const INITIAL_BOM = {
   name: "",

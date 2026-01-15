@@ -8,7 +8,7 @@ import {
 import { Form } from "@/components/ui/form";
 import FormProductBOM from "./form-product-bom";
 import FormBillOfMaterial from "./form-bill-of-materials";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { BillOfMaterialsForm } from "@/validations/products/bill-of-materials-validation";
 import DialogProducts from "@/components/common/dialog-products";

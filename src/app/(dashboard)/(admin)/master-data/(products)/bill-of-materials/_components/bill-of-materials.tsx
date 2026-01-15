@@ -1,32 +1,18 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import useDataTable from "@/hooks/use-data-table";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import {
-  ArrowDown,
-  ArrowUp,
-  Funnel,
-  Pencil,
-  SearchIcon,
-  Trash2,
-} from "lucide-react";
-import { ReactNode, useMemo, useState } from "react";
+import { ArrowDown, ArrowUp, Pencil, Trash2 } from "lucide-react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useAuthStore } from "@/stores/auth-store";
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import type { BillOfMaterials } from "@/validations/products/bill-of-materials-validation";
 import { Unit } from "@/validations/unit-validation";
 import { ColumnDef, SortingState } from "@tanstack/react-table";
 import DropdownAction from "@/components/common/dropdown-action";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "@/components/ui/input-group";
 import { DataTable } from "@/components/common/tanstack-table";
 import DialogFilters from "@/components/common/dialog-filters";
 import { FILTER_TABLE_BOM } from "@/constants/products/bill-of-materials.constant";
@@ -43,7 +29,6 @@ export default function BillOfMaterials() {
   const [sorting, setSorting] = useState<SortingState>([]);
 
   const {
-    currentLimit,
     currentPage,
     handleChangePage,
     currentSearch,
@@ -57,7 +42,7 @@ export default function BillOfMaterials() {
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ["billOfMaterials", currentPage, currentLimit, currentSearch],
+    queryKey: ["billOfMaterials", currentPage, currentSearch],
     queryFn: async () => {
       const result = await supabase
         .from("bill_of_materials")
@@ -70,7 +55,7 @@ export default function BillOfMaterials() {
           { count: "exact" }
         )
         .eq("clients_id", currentId)
-        .range((currentPage - 1) * currentLimit, currentPage * currentLimit - 1)
+        .range((currentPage - 1) * 10, currentPage * 10 - 1)
         .order("name")
         .or(`name.ilike.%${currentSearch}%,code.ilike.%${currentSearch}%`);
       setTotalData(result.count || 0);
@@ -228,7 +213,7 @@ export default function BillOfMaterials() {
 
   const totalPages = useMemo(() => {
     return billOfMaterials && billOfMaterials.count !== null
-      ? Math.ceil(billOfMaterials.count / currentLimit)
+      ? Math.ceil(billOfMaterials.count / 10)
       : 0;
   }, [billOfMaterials]);
 

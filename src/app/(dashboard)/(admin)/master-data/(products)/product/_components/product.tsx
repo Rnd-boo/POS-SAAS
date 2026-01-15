@@ -43,7 +43,6 @@ export default function ProductManagement() {
   const [sorting, setSorting] = useState<SortingState>([]);
 
   const {
-    currentLimit,
     currentPage,
     handleChangePage,
     currentSearch,
@@ -70,14 +69,7 @@ export default function ProductManagement() {
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: [
-      "products",
-      currentPage,
-      currentLimit,
-      currentSearch,
-      filters,
-      sorting,
-    ],
+    queryKey: ["products", currentPage, currentSearch, filters, sorting],
     queryFn: async () => {
       let query = supabase
         .from("products")
@@ -88,7 +80,7 @@ export default function ProductManagement() {
           { count: "exact" }
         )
         .eq("clients_id", currentId)
-        .range((currentPage - 1) * currentLimit, currentPage * currentLimit - 1)
+        .range((currentPage - 1) * 10, currentPage * 10 - 1)
         .ilike("name", `%${currentSearch}%`);
 
       const sort = sorting[0];
@@ -236,7 +228,7 @@ export default function ProductManagement() {
 
   const totalPages = useMemo(() => {
     return products && products.count !== null
-      ? Math.ceil(products.count / currentLimit)
+      ? Math.ceil(products.count / 10)
       : 0;
   }, [products]);
   return (

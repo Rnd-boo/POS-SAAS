@@ -72,7 +72,7 @@ export default function DetailBillOfMaterials() {
               )`
         )
         .eq("clients_id", currentId)
-        .eq("bill_of_materials.id", billOfMaterialsId);
+        .eq("bill_of_materials", billOfMaterialsId);
 
       if (result.error)
         toast.error("Get billOfMaterials Data Failed", {
@@ -88,7 +88,12 @@ export default function DetailBillOfMaterials() {
     form.setValue("name", billOfMaterials?.name);
     form.setValue("type", billOfMaterials?.type);
     form.setValue("code", billOfMaterials?.code);
-    form.setValue("description", billOfMaterials?.description);
+    form.setValue(
+      "description",
+      billOfMaterials?.description === null
+        ? "No Description"
+        : billOfMaterials?.description
+    );
     form.setValue(
       "products_id",
       (billOfMaterials?.products as { name?: string })?.name ?? ""
@@ -118,6 +123,6 @@ export default function DetailBillOfMaterials() {
       );
       form.setValue("product_bom", formattedproductBillOfMaterials);
     }
-  }, [billOfMaterials, form]);
+  }, [billOfMaterials, productBillOfMaterials, form]);
   return <CardFormBillOfMaterials type="Detail" form={form} />;
 }

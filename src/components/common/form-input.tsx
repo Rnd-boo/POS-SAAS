@@ -19,8 +19,8 @@ export default function FormInput<T extends FieldValues>({
   disabled = false,
   className,
   isLoading,
-  readOnly,
-  displayValue,
+  readOnly = false,
+  onChange,
 }: {
   form: UseFormReturn<T>;
   name: Path<T>;
@@ -31,7 +31,7 @@ export default function FormInput<T extends FieldValues>({
   className?: string;
   isLoading?: boolean;
   readOnly?: boolean;
-  displayValue?: string | number;
+  onChange?: (value: string) => void;
 }) {
   return (
     <FormField
@@ -55,12 +55,14 @@ export default function FormInput<T extends FieldValues>({
             ) : (
               <Input
                 {...rest}
-                value={displayValue ?? rest.value}
                 type={type}
                 placeholder={placeholder}
                 autoComplete="off"
                 disabled={disabled}
                 readOnly={readOnly}
+                onChange={
+                  onChange ? (e) => onChange(e.target.value) : rest.onChange
+                }
               />
             )}
           </FormControl>

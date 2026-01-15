@@ -1,20 +1,11 @@
 "use client";
 
 import DropdownAction from "@/components/common/dropdown-action";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import useDataTable from "@/hooks/use-data-table";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import {
-  ArrowDown,
-  ArrowUp,
-  Funnel,
-  Pencil,
-  SearchIcon,
-  Trash2,
-} from "lucide-react";
+import { ArrowDown, ArrowUp, Pencil, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import DialogCreateCategory from "./dialog-create-category";
@@ -24,12 +15,6 @@ import DialogDeleteCategory from "./dialog-delete-category";
 import { useAuthStore } from "@/stores/auth-store";
 import { DataTable } from "@/components/common/tanstack-table";
 import { ColumnDef, SortingState } from "@tanstack/react-table";
-
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "@/components/ui/input-group";
 import { applyFilterQuery } from "@/hooks/use-filter-query";
 import { CATEGORY_TABLE_PRODUCT } from "@/constants/category.constant";
 import { STATUS_LIST } from "@/constants/general.constant";
@@ -44,9 +29,7 @@ export default function CategoryManagement() {
   const [filters, setFilters] = useState<Record<string, string>>({});
 
   const {
-    currentLimit,
     currentPage,
-    handleChangeLimit,
     handleChangePage,
     currentSearch,
     handleChangeSearch,
@@ -62,7 +45,6 @@ export default function CategoryManagement() {
     queryKey: [
       "categories",
       currentPage,
-      currentLimit,
       currentSearch,
       currentId,
       sorting,
@@ -73,7 +55,7 @@ export default function CategoryManagement() {
         .from("categories")
         .select("id, name, description, status", { count: "exact" })
         .eq("clients_id", currentId)
-        .range((currentPage - 1) * currentLimit, currentPage * currentLimit - 1)
+        .range((currentPage - 1) * 10, currentPage * 10 - 1)
         .ilike("name", `%${currentSearch}%`);
 
       const sort = sorting[0];
@@ -109,7 +91,7 @@ export default function CategoryManagement() {
 
   const totalPages = useMemo(() => {
     return categories && categories.count !== null
-      ? Math.ceil(categories.count / currentLimit)
+      ? Math.ceil(categories.count / 10)
       : 0;
   }, [categories]);
 

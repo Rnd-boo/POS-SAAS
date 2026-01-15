@@ -2,8 +2,7 @@
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Input } from "../ui/input";
-import DataTable from "./data-table";
-import { ReactNode, useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useAuthStore } from "@/stores/auth-store";
 import useDataTable from "@/hooks/use-data-table";
@@ -11,43 +10,39 @@ import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Category } from "@/validations/category-validation";
-import { Funnel, RefreshCcw } from "lucide-react";
+import { ArrowDown, ArrowUp, Funnel, RefreshCcw } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 import DialogFilters from "./dialog-filters";
+import { DataTable } from "./tanstack-table";
+import { ColumnDef } from "@tanstack/react-table";
+import { UnitProduct } from "@/types/products/product-dialog";
 
 export default function DialogProducts({
   form,
   open,
   mapping,
   onOpenChange,
-  setDisplayNames,
-  displayNames,
+  setSelectedProduct,
 }: {
   form: UseFormReturn<any>;
   open: boolean;
   mapping: Record<string, string>;
   onOpenChange: (open: boolean) => void;
-  setDisplayNames: (displayNames: Record<string, string>) => void;
-  displayNames: Record<string, string>;
+  setSelectedProduct: React.Dispatch<
+    React.SetStateAction<Record<string, UnitProduct | null>>
+  >;
 }) {
-  const HEADER_TABLE_PRODUCTS_DIALOG = [
-    "No",
-    "Product Name",
-    "Product Code",
-    "Category",
-    "Unit",
-  ];
   const supabase = createClient();
   const currentId = useAuthStore((state) => state.profile?.clients);
   const [openDialogFilters, setOpenDialogFilters] = useState<boolean>(false);
 
   const {
-    currentLimit,
     currentPage,
-    handleChangeLimit,
     handleChangePage,
     currentSearch,
     handleChangeSearch,
+    setTotalData,
+    totalData,
   } = useDataTable();
 
   const {
@@ -55,7 +50,7 @@ export default function DialogProducts({
     isLoading: isLoadingProductUnit,
     refetch,
   } = useQuery({
-    queryKey: ["product_units", currentPage, currentLimit, currentSearch],
+    queryKey: ["product_units", currentPage, currentSearch],
 
     queryFn: async () => {
       const result = await supabase
@@ -69,11 +64,8 @@ export default function DialogProducts({
         .eq("clients_id", currentId)
         .order("products(name)")
         .ilike("products.name", `%${currentSearch}%`)
-        .range(
-          (currentPage - 1) * currentLimit,
-          currentPage * currentLimit - 1
-        );
-
+        .range((currentPage - 1) * 10, currentPage * 10 - 1);
+      setTotalData(result.count || 0);
       if (result.error)
         toast.error("Get Product Data Failed", {
           description: result.error.message,
@@ -81,25 +73,94 @@ export default function DialogProducts({
 
       return result;
     },
-    enabled: !!currentId,
+    enabled: !!currentId && open,
   });
 
-  const filteredData = useMemo(() => {
-    return (productUnit?.data || []).map((product, index) => {
-      return [
-        currentLimit * (currentPage - 1) + index + 1,
-        (product.products as unknown as { name: string })?.name,
-        (product.products as unknown as { upc: string })?.upc,
-        (product.products as unknown as { categories: Category })?.categories
-          .name,
-        (product.units as unknown as { name: string })?.name,
-      ];
-    });
-  }, [productUnit]);
+  const data: UnitProduct[] =
+    productUnit?.data?.map((row) => ({
+      ...row,
+      products: Array.isArray(row.products) ? row.products[0] : row.products,
+      units: Array.isArray(row.units) ? row.units[0] : row.units,
+    })) || [];
+  const columns: ColumnDef<UnitProduct>[] = [
+    {
+      accessorKey: "products",
+      enableHiding: false,
+      header: ({ column }) => {
+        const sorted = column.getIsSorted();
+        return (
+          <div
+            className="flex gap-2 font-medium items-center"
+            onClick={() => column.toggleSorting(undefined, true)}
+          >
+            Product Name
+            {sorted === "asc" && <ArrowUp className="size-3" />}
+            {sorted === "desc" && <ArrowDown className="size-3" />}
+          </div>
+        );
+      },
+      cell: ({ row }) => (
+        <div>{(row.getValue("products") as { name: string })?.name}</div>
+      ),
+    },
+    {
+      accessorKey: "categories",
+      enableHiding: false,
+      header: () => <div>Category</div>,
+      cell: ({ row }) => (
+        <div className="truncate max-w-xs">
+          {
+            (row.getValue("products") as { categories: Category })?.categories
+              .name
+          }
+        </div>
+      ),
+    },
+    {
+      accessorKey: "upc",
+      enableHiding: false,
+      header: ({ column }) => {
+        const sorted = column.getIsSorted();
+        return (
+          <div
+            className="flex gap-2 font-medium items-center"
+            onClick={() => column.toggleSorting(undefined, true)}
+          >
+            Product Code
+            {sorted === "asc" && <ArrowUp className="size-3" />}
+            {sorted === "desc" && <ArrowDown className="size-3" />}
+          </div>
+        );
+      },
+      cell: ({ row }) => (
+        <div>{(row.getValue("products") as { upc: string })?.upc}</div>
+      ),
+    },
+    {
+      accessorKey: "units",
+      enableHiding: false,
+      header: ({ column }) => {
+        const sorted = column.getIsSorted();
+        return (
+          <div
+            className="flex gap-2 font-medium items-center"
+            onClick={() => column.toggleSorting(undefined, true)}
+          >
+            Product Unit
+            {sorted === "asc" && <ArrowUp className="size-3" />}
+            {sorted === "desc" && <ArrowDown className="size-3" />}
+          </div>
+        );
+      },
+      cell: ({ row }) => (
+        <div>{(row.getValue("units") as { name: string }).name}</div>
+      ),
+    },
+  ];
 
   const totalPages = useMemo(() => {
     return productUnit && productUnit.count !== null
-      ? Math.ceil(productUnit.count / currentLimit)
+      ? Math.ceil(productUnit.count / 10)
       : 0;
   }, [productUnit]);
 
@@ -111,36 +172,26 @@ export default function DialogProducts({
       handleChangePage(1);
     }
   };
-  const handleRowClick = (row: (string | ReactNode)[], rowIndex: number) => {
-    const data = productUnit?.data?.[rowIndex];
-    Object.entries(mapping).forEach(([dataKey, formKey]) => {
-      const value = (data as any)[dataKey];
-      const finalValue = typeof value === "object" ? value.name : value;
-      form.setValue(formKey, finalValue);
-    });
-    setDisplayNames({
-      ...displayNames,
-      [mapping.products_id]: (data?.products as { name?: string })?.name ?? "",
-      [mapping.units_id]: (data?.units as { name?: string })?.name ?? "",
-    });
+
+  const handleRowClick = (row: UnitProduct) => {
+    form.setValue(mapping.products_id, row.products_id);
+    form.setValue(mapping.units_id, row.units_id);
+    if (mapping.units_id?.startsWith("product_bom")) {
+      form.setValue(mapping.units_id, String(row.id));
+    }
+    form.setValue("product_units_id", String(row.id));
+    setSelectedProduct((prev) => ({
+      ...prev,
+      [mapping.key]: row,
+    }));
+
     onOpenChange(false);
   };
 
-  const productId = form.watch("products_id");
-  const productUnitId = form.watch("product_units_id");
-  useEffect(() => {
-    if (!productId || !productUnitId) return;
-
-    setDisplayNames({
-      ...displayNames,
-      products_id: productId,
-      product_units_id: productUnitId,
-    });
-  }, [productId]);
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent
-        className="w-full max-w-[1200px] sm:max-w-[1200px]"
+        className="w-full max-w-[1200px] sm:max-w-[1200px] overflow-auto"
         forceMount
       >
         <DialogHeader>
@@ -163,24 +214,16 @@ export default function DialogProducts({
             placeholder="Search by Product Name"
             onChange={(e) => handleChangeSearch(e.target.value)}
           />
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            onClick={() => refetch()}
-          >
-            <RefreshCcw />
-          </Button>
         </div>
         <DataTable
-          handleView={handleRowClick}
-          header={HEADER_TABLE_PRODUCTS_DIALOG}
-          data={filteredData}
+          totalData={totalData}
+          onRowClick={handleRowClick}
+          columns={columns}
+          refetch={refetch}
+          data={data}
           totalPages={totalPages}
           currentPage={currentPage}
-          currentLimit={currentLimit}
           onChangePage={handleChangePage}
-          onChangeLimit={handleChangeLimit}
         />
       </DialogContent>
     </Dialog>
