@@ -6,7 +6,7 @@ export type formState = {
 };
 
 export interface FilterConfig {
-  key: string; // ⬅️ column supabase
+  key: string;
   label: string;
   type: "select" | "combobox" | "text";
   operator?: "eq" | "ilike";

@@ -30,9 +30,7 @@ export default function BranchManagement() {
   const router = useRouter();
   const pathname = usePathname();
   const {
-    currentLimit,
     currentPage,
-    handleChangeLimit,
     handleChangePage,
     currentSearch,
     handleChangeSearch,
@@ -45,14 +43,7 @@ export default function BranchManagement() {
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: [
-      "branch",
-      currentPage,
-      currentLimit,
-      currentSearch,
-      currentId,
-      currentBrandId,
-    ],
+    queryKey: ["branch", currentPage, currentSearch, currentId, currentBrandId],
     queryFn: async () => {
       const result = await supabase
         .from("branch")
@@ -61,7 +52,7 @@ export default function BranchManagement() {
         })
         .eq("clients_id", currentId)
         .eq("brand_id", currentBrandId)
-        .range((currentPage - 1) * currentLimit, currentPage * currentLimit - 1)
+        .range((currentPage - 1) * 10, currentPage * 10 - 1)
         .order("name")
         .ilike("name", `%${currentSearch}%`);
 
@@ -131,7 +122,7 @@ export default function BranchManagement() {
           <div
             className={cn(
               "px-2 py-1 rounded-full text-white w-fit",
-              status ? "bg-green-600" : "bg-red-500"
+              status ? "bg-green-600" : "bg-red-500",
             )}
           >
             {status ? "Active" : "Inactive"}
@@ -182,7 +173,7 @@ export default function BranchManagement() {
 
   const totalPages = useMemo(() => {
     return branches && branches.count !== null
-      ? Math.ceil(branches.count / currentLimit)
+      ? Math.ceil(branches.count / 10)
       : 0;
   }, [branches]);
 

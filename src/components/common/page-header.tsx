@@ -61,7 +61,9 @@ export default function PageHeader({
                     className="ml-1 size-6 rounded hover:bg-muted cursor-pointer"
                     onClick={(e) => {
                       e.stopPropagation();
-                      setFilters && setFilters({});
+                      if (setFilters) {
+                        setFilters({});
+                      }
                     }}
                   >
                     x
