@@ -21,6 +21,7 @@ import PageHeader from "@/components/common/page-header";
 import { Product } from "@/validations/product-validation";
 import { applyFilterQuery } from "@/hooks/use-filter-query";
 import { useBrandStore } from "@/stores/brand-store";
+import DialogDeleteBillOfMaterials from "./dialog-delete-bill-of-materials";
 
 export default function BillOfMaterials() {
   const supabase = createClient();
@@ -305,6 +306,12 @@ export default function BillOfMaterials() {
         onOpenChange={setOpenDialogFilters}
         open={openDialogFilters}
         onChange={setFilters}
+      />
+      <DialogDeleteBillOfMaterials
+        open={selectedAction !== null && selectedAction.type === "delete"}
+        refetch={refetch}
+        currentData={selectedAction?.data}
+        handleChangeAction={handleChangeAction}
       />
     </div>
   );
