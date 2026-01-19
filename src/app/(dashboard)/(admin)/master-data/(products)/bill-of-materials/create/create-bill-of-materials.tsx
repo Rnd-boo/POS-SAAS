@@ -17,6 +17,7 @@ import {
 import CardFormBillOfMaterials from "../_components/card-form-bill-of-materials";
 import { createBillOfMaterials } from "../action";
 import { useBrandStore } from "@/stores/brand-store";
+import { error } from "console";
 
 export default function CreateBillOfMaterials() {
   const router = useRouter();
@@ -30,7 +31,7 @@ export default function CreateBillOfMaterials() {
 
   const [createBOMState, createBOMAction, isPendingcreateBOM] = useActionState(
     createBillOfMaterials,
-    INITIAL_STATE_BOM
+    INITIAL_STATE_BOM,
   );
   const onSubmit = form.handleSubmit(async (data) => {
     // Debug: Log the form data
@@ -62,6 +63,11 @@ export default function CreateBillOfMaterials() {
   }, [createBOMState]);
 
   return (
-    <CardFormBillOfMaterials form={form} type="Create" onSubmit={onSubmit} />
+    <CardFormBillOfMaterials
+      form={form}
+      type="Create"
+      onSubmit={onSubmit}
+      isPending={isPendingcreateBOM}
+    />
   );
 }

@@ -4,7 +4,6 @@ import FormInput from "@/components/common/form-input";
 import FormSelect from "@/components/common/form-select";
 import {
   FormControl,
-  FormField,
   FormItem,
   FormLabel,
   FormMessage,
@@ -21,21 +20,32 @@ export default function FormBillOfMaterial({
   setOpen,
   selectedProduct,
   setActiveMapping,
+  displayNames,
 }: {
   form: UseFormReturn<BillOfMaterialsForm>;
   type: "Create" | "Detail" | "Update";
   setOpen: (open: boolean) => void;
   selectedProduct: Record<string, UnitProduct | null>;
   setActiveMapping: (mapping: Record<string, string>) => void;
+  displayNames?: Record<
+    string,
+    | { productName?: string; unitName?: string }
+    | { productName?: string; unitName?: string }[]
+  >;
 }) {
   const TYPE_LIST = [
     { value: "assembly", label: "Assembly" },
-    { value: "diassembly", label: "Diassembly" },
+    { value: "disassembly", label: "Disassembly" },
     { value: "menu", label: "Menu" },
   ];
   const selectedProducts = selectedProduct["bill_of_materials"];
-  const productId = form.watch("products_id");
-  const productUnitId = form.watch("product_units_id");
+  const productId = (
+    displayNames?.bill_of_materials as { productName?: string } | undefined
+  )?.productName;
+  const productUnitId = (
+    displayNames?.bill_of_materials as { unitName?: string } | undefined
+  )?.unitName;
+
   return (
     <>
       <div className="w-full gap-4 grid grid-cols-[1fr_1fr_2fr]">
@@ -80,6 +90,7 @@ export default function FormBillOfMaterial({
               }}
             />
           </FormControl>
+          <FormMessage className="text-xs" />
         </FormItem>
         <FormItem>
           <FormLabel>Unit</FormLabel>

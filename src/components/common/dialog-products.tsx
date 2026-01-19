@@ -35,7 +35,6 @@ export default function DialogProducts({
   const supabase = createClient();
   const currentId = useAuthStore((state) => state.profile?.clients);
   const [openDialogFilters, setOpenDialogFilters] = useState<boolean>(false);
-
   const {
     currentPage,
     handleChangePage,
@@ -59,7 +58,7 @@ export default function DialogProducts({
           `id, products_id, units_id, 
             products!inner(name, upc, categories!inner(name)), 
             units!inner(name)`,
-          { count: "exact" }
+          { count: "exact" },
         )
         .eq("clients_id", currentId)
         .order("products(name)")
@@ -175,11 +174,8 @@ export default function DialogProducts({
 
   const handleRowClick = (row: UnitProduct) => {
     form.setValue(mapping.products_id, row.products_id);
-    form.setValue(mapping.units_id, row.units_id);
-    if (mapping.units_id?.startsWith("product_bom")) {
-      form.setValue(mapping.units_id, String(row.id));
-    }
-    form.setValue("product_units_id", String(row.id));
+    form.setValue(mapping.units_id, String(row.id));
+
     setSelectedProduct((prev) => ({
       ...prev,
       [mapping.key]: row,

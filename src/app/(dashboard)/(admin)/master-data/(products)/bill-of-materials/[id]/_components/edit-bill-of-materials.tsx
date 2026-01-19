@@ -1,32 +1,37 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import CardFormBillOfMaterials from "../../_components/card-form-bill-of-materials";
+import {
+  DisplayName,
+  INITIAL_BOM,
+  INITIAL_STATE_BOM,
+} from "@/constants/products/bill-of-materials.constant";
+import { createClient } from "@/lib/supabase/client";
+import { useAuthStore } from "@/stores/auth-store";
+import { useBrandStore } from "@/stores/brand-store";
 import {
   BillOfMaterialsForm,
   billOfMaterialsFormSchema,
 } from "@/validations/products/bill-of-materials-validation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  DisplayName,
-  INITIAL_BOM,
-} from "@/constants/products/bill-of-materials.constant";
-import { useParams } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
-import { useAuthStore } from "@/stores/auth-store";
-import { useBrandStore } from "@/stores/brand-store";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useParams, useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import CardFormBillOfMaterials from "../../_components/card-form-bill-of-materials";
 import { toast } from "sonner";
-import { useEffect, useState } from "react";
+import { startTransition, useActionState, useEffect, useState } from "react";
 import { Unit } from "@/validations/unit-validation";
-import { Product } from "@/validations/product-validation";
+import { updateBillOfMaterials } from "../../action";
+import { Product, ProductUnit } from "@/validations/product-validation";
+import { error } from "console";
 
-export default function DetailBillOfMaterials() {
+export default function EditBillOfMaterials() {
   const params = useParams();
   const billOfMaterialsId = params?.id as string;
   const supabase = createClient();
   const currentId = useAuthStore((state) => state.profile?.clients);
   const currentBrandId = useBrandStore((s) => s.currentBrandId);
+  const router = useRouter();
+  const queryClient = useQueryClient();
   const [displayNames, setDisplayNames] = useState<
     Record<string, DisplayName | DisplayName[]>
   >({});
@@ -35,7 +40,6 @@ export default function DetailBillOfMaterials() {
     resolver: zodResolver(billOfMaterialsFormSchema),
     defaultValues: INITIAL_BOM,
   });
-
   const { data: billOfMaterials, isLoading: isLoadingBillOfMaterials } =
     useQuery({
       queryKey: ["billOfMaterials", billOfMaterialsId],
@@ -43,26 +47,25 @@ export default function DetailBillOfMaterials() {
         const result = await supabase
           .from("bill_of_materials")
           .select(
-            `id, name, code, type,  product_units_id, status, description, 
+            `id, name, code, type, product_units_id, status, description,  
             product_units (
               id,products_id,units_id,
-              products(name),
-              units (name)
+              products (id,name),
+              units (id,name)
               )`,
           )
           .eq("clients_id", currentId)
-          .eq("brand_id", currentBrandId)
           .eq("id", billOfMaterialsId)
           .single();
 
         if (result.error)
-          toast.error("Get Bill Of Materials Data Failed", {
+          toast.error("Get billOfMaterials Data Failed", {
             description: result.error.message,
           });
 
         return result.data;
       },
-      enabled: !!currentId && !!billOfMaterialsId && !!currentBrandId,
+      enabled: !!currentId && !!billOfMaterialsId,
     });
 
   const {
@@ -74,18 +77,18 @@ export default function DetailBillOfMaterials() {
       const result = await supabase
         .from("product_bill_of_materials")
         .select(
-          `id, qty, waste, bill_of_materials(id),
+          `id, qty, waste, bill_of_materials(id),  
             product_units (
               id,products_id,units_id,
-              products(name), 
-              units (name)
+              products(id,name),
+              units (id,name)
               )`,
         )
         .eq("clients_id", currentId)
         .eq("bill_of_materials", billOfMaterialsId);
 
       if (result.error)
-        toast.error("Get Product Bill Of Materials Data Failed", {
+        toast.error("Get billOfMaterials Data Failed", {
           description: result.error.message,
         });
 
@@ -115,8 +118,7 @@ export default function DetailBillOfMaterials() {
     );
     form.setValue(
       "product_units_id",
-      (billOfMaterials?.product_units as unknown as { units: Unit })?.units
-        ?.name ?? "",
+      String((billOfMaterials?.product_units as { id?: string })?.id ?? ""),
     );
 
     form.setValue("code", billOfMaterials?.code);
@@ -125,12 +127,7 @@ export default function DetailBillOfMaterials() {
     if (productBillOfMaterials) {
       const formattedproductBillOfMaterials = productBillOfMaterials.map(
         (item) => ({
-          products_id: String(
-            (item.product_units as { products?: Product }).products?.name,
-          ),
-          product_units_id: String(
-            (item.product_units as { units?: Unit }).units?.name,
-          ),
+          product_units_id: String((item.product_units as { id?: string })?.id),
           qty: item.qty,
           waste: item.waste,
           wastePercentage: (item.waste / item.qty) * 100,
@@ -149,10 +146,54 @@ export default function DetailBillOfMaterials() {
       }));
     }
   }, [billOfMaterials, productBillOfMaterials, form]);
+
+  const [updateBOMState, updateBOMAction, isPendingUpdateBOM] = useActionState(
+    updateBillOfMaterials,
+    INITIAL_STATE_BOM,
+  );
+  console.log(form.getValues("product_units_id"));
+  const onSubmit = form.handleSubmit(
+    async (data) => {
+      // Debug: Log the form data
+      const formData = new FormData();
+      Object.entries(data).forEach(([key, value]) => {
+        if (key === "product_bom") {
+          formData.append("product_bom", JSON.stringify(value));
+        } else {
+          formData.append(key, String(value ?? ""));
+        }
+      });
+      formData.append("brand_id", String(currentBrandId));
+      formData.append("id", String(billOfMaterialsId));
+      startTransition(() => {
+        updateBOMAction(formData);
+      });
+    },
+    (errors) => {
+      console.log(errors);
+    },
+  );
+  useEffect(() => {
+    if (updateBOMState?.status === "error") {
+      toast.error("Update Bill Of Material Failed", {
+        description: updateBOMState.errors?._form?.[0],
+      });
+    }
+    if (updateBOMState?.status === "success") {
+      toast.success("Update Bill Of Material Success");
+      form.reset();
+      queryClient.refetchQueries({ queryKey: ["billOfMaterials"] });
+      queryClient.refetchQueries({ queryKey: ["productBillOfMaterials"] });
+      router.push("/master-data/bill-of-materials");
+    }
+  }, [updateBOMState]);
+
   return (
     <CardFormBillOfMaterials
-      type="Detail"
       form={form}
+      type="Update"
+      onSubmit={onSubmit}
+      isPending={isPendingUpdateBOM}
       displayNames={displayNames}
     />
   );

@@ -1,5 +1,7 @@
 import { FilterConfig } from "@/types/general";
 
+export type DisplayName = { productName?: string; unitName?: string };
+
 export const FILTER_TABLE_BOM: Omit<FilterConfig, "options">[] = [
   {
     key: "name",
@@ -12,12 +14,12 @@ export const FILTER_TABLE_BOM: Omit<FilterConfig, "options">[] = [
     type: "text",
   },
   {
-    key: "products",
+    key: "product_units.products.id",
     label: "Product",
     type: "combobox",
   },
   {
-    key: "product_units",
+    key: "product_units.units.id",
     label: "Product Unit",
     type: "combobox",
   },
@@ -37,7 +39,6 @@ export const INITIAL_BOM = {
   name: "",
   code: "",
   type: "",
-  products_id: "",
   product_units_id: "",
   description: "",
   status: "",
@@ -58,10 +59,10 @@ export const INITIAL_STATE_BOM = {
     name: [],
     code: [],
     type: [],
-    products_id: [],
     product_units_id: [],
     description: [],
     status: [],
+    product_bom: [],
     _form: [],
   },
 };

@@ -18,6 +18,9 @@ import DialogFilters from "@/components/common/dialog-filters";
 import { FILTER_TABLE_BOM } from "@/constants/products/bill-of-materials.constant";
 import { STATUS_LIST } from "@/constants/general.constant";
 import PageHeader from "@/components/common/page-header";
+import { Product } from "@/validations/product-validation";
+import { applyFilterQuery } from "@/hooks/use-filter-query";
+import { useBrandStore } from "@/stores/brand-store";
 
 export default function BillOfMaterials() {
   const supabase = createClient();
@@ -27,7 +30,7 @@ export default function BillOfMaterials() {
   const [openDialogFilters, setOpenDialogFilters] = useState<boolean>(false);
   const [filters, setFilters] = useState<Record<string, string>>({});
   const [sorting, setSorting] = useState<SortingState>([]);
-
+  const currentBrandId = useBrandStore((s) => s.currentBrandId);
   const {
     currentPage,
     handleChangePage,
@@ -42,22 +45,34 @@ export default function BillOfMaterials() {
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ["billOfMaterials", currentPage, currentSearch],
+    queryKey: [
+      "billOfMaterials",
+      currentPage,
+      currentSearch,
+      filters,
+      currentBrandId,
+    ],
     queryFn: async () => {
-      const result = await supabase
+      let query = supabase
         .from("bill_of_materials")
         .select(
-          `id, name, code, type, products_id, product_units_id, status, description, products(id,name), 
-            product_units (
+          `id, name, code, type, product_units_id, status, description,  
+            product_units!inner (
               id,products_id,units_id,
-              units (id, name)
+              products!inner (id,name),
+              units!inner (id, name)
               )`,
-          { count: "exact" }
+          { count: "exact" },
         )
         .eq("clients_id", currentId)
+        .eq("brand_id", currentBrandId)
         .range((currentPage - 1) * 10, currentPage * 10 - 1)
         .order("name")
         .or(`name.ilike.%${currentSearch}%,code.ilike.%${currentSearch}%`);
+
+      query = applyFilterQuery(query, filters);
+
+      const result = await query;
       setTotalData(result.count || 0);
       if (result.error)
         toast.error("Get BOM Data Failed", {
@@ -87,11 +102,12 @@ export default function BillOfMaterials() {
     {
       accessorKey: "name",
       enableHiding: false,
+      enablePinning: true,
       header: ({ column }) => {
         const sorted = column.getIsSorted();
         return (
           <div
-            className="flex gap-2 font-medium items-center"
+            className="flex gap-2 font-medium items-center "
             onClick={() => column.toggleSorting(undefined, true)}
           >
             Bill Of Material Name
@@ -125,7 +141,10 @@ export default function BillOfMaterials() {
       header: () => <div>Product</div>,
       cell: ({ row }) => (
         <div className="truncate max-w-xs">
-          {(row.getValue("products") as unknown as { name: string }).name}
+          {
+            (row.getValue("product_units") as { products: Product }).products
+              .name
+          }
         </div>
       ),
     },
@@ -135,10 +154,7 @@ export default function BillOfMaterials() {
       header: () => <div>Product Unit</div>,
       cell: ({ row }) => (
         <div className="truncate max-w-xs">
-          {
-            (row.getValue("product_units") as unknown as { units: Unit }).units
-              .name
-          }
+          {(row.getValue("product_units") as { units: Unit }).units.name}
         </div>
       ),
     },
@@ -162,7 +178,7 @@ export default function BillOfMaterials() {
           <div
             className={cn(
               "px-2 py-1 rounded-full text-white w-fit",
-              status ? "bg-green-600" : "bg-red-500"
+              status ? "bg-green-600" : "bg-red-500",
             )}
           >
             {status ? "Active" : "Inactive"}
@@ -173,6 +189,7 @@ export default function BillOfMaterials() {
     {
       id: "actions",
       enableHiding: false,
+      enablePinning: true,
       header: () => <div className="flex justify-center">Actions</div>,
       cell: ({ row }) => {
         return (
@@ -240,35 +257,46 @@ export default function BillOfMaterials() {
       />{" "}
       <DialogFilters
         configs={FILTER_TABLE_BOM.map((config) => {
+          const optionsProduct = Array.from(
+            new Map(
+              billOfMaterials?.data
+                ?.map(
+                  (bom) =>
+                    (bom.product_units as { products?: Product })?.products,
+                )
+                .filter((p): p is Product => Boolean(p))
+                .map((p) => [p.id, { value: p.id, label: p.name }]),
+            ).values(),
+          );
+          const optionsProductUnit = Array.from(
+            new Map(
+              billOfMaterials?.data
+                ?.map((bom) => (bom.product_units as { units?: Unit })?.units)
+                .filter((p): p is Unit => Boolean(p))
+                .map((p) => [p.id, { value: p.id, label: p.name }]),
+            ).values(),
+          );
           if (config.key === "status") {
             return {
               ...config,
               options: STATUS_LIST,
             };
-          } else if (config.key === "products") {
+          } else if (config.key === "product_units.products.id") {
             return {
               ...config,
-              options: billOfMaterials?.data?.map((bom) => ({
-                value: (bom.products as unknown as { id: string }).id,
-                label: (bom.products as unknown as { name: string }).name,
-              })),
+              options: optionsProduct,
             };
-          } else if (config.key === "product_units") {
+          } else if (config.key === "product_units.units.id") {
             return {
               ...config,
-              options: billOfMaterials?.data?.map((bom) => ({
-                value: (bom.product_units as unknown as { units: Unit }).units
-                  .id,
-                label: (bom.product_units as unknown as { units: Unit }).units
-                  .name,
-              })),
+              options: optionsProductUnit,
             };
           } else if (config.key === "type") {
             return {
               ...config,
               options: [
                 { label: "Assembly", value: "assembly" },
-                { label: "Dissambly", value: "dissambly" },
+                { label: "Disassembly", value: "disassembly" },
               ],
             };
           }

@@ -4,6 +4,7 @@ import { FormControl, FormItem, FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { DisplayName } from "@/constants/products/bill-of-materials.constant";
 import { cn } from "@/lib/utils";
 import { UnitProduct } from "@/types/products/product-dialog";
 import { BillOfMaterialsForm } from "@/validations/products/bill-of-materials-validation";
@@ -18,6 +19,7 @@ export default function FormProductBOM({
   setSelectedProduct,
   setOpen,
   setActiveMapping,
+  displayNames,
 }: {
   form: UseFormReturn<BillOfMaterialsForm>;
   type: "Detail" | "Create" | "Update";
@@ -27,6 +29,7 @@ export default function FormProductBOM({
   >;
   setOpen: (open: boolean) => void;
   setActiveMapping: (mapping: Record<string, string>) => void;
+  displayNames?: Record<string, DisplayName | DisplayName[]>;
 }) {
   const { fields, append, remove } = useFieldArray({
     control: form.control,
@@ -34,12 +37,18 @@ export default function FormProductBOM({
   });
   const handleAddProductBOM = () => {
     append({
-      products_id: "",
       product_units_id: "",
       qty: 0,
       wastePercentage: 0,
       waste: 0,
     });
+  };
+
+  const getDisplayName = (index: number) => {
+    const displayProductBOMNames = displayNames?.product_bom;
+    if (!Array.isArray(displayProductBOMNames))
+      return { productName: "", unitName: "" };
+    return displayProductBOMNames[index] || { productName: "", unitName: "" };
   };
 
   return (
@@ -49,7 +58,7 @@ export default function FormProductBOM({
           "grid gap-x-2 ",
           type === "Detail"
             ? "grid-cols-[2fr_1fr_1fr_1fr_1fr]"
-            : "grid-cols-[2fr_1fr_1fr_1fr_1fr_auto]"
+            : "grid-cols-[2fr_1fr_1fr_1fr_1fr_auto]",
         )}
       >
         <Label>Product</Label>
@@ -60,17 +69,22 @@ export default function FormProductBOM({
         {type !== "Detail" && <div></div>}
         {fields.map((field, index) => {
           const selectedProducts = selectedProduct[field.id];
-          const productId = form.watch(`product_bom.${index}.products_id`);
-          const productUnitId = form.watch(
-            `product_bom.${index}.product_units_id`
-          );
+
+          const {
+            productName: updateProductName,
+            unitName: updateUnitProductName,
+          } = getDisplayName(index);
           return (
             <Fragment key={field.id}>
               <FormItem>
                 <FormLabel></FormLabel>
                 <FormControl>
                   <Input
-                    value={selectedProducts?.products?.name ?? productId ?? ""}
+                    value={
+                      selectedProducts?.products?.name ??
+                      updateProductName ??
+                      ""
+                    }
                     placeholder="Click for searching products"
                     readOnly
                     disabled={type === "Detail"}
@@ -89,7 +103,11 @@ export default function FormProductBOM({
                 <FormLabel></FormLabel>
                 <FormControl>
                   <Input
-                    value={selectedProducts?.units?.name ?? productUnitId ?? ""}
+                    value={
+                      selectedProducts?.units?.name ??
+                      updateUnitProductName ??
+                      ""
+                    }
                     placeholder="Select product"
                     disabled
                   />
@@ -105,7 +123,7 @@ export default function FormProductBOM({
                   const qty = Number(e) || 0;
                   const wastePercentage =
                     Number(
-                      form.getValues(`product_bom.${index}.wastePercentage`)
+                      form.getValues(`product_bom.${index}.wastePercentage`),
                     ) || 0;
 
                   const waste = qty * (wastePercentage / 100);
@@ -113,7 +131,7 @@ export default function FormProductBOM({
                   form.setValue(
                     `product_bom.${index}.waste`,
                     Number(waste.toFixed(2)),
-                    { shouldDirty: false }
+                    { shouldDirty: false },
                   );
                 }}
               />
@@ -132,7 +150,7 @@ export default function FormProductBOM({
                   form.setValue(
                     `product_bom.${index}.waste`,
                     Number(waste.toFixed(2)),
-                    { shouldDirty: false }
+                    { shouldDirty: false },
                   );
                 }}
               />

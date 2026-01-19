@@ -35,7 +35,7 @@ export default function ViewProduct() {
         .select(
           `*,client_profiles:client_profiles_id(name), categories:categories_id(
             name
-          )`
+          )`,
         )
         .eq("clients_id", currentId)
         .eq("id", productId)
@@ -55,7 +55,7 @@ export default function ViewProduct() {
     form.setValue("name", product?.name);
     form.setValue(
       "description",
-      product?.description?.trim() || "No Description"
+      product?.description?.trim() || "No Description",
     );
     form.setValue("status", product?.status ? "Active" : "Not Active");
     form.setValue("upc", product?.upc);
@@ -70,7 +70,7 @@ export default function ViewProduct() {
         .select(
           `id,is_base_unit, products_id, units_id, conversion_factor, is_sales_unit, units(
             name
-          )`
+          )`,
         )
         .eq("clients_id", currentId)
         .eq("products_id", product?.id);
@@ -90,6 +90,7 @@ export default function ViewProduct() {
       const formattedUnits = productUnit
         .filter((unit) => unit && unit.units && unit.conversion_factor)
         .map((unit) => ({
+          products_id: unit.products_id,
           units_id: (unit.units as unknown as { name: string }).name,
           conversion_factor: String(unit.conversion_factor),
           base_unit: unit.is_base_unit,

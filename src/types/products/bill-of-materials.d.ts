@@ -8,7 +8,6 @@ export type BillOfMaterialsFormState = {
     description?: string[];
     status?: string[];
     product_units_id?: string[];
-    products_id?: string[];
     _form?: string[];
   };
 };
