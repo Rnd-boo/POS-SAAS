@@ -23,14 +23,13 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
+import PageHeader from "@/components/common/page-header";
 
 export default function UnitManagement() {
   const supabase = createClient();
   const currentId = useAuthStore((state) => state.profile?.clients);
   const {
-    currentLimit,
     currentPage,
-    handleChangeLimit,
     handleChangePage,
     currentSearch,
     handleChangeSearch,
@@ -43,13 +42,13 @@ export default function UnitManagement() {
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ["units", currentPage, currentLimit, currentSearch, currentId],
+    queryKey: ["units", currentPage, currentSearch, currentId],
     queryFn: async () => {
       const result = await supabase
         .from("units")
         .select("id, name, notes, status", { count: "exact" })
         .eq("clients_id", currentId)
-        .range((currentPage - 1) * currentLimit, currentPage * currentLimit - 1)
+        .range((currentPage - 1) * 10, currentPage * 10 - 1)
         .order("created_at")
         .ilike("name", `%${currentSearch}%`);
 
@@ -106,7 +105,7 @@ export default function UnitManagement() {
           <div
             className={cn(
               "px-2 py-1 rounded-full text-white w-fit",
-              status ? "bg-green-600" : "bg-red-500"
+              status ? "bg-green-600" : "bg-red-500",
             )}
           >
             {status ? "Active" : "Inactive"}
@@ -159,35 +158,16 @@ export default function UnitManagement() {
   ];
 
   const totalPages = useMemo(() => {
-    return units && units.count !== null
-      ? Math.ceil(units.count / currentLimit)
-      : 0;
+    return units && units.count !== null ? Math.ceil(units.count / 10) : 0;
   }, [units]);
 
   return (
     <div className="w-full">
-      <div className="flex flex-col lg:flex-row mb-4 gap-2 justify-between w-full">
-        <h1 className="text-2xl font-semibold">Unit Of Measure Management</h1>
-      </div>
-      <div className="mb-2 flex justify-between">
-        <div className="flex gap-2 w-full max-w-md">
-          <InputGroup className="max-w-sm">
-            <InputGroupInput
-              placeholder="Search by unit name"
-              onChange={(e) => handleChangeSearch(e.target.value)}
-            />
-            <InputGroupAddon>
-              <SearchIcon />
-            </InputGroupAddon>
-          </InputGroup>
-        </div>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button variant="outline">Create</Button>
-          </DialogTrigger>
-          <DialogCreateUnit refetch={refetch} />
-        </Dialog>
-      </div>
+      <PageHeader
+        title="unit"
+        DialogCreateComponent={<DialogCreateUnit refetch={refetch} />}
+        handleChangeSearch={handleChangeSearch}
+      />
       <DataTable
         data={data}
         columns={columns}

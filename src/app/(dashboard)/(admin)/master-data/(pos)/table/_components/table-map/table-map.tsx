@@ -1,9 +1,5 @@
 "use client";
 
-import DataTable from "@/components/common/data-table";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogTrigger } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import useDataTable from "@/hooks/use-data-table";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
@@ -13,13 +9,16 @@ import { ReactNode, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useAuthStore } from "@/stores/auth-store";
 import { useBrandStore } from "@/stores/brand-store";
-import { HEADER_TABLE_TABLE_MAP } from "@/constants/pos/table.constant";
 import DialogCreateTableMap from "./dialog-create-table-map";
 import DialogDeleteTableMap from "./dialog-delete-table-map";
 import DialogDetailTableMap from "./dialog-detail-table-map";
 import DialogUpdateTableMap from "./dialog-update-table-map";
 import { Card, CardContent } from "@/components/ui/card";
 import { TableMap } from "@/validations/pos/table.validation";
+import PageHeader from "@/components/common/page-header";
+import { DataTable } from "@/components/common/tanstack-table";
+import { ColumnDef } from "@tanstack/react-table";
+import DropdownAction from "@/components/common/dropdown-action";
 
 export default function TableMapManagement() {
   const supabase = createClient();
@@ -27,12 +26,12 @@ export default function TableMapManagement() {
   const currentId = useAuthStore((state) => state.profile?.clients);
 
   const {
-    currentLimit,
     currentPage,
-    handleChangeLimit,
     handleChangePage,
     currentSearch,
     handleChangeSearch,
+    totalData,
+    setTotalData,
   } = useDataTable();
 
   const {
@@ -43,7 +42,6 @@ export default function TableMapManagement() {
     queryKey: [
       "table_map",
       currentPage,
-      currentLimit,
       currentSearch,
       currentId,
       currentBrandId,
@@ -56,14 +54,15 @@ export default function TableMapManagement() {
           client_profiles:client_profiles_id(name)`,
           {
             count: "exact",
-          }
+          },
         )
         .eq("clients_id", currentId)
         .eq("brand_id", currentBrandId)
-        .range((currentPage - 1) * currentLimit, currentPage * currentLimit - 1)
+        .range((currentPage - 1) * 10, currentPage * 10 - 1)
         .order("name")
         .ilike("name", `%${currentSearch}%`);
 
+      setTotalData(result.count || 0);
       if (result.error)
         toast.error("Get Table Map Data Failed", {
           description: result.error.message,
@@ -93,86 +92,119 @@ export default function TableMapManagement() {
     }
   };
 
-  const filteredData = useMemo(() => {
-    return (tableMap?.data || []).map((table, index) => {
-      return [
-        currentLimit * (currentPage - 1) + index + 1,
-        table.name,
-        (table.branch as unknown as { name: string }).name,
-        <div
-          className={cn(
-            "px-2 py-1 rounded-full text-white w-fit",
-            table.status ? "bg-green-600" : "bg-red-500"
-          )}
-        >
-          {table.status ? "Active" : "Not Active"}
-        </div>,
-        <div className="flex  gap-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="cursor-pointer size-6 hover:text-muted-foreground hover:!bg-muted-foreground/40"
-            onClick={() => {
-              setSelectedAction({
-                data: table,
-                type: "update",
-              });
-            }}
+  const data: TableMap[] = tableMap?.data || [];
+  const columns: ColumnDef<TableMap>[] = [
+    {
+      accessorKey: "name",
+      enableHiding: false,
+      header: () => {
+        return (
+          <div className="flex gap-2 font-medium items-center">
+            Table Map Name
+          </div>
+        );
+      },
+      cell: ({ row }) => <div>{row.getValue("name")}</div>,
+    },
+    {
+      accessorKey: "branch",
+      enableHiding: false,
+      header: () => {
+        return (
+          <div className="flex gap-2 font-medium items-center">Branch Name</div>
+        );
+      },
+      cell: ({ row }) => (
+        <div>
+          {(row.getValue("branch") as unknown as { name: string }).name}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "status",
+      enableHiding: false,
+      header: () => <div>Status</div>,
+      cell: ({ row }) => {
+        const status = row.getValue("status");
+
+        return (
+          <div
+            className={cn(
+              "px-2 py-1 rounded-full text-white w-fit",
+              status ? "bg-green-600" : "bg-red-500",
+            )}
           >
-            <Pencil />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="cursor-pointer size-6 text-destructive hover:text-muted-foreground hover:!bg-muted-foreground/40"
-            onClick={() => {
-              setSelectedAction({
-                data: table,
-                type: "delete",
-              });
-            }}
-          >
-            <Trash2 />
-          </Button>
-        </div>,
-      ];
-    });
-  }, [tableMap]);
+            {status ? "Active" : "Inactive"}
+          </div>
+        );
+      },
+    },
+    {
+      id: "actions",
+      enableHiding: false,
+      header: () => <div className="flex justify-center">Actions</div>,
+      cell: ({ row }) => {
+        return (
+          <DropdownAction
+            menu={[
+              {
+                label: (
+                  <span className="flex items-center gap-2">
+                    <Pencil />
+                    Edit
+                  </span>
+                ),
+                action: () => {
+                  setSelectedAction({
+                    data: row.original,
+                    type: "update",
+                  });
+                },
+              },
+              {
+                label: (
+                  <span className="flex items-center gap-2">
+                    <Trash2 className="text-red-400" />
+                    Delete
+                  </span>
+                ),
+                variant: "destructive",
+                action: () => {
+                  setSelectedAction({
+                    data: row.original,
+                    type: "delete",
+                  });
+                },
+              },
+            ]}
+          />
+        );
+      },
+    },
+  ];
 
   const totalPages = useMemo(() => {
     return tableMap && tableMap.count !== null
-      ? Math.ceil(tableMap.count / currentLimit)
+      ? Math.ceil(tableMap.count / 10)
       : 0;
   }, [tableMap]);
 
   return (
     <Card className="w-full">
       <CardContent>
-        <div className=" flex lg:flex-row items-center  justify-between mb-4 w-full">
-          <h1 className="font-semibold text-2xl px-2">Table Map</h1>
-          <div className="flex gap-2">
-            <Input
-              placeholder="Search by Table Map"
-              onChange={(e) => handleChangeSearch(e.target.value)}
-            />
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button variant="outline">Create</Button>
-              </DialogTrigger>
-              <DialogCreateTableMap refetch={refetch} />
-            </Dialog>
-          </div>
-        </div>
+        <PageHeader
+          title="table map"
+          DialogCreateComponent={<DialogCreateTableMap refetch={refetch} />}
+          handleChangeSearch={handleChangeSearch}
+        />
         <DataTable
-          handleView={handleViewTable}
-          header={HEADER_TABLE_TABLE_MAP}
-          isLoading={isLoading}
-          data={filteredData}
+          refetch={refetch}
+          data={data}
+          totalData={totalData}
+          columns={columns}
           totalPages={totalPages}
           currentPage={currentPage}
-          currentLimit={currentLimit}
           onChangePage={handleChangePage}
-          onChangeLimit={handleChangeLimit}
         />
         <DialogDetailTableMap
           open={selectedAction !== null && selectedAction.type === "detail"}

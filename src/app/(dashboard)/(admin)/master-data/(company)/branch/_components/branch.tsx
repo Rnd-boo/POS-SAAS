@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import useDataTable from "@/hooks/use-data-table";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
@@ -13,15 +12,10 @@ import { Branch } from "@/validations/branch.validation";
 import DialogDeleteBranch from "./dialog-delete-branch";
 import { useBrandStore } from "@/stores/brand-store";
 import { usePathname, useRouter } from "next/navigation";
-import Link from "next/link";
 import { ColumnDef } from "@tanstack/react-table";
 import DropdownAction from "@/components/common/dropdown-action";
 import { DataTable } from "@/components/common/tanstack-table";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "@/components/ui/input-group";
+import PageHeader from "@/components/common/page-header";
 
 export default function BranchManagement() {
   const supabase = createClient();
@@ -179,25 +173,11 @@ export default function BranchManagement() {
 
   return (
     <div className="w-full">
-      <div className="flex flex-col lg:flex-row mb-4 gap-2 justify-between w-full">
-        <h1 className="text-2xl font-semibold">Product Management</h1>
-      </div>
-      <div className="mb-2 flex justify-between ">
-        <div className="flex gap-2 w-full max-w-md">
-          <InputGroup className="max-w-sm">
-            <InputGroupInput
-              placeholder="Search by Branch name"
-              onChange={(e) => handleChangeSearch(e.target.value)}
-            />
-            <InputGroupAddon>
-              <SearchIcon />
-            </InputGroupAddon>
-          </InputGroup>
-        </div>
-        <Link href={`${pathname}/create`}>
-          <Button variant="outline">Create</Button>
-        </Link>
-      </div>
+      <PageHeader
+        title="branch"
+        pathname={pathname}
+        handleChangeSearch={handleChangeSearch}
+      />
       <DataTable
         data={data}
         columns={columns}

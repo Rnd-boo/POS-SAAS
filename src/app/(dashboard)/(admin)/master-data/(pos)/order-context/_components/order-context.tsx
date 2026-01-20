@@ -1,6 +1,5 @@
 "use client";
 
-import DataTable from "@/components/common/data-table";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -19,6 +18,9 @@ import type { OrderContext } from "@/validations/pos/order-context.validation";
 import DialogCreateOrderContext from "./dialog-create-order-context";
 import DialogUpdateOrderContext from "./dialog-update-order-context";
 import DialogDetailOrderContext from "./dialog-detail-order-context";
+import { DataTable } from "@/components/common/tanstack-table";
+import { ColumnDef } from "@tanstack/react-table";
+import DropdownAction from "@/components/common/dropdown-action";
 
 export default function OrderContext() {
   const supabase = createClient();
@@ -26,12 +28,12 @@ export default function OrderContext() {
   const currentId = useAuthStore((state) => state.profile?.clients);
 
   const {
-    currentLimit,
     currentPage,
-    handleChangeLimit,
     handleChangePage,
     currentSearch,
     handleChangeSearch,
+    totalData,
+    setTotalData,
   } = useDataTable();
 
   const {
@@ -42,7 +44,6 @@ export default function OrderContext() {
     queryKey: [
       "order-context",
       currentPage,
-      currentLimit,
       currentSearch,
       currentBrandId,
       currentId,
@@ -54,13 +55,14 @@ export default function OrderContext() {
           "id,name,status,brand_id,tax_value,tax_name,other_tax_value,other_tax_name",
           {
             count: "exact",
-          }
+          },
         )
         .eq("clients_id", currentId)
         .eq("brand_id", currentBrandId)
         .order("name")
         .ilike("name", `%${currentSearch}%`);
 
+      setTotalData(result.count || 0);
       if (result.error) {
         toast.error("Get Order Context data Failed");
       }
@@ -77,66 +79,103 @@ export default function OrderContext() {
   const handleChangeAction = (open: boolean) => {
     if (!open) setSelectedAction(null);
   };
-
-  const handleViewTable = (row: (string | ReactNode)[], rowIndex: number) => {
-    // Get the raw data for this row
-    const data = orderContexts?.data?.[rowIndex];
-    if (data) {
-      setSelectedAction({
-        data,
-        type: "detail",
-      });
-    }
+  const handleClickAction = (row: OrderContext) => {
+    setSelectedAction({
+      data: row,
+      type: "detail",
+    });
   };
 
-  const filteredData = useMemo(() => {
-    return (orderContexts?.data || []).map((OrderContext, index) => {
-      return [
-        currentLimit * (currentPage - 1) + index + 1,
-        OrderContext.name,
-        <div
-          className={cn(
-            "px-2 py-1 rounded-full text-white w-fit",
-            OrderContext.status ? "bg-green-600" : "bg-red-500"
-          )}
-        >
-          {OrderContext.status ? "Active" : "Inactive"}
-        </div>,
-        <div className="flex  gap-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="cursor-pointer size-6 hover:text-muted-foreground hover:!bg-muted-foreground/40"
-            onClick={() => {
-              setSelectedAction({
-                data: OrderContext,
-                type: "update",
-              });
-            }}
+  const data: OrderContext[] = orderContexts?.data || [];
+  const columns: ColumnDef<OrderContext>[] = [
+    {
+      accessorKey: "name",
+      enableHiding: false,
+      header: ({ column }) => {
+        return (
+          <div className="flex gap-2 font-medium items-center">
+            Order Context Name
+          </div>
+        );
+      },
+      cell: ({ row }) => <div>{row.getValue("name")}</div>,
+    },
+    {
+      accessorKey: "notes",
+      enableHiding: false,
+      header: () => <div>Notes</div>,
+      cell: ({ row }) => (
+        <div className="truncate max-w-xs">
+          {row.getValue("notes") !== null ? row.getValue("notes") : "-"}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "status",
+      enableHiding: false,
+      header: () => <div>Status</div>,
+      cell: ({ row }) => {
+        const status = row.getValue("status");
+
+        return (
+          <div
+            className={cn(
+              "px-2 py-1 rounded-full text-white w-fit",
+              status ? "bg-green-600" : "bg-red-500",
+            )}
           >
-            <Pencil />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="cursor-pointer size-6 text-destructive hover:text-muted-foreground hover:!bg-muted-foreground/40"
-            onClick={() => {
-              setSelectedAction({
-                data: OrderContext,
-                type: "delete",
-              });
-            }}
-          >
-            <Trash2 />
-          </Button>
-        </div>,
-      ];
-    });
-  }, [orderContexts]);
+            {status ? "Active" : "Inactive"}
+          </div>
+        );
+      },
+    },
+    {
+      id: "actions",
+      enableHiding: false,
+      header: () => <div className="flex justify-center">Actions</div>,
+      cell: ({ row }) => {
+        return (
+          <DropdownAction
+            menu={[
+              {
+                label: (
+                  <span className="flex items-center gap-2">
+                    <Pencil />
+                    Edit
+                  </span>
+                ),
+                action: () => {
+                  setSelectedAction({
+                    data: row.original,
+                    type: "update",
+                  });
+                },
+              },
+              {
+                label: (
+                  <span className="flex items-center gap-2">
+                    <Trash2 className="text-red-400" />
+                    Delete
+                  </span>
+                ),
+                variant: "destructive",
+                action: () => {
+                  setSelectedAction({
+                    data: row.original,
+                    type: "delete",
+                  });
+                },
+              },
+            ]}
+          />
+        );
+      },
+    },
+  ];
 
   const totalPages = useMemo(() => {
     return orderContexts && orderContexts.count !== null
-      ? Math.ceil(orderContexts.count / currentLimit)
+      ? Math.ceil(orderContexts.count / 10)
       : 0;
   }, [orderContexts]);
   return (
@@ -157,15 +196,14 @@ export default function OrderContext() {
         </div>
       </div>
       <DataTable
-        handleView={handleViewTable}
-        header={HEADER_TABLE_ORDER_CONTEXT}
-        isLoading={isLoading}
-        data={filteredData}
+        onRowClick={handleClickAction}
+        totalData={totalData}
+        refetch={refetch}
+        data={data}
+        columns={columns}
         totalPages={totalPages}
         currentPage={currentPage}
-        currentLimit={currentLimit}
         onChangePage={handleChangePage}
-        onChangeLimit={handleChangeLimit}
       />
       <DialogDeleteOrderContext
         open={selectedAction !== null && selectedAction.type === "delete"}

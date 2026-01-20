@@ -34,8 +34,8 @@ export default function CardFormBranch({
 
   return (
     <Form {...form}>
-      <form onSubmit={onSubmit}>
-        <Card className="w-full">
+      <form onSubmit={onSubmit} className="w-full">
+        <Card>
           <CardHeader>
             <CardTitle>{type} Branch</CardTitle>
             <CardDescription>

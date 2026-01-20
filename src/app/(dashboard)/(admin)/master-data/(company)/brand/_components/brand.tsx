@@ -1,7 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import useDataTable from "@/hooks/use-data-table";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
@@ -15,14 +13,10 @@ import DialogCreateBrand from "./dialog-create-brand";
 import DialogDeleteBrand from "./dialog-delete-brand";
 import DialogDetailBrand from "./dialog-detail-brand";
 import DialogUpdateBrand from "./dialog-update-brand";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "@/components/ui/input-group";
 import { ColumnDef } from "@tanstack/react-table";
 import DropdownAction from "@/components/common/dropdown-action";
 import { DataTable } from "@/components/common/tanstack-table";
+import PageHeader from "@/components/common/page-header";
 
 export default function BrandManagement() {
   const supabase = createClient();
@@ -30,9 +24,7 @@ export default function BrandManagement() {
   const currentId = useAuthStore((state) => state.profile?.clients);
 
   const {
-    currentLimit,
     currentPage,
-    handleChangeLimit,
     handleChangePage,
     currentSearch,
     setTotalData,
@@ -45,7 +37,7 @@ export default function BrandManagement() {
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ["brand", currentPage, currentLimit, currentSearch, currentId],
+    queryKey: ["brand", currentPage, currentSearch, currentId],
     queryFn: async () => {
       const result = await supabase
         .from("brand")
@@ -54,10 +46,10 @@ export default function BrandManagement() {
           client_profiles:client_profiles_id(name)`,
           {
             count: "exact",
-          }
+          },
         )
         .eq("clients_id", currentId)
-        .range((currentPage - 1) * currentLimit, currentPage * currentLimit - 1)
+        .range((currentPage - 1) * 10, currentPage * 10 - 1)
         .order("name")
         .ilike("name", `%${currentSearch}%`);
 
@@ -112,7 +104,7 @@ export default function BrandManagement() {
           <div
             className={cn(
               "px-2 py-1 rounded-full text-white w-fit",
-              status ? "bg-green-600" : "bg-red-500"
+              status ? "bg-green-600" : "bg-red-500",
             )}
           >
             {status ? "Active" : "Inactive"}
@@ -165,35 +157,16 @@ export default function BrandManagement() {
   ];
 
   const totalPages = useMemo(() => {
-    return brands && brands.count !== null
-      ? Math.ceil(brands.count / currentLimit)
-      : 0;
+    return brands && brands.count !== null ? Math.ceil(brands.count / 10) : 0;
   }, [brands]);
 
   return (
     <div className="w-full">
-      <div className="flex flex-col lg:flex-row mb-4 gap-2 justify-between w-full">
-        <h1 className="text-2xl font-semibold">Product Management</h1>
-      </div>
-      <div className="mb-2 flex justify-between ">
-        <div className="flex gap-2 w-full max-w-md">
-          <InputGroup className="max-w-sm">
-            <InputGroupInput
-              placeholder="Search by product name"
-              onChange={(e) => handleChangeSearch(e.target.value)}
-            />
-            <InputGroupAddon>
-              <SearchIcon />
-            </InputGroupAddon>
-          </InputGroup>
-        </div>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button variant="outline">Create</Button>
-          </DialogTrigger>
-          <DialogCreateBrand refetch={refetch} />
-        </Dialog>
-      </div>
+      <PageHeader
+        title="brand"
+        handleChangeSearch={handleChangeSearch}
+        DialogCreateComponent={<DialogCreateBrand refetch={refetch} />}
+      />
       <DataTable
         data={data}
         columns={columns}

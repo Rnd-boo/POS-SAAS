@@ -111,7 +111,7 @@ export default function TableLayout() {
       const result = await supabase
         .from("table")
         .select(
-          "id,name,status,position_x,width,height,position_y,capacity,shape"
+          "id,name,status,position_x,width,height,position_y,capacity,shape",
         )
         .eq("clients_id", currentId)
         .eq("table_map_id", selectedTableMap);
@@ -156,7 +156,7 @@ export default function TableLayout() {
             (c: any) =>
               ((c.type === "position" || c.type === "selected") &&
                 c.position) ||
-              c.selected
+              c.selected,
           );
 
           draggedNode.forEach((change: any) => {
@@ -180,7 +180,7 @@ export default function TableLayout() {
         return updated;
       });
     },
-    [setNodes, setValue, edit, fields]
+    [setNodes, setValue, edit, fields],
   );
 
   const handleAddTable = useCallback(() => {
@@ -248,7 +248,7 @@ export default function TableLayout() {
     <Card>
       <CardContent>
         <ReactFlowProvider>
-          <h1 className="font-semibold text-2xl px-2">Table Layout</h1>
+          <h1 className="font-semibold text-2xl ">Table Layout</h1>
           <div className="w-full flex justify-between mt-4">
             <div className="flex gap-2">
               <Select
