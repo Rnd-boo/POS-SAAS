@@ -1,7 +1,6 @@
 import { startTransition, useActionState, useEffect } from "react";
 import { toast } from "sonner";
 import DialogDelete from "@/components/common/dialog-delete";
-import { Branch } from "@/validations/branch.validation";
 import { INITIAL_STATE_BOM } from "@/constants/products/bill-of-materials.constant";
 import { deleteBillOfMaterials } from "../action";
 import { BillOfMaterials } from "@/validations/products/bill-of-materials-validation";

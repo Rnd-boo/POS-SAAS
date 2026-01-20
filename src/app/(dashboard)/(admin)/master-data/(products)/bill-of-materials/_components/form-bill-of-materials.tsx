@@ -4,6 +4,7 @@ import FormInput from "@/components/common/form-input";
 import FormSelect from "@/components/common/form-select";
 import {
   FormControl,
+  FormField,
   FormItem,
   FormLabel,
   FormMessage,
@@ -72,26 +73,32 @@ export default function FormBillOfMaterial({
         />
       </div>
       <div className="w-full gap-4 grid grid-cols-[2fr_2fr_1fr] mt-4">
-        <FormItem>
-          <FormLabel>Product</FormLabel>
-          <FormControl>
-            <Input
-              value={selectedProducts?.products?.name ?? productId ?? ""}
-              placeholder="Click for searching products"
-              readOnly
-              disabled={type === "Detail"}
-              onClick={() => {
-                setActiveMapping({
-                  key: "bill_of_materials",
-                  products_id: "products_id",
-                  units_id: "product_units_id",
-                });
-                setOpen(true);
-              }}
-            />
-          </FormControl>
-          <FormMessage className="text-xs" />
-        </FormItem>
+        <FormField
+          control={form.control}
+          name={`product_units_id`}
+          render={() => (
+            <FormItem>
+              <FormLabel>Product</FormLabel>
+              <FormControl>
+                <Input
+                  value={selectedProducts?.products?.name ?? productId ?? ""}
+                  placeholder="Click for searching products"
+                  readOnly
+                  disabled={type === "Detail"}
+                  onClick={() => {
+                    setActiveMapping({
+                      key: "bill_of_materials",
+                      products_id: "products_id",
+                      units_id: "product_units_id",
+                    });
+                    setOpen(true);
+                  }}
+                />
+              </FormControl>
+              <FormMessage className="text-xs" />
+            </FormItem>
+          )}
+        />
         <FormItem>
           <FormLabel>Unit</FormLabel>
           <FormControl>

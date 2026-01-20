@@ -112,9 +112,7 @@ export default function EditBillOfMaterials() {
     form.setValue("code", billOfMaterials?.code);
     form.setValue(
       "description",
-      billOfMaterials?.description === null
-        ? "No Description"
-        : billOfMaterials?.description,
+      billOfMaterials?.description === null ? "" : billOfMaterials?.description,
     );
     form.setValue(
       "product_units_id",
@@ -128,7 +126,7 @@ export default function EditBillOfMaterials() {
       const formattedproductBillOfMaterials = productBillOfMaterials.map(
         (item) => ({
           product_units_id: String((item.product_units as { id?: string })?.id),
-          qty: item.qty,
+          qty: String(item.qty),
           waste: item.waste,
           wastePercentage: (item.waste / item.qty) * 100,
         }),

@@ -46,7 +46,7 @@ export const INITIAL_BOM = {
     {
       products_id: "",
       product_units_id: "",
-      qty: 0,
+      qty: "",
       wastePercentage: 0,
       waste: 0,
     },

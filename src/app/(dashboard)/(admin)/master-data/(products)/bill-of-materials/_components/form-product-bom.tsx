@@ -1,6 +1,12 @@
 import FormInput from "@/components/common/form-input";
 import { Button } from "@/components/ui/button";
-import { FormControl, FormItem, FormLabel } from "@/components/ui/form";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -38,7 +44,7 @@ export default function FormProductBOM({
   const handleAddProductBOM = () => {
     append({
       product_units_id: "",
-      qty: 0,
+      qty: "",
       wastePercentage: 0,
       waste: 0,
     });
@@ -55,7 +61,7 @@ export default function FormProductBOM({
     <>
       <div
         className={cn(
-          "grid gap-x-2 ",
+          "grid gap-x-2 gap-y-2",
           type === "Detail"
             ? "grid-cols-[2fr_1fr_1fr_1fr_1fr]"
             : "grid-cols-[2fr_1fr_1fr_1fr_1fr_auto]",
@@ -69,61 +75,76 @@ export default function FormProductBOM({
         {type !== "Detail" && <div></div>}
         {fields.map((field, index) => {
           const selectedProducts = selectedProduct[field.id];
-
+          const qty = form.watch(`product_bom.${index}.qty`);
           const {
             productName: updateProductName,
             unitName: updateUnitProductName,
           } = getDisplayName(index);
+
           return (
             <Fragment key={field.id}>
-              <FormItem>
-                <FormLabel></FormLabel>
-                <FormControl>
-                  <Input
-                    value={
-                      selectedProducts?.products?.name ??
-                      updateProductName ??
-                      ""
-                    }
-                    placeholder="Click for searching products"
-                    readOnly
-                    disabled={type === "Detail"}
-                    onClick={() => {
-                      setActiveMapping({
-                        key: field.id,
-                        products_id: `product_bom.${index}.products_id`,
-                        units_id: `product_bom.${index}.product_units_id`,
-                      });
-                      setOpen(true);
-                    }}
-                  />
-                </FormControl>
-              </FormItem>
-              <FormItem>
-                <FormLabel></FormLabel>
-                <FormControl>
-                  <Input
-                    value={
-                      selectedProducts?.units?.name ??
-                      updateUnitProductName ??
-                      ""
-                    }
-                    placeholder="Select product"
-                    disabled
-                  />
-                </FormControl>
-              </FormItem>
+              <FormField
+                control={form.control}
+                name={`product_bom.${index}.product_units_id`}
+                render={() => (
+                  <FormItem>
+                    <FormLabel></FormLabel>
+                    <FormControl>
+                      <Input
+                        value={
+                          selectedProducts?.products?.name ??
+                          updateProductName ??
+                          ""
+                        }
+                        readOnly
+                        placeholder="Click for searching products"
+                        disabled={type === "Detail"}
+                        onClick={() => {
+                          setActiveMapping({
+                            key: field.id,
+                            products_id: `product_bom.${index}.products_id`,
+                            units_id: `product_bom.${index}.product_units_id`,
+                          });
+                          setOpen(true);
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage className="text-xs" />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name={`product_bom.${index}.product_units_id`}
+                render={() => (
+                  <FormItem>
+                    <FormLabel></FormLabel>
+                    <FormControl>
+                      <Input
+                        value={
+                          selectedProducts?.units?.name ??
+                          updateUnitProductName ??
+                          ""
+                        }
+                        placeholder="Select product"
+                        disabled
+                      />
+                    </FormControl>
+                    <FormMessage className="text-xs" />
+                  </FormItem>
+                )}
+              />
               <FormInput
-                readOnly={type === "Detail"}
                 form={form}
                 label=""
                 name={`product_bom.${index}.qty`}
                 placeholder="Quantity"
+                disabled={type === "Detail"}
                 onChange={(e) => {
                   const qty = Number(e) || 0;
                   const wastePercentage =
                     Number(
-                      form.getValues(`product_bom.${index}.wastePercentage`),
+                      form.watch(`product_bom.${index}.wastePercentage`),
                     ) || 0;
 
                   const waste = qty * (wastePercentage / 100);
@@ -136,14 +157,15 @@ export default function FormProductBOM({
                 }}
               />
               <FormInput
-                readOnly={type === "Detail"}
+                type="number"
                 form={form}
                 label=""
+                disabled={qty === "" || type === "Detail"}
                 name={`product_bom.${index}.wastePercentage`}
                 onChange={(e) => {
                   const wastePercentage = Number(e) || 0;
                   const qty =
-                    Number(form.getValues(`product_bom.${index}.qty`)) || 0;
+                    Number(form.watch(`product_bom.${index}.qty`)) || 0;
 
                   const waste = qty * (wastePercentage / 100);
 
@@ -157,8 +179,19 @@ export default function FormProductBOM({
               <FormInput
                 form={form}
                 label=""
+                disabled={qty === "" || type === "Detail"}
                 name={`product_bom.${index}.waste`}
-                disabled
+                onChange={(e) => {
+                  const wasteQty = Number(e);
+                  const qty = Number(form.watch(`product_bom.${index}.qty`));
+
+                  const wastePercentage = (100 * wasteQty) / qty;
+
+                  form.setValue(
+                    `product_bom.${index}.wastePercentage`,
+                    Number(wastePercentage.toFixed(4)),
+                  );
+                }}
               />
               {fields.length > 1 && type !== "Detail" && (
                 <Button

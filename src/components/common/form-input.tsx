@@ -60,9 +60,10 @@ export default function FormInput<T extends FieldValues>({
                 autoComplete="off"
                 disabled={disabled}
                 readOnly={readOnly}
-                onChange={
-                  onChange ? (e) => onChange(e.target.value) : rest.onChange
-                }
+                onChange={(e) => {
+                  rest.onChange(e);
+                  onChange?.(e.target.value);
+                }}
               />
             )}
           </FormControl>

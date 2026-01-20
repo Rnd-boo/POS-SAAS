@@ -67,7 +67,7 @@ export function DataTable<TData extends { id: string | number }>({
   >;
 }) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    [],
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -80,6 +80,7 @@ export function DataTable<TData extends { id: string | number }>({
     enableMultiSort: false,
     manualSorting: true,
     onColumnFiltersChange: setColumnFilters,
+    enableColumnPinning: true,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -91,6 +92,10 @@ export function DataTable<TData extends { id: string | number }>({
       columnFilters,
       columnVisibility,
       rowSelection,
+      columnPinning: {
+        left: ["name"],
+        right: ["actions"],
+      },
     },
   });
 
@@ -147,15 +152,26 @@ export function DataTable<TData extends { id: string | number }>({
                       key={header.id}
                       className={cn(
                         "bg-muted hover:!bg-muted/50 cursor-pointer transition-all",
+                        header.column.getIsPinned() && "sticky z-20",
                         header.column.id === "actions" &&
-                          "hover:!bg-muted cursor-default"
+                          "hover:!bg-muted cursor-default",
                       )}
+                      style={{
+                        left:
+                          header.column.getIsPinned() === "left"
+                            ? header.column.getStart("left")
+                            : undefined,
+                        right:
+                          header.column.getIsPinned() === "right"
+                            ? header.column.getAfter("right")
+                            : undefined,
+                      }}
                     >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                     </TableHead>
                   );
@@ -187,12 +203,25 @@ export function DataTable<TData extends { id: string | number }>({
                     <TableCell
                       key={cell.id}
                       className={cn(
-                        cell.column.id === "actions" && "text-center"
+                        cell.column.getIsPinned() && "sticky z-20 ",
+                        cell.column.getIsPinned() === "right" &&
+                          cell.column.id === "actions" &&
+                          "text-center",
                       )}
+                      style={{
+                        left:
+                          cell.column.getIsPinned() === "left"
+                            ? cell.column.getStart("left")
+                            : undefined,
+                        right:
+                          cell.column.getIsPinned() === "right"
+                            ? cell.column.getAfter("right")
+                            : undefined,
+                      }}
                     >
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}

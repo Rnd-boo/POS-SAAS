@@ -173,8 +173,12 @@ export default function DialogProducts({
   };
 
   const handleRowClick = (row: UnitProduct) => {
-    form.setValue(mapping.products_id, row.products_id);
-    form.setValue(mapping.units_id, String(row.id));
+    form.setValue(mapping.products_id, row.products_id, {
+      shouldValidate: true,
+    });
+    form.setValue(mapping.units_id, String(row.id), {
+      shouldValidate: true,
+    });
 
     setSelectedProduct((prev) => ({
       ...prev,
