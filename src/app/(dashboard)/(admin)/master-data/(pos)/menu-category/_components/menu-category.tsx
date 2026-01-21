@@ -47,7 +47,7 @@ export default function MenuCategory() {
       sorting,
     ],
     queryFn: async () => {
-      let query = supabase
+      const query = supabase
         .from("menu_category")
         .select("id,name,status,brand_id", {
           count: "exact",
@@ -83,17 +83,6 @@ export default function MenuCategory() {
     if (!open) setSelectedAction(null);
   };
 
-  const handleViewTable = (row: (string | ReactNode)[], rowIndex: number) => {
-    // Get the raw data for this row
-    const data = menuCategories?.data?.[rowIndex];
-    if (data) {
-      setSelectedAction({
-        data,
-        type: "detail",
-      });
-    }
-  };
-
   const data: MenuCategory[] = menuCategories?.data || [];
   const columns: ColumnDef<MenuCategory>[] = [
     {
@@ -106,7 +95,7 @@ export default function MenuCategory() {
             className="flex gap-2 font-medium items-center"
             onClick={() => column.toggleSorting(undefined, true)}
           >
-            Category Name
+            Menu category name
             {sorted === "asc" && <ArrowUp className="size-3" />}
             {sorted === "desc" && <ArrowDown className="size-3" />}
           </div>
@@ -125,7 +114,7 @@ export default function MenuCategory() {
           <div
             className={cn(
               "px-2 py-1 rounded-full text-white w-fit",
-              status ? "bg-green-600" : "bg-red-500"
+              status ? "bg-green-600" : "bg-red-500",
             )}
           >
             {status ? "Active" : "Inactive"}
@@ -185,7 +174,7 @@ export default function MenuCategory() {
     <div className="w-full">
       <PageHeader
         handleChangeSearch={handleChangeSearch}
-        title="category"
+        title="menu category"
         DialogCreateComponent={<DialogCreateMenuCategory refetch={refetch} />}
       />
       <DataTable

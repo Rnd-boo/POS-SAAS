@@ -197,7 +197,9 @@ export function DataTable<TData extends { id: string | number }>({
                       });
                     }
                   }}
-                  className={cn(pathname && "cursor-pointer")}
+                  className={cn(
+                    (pathname || setSelectedAction) && "cursor-pointer",
+                  )}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell

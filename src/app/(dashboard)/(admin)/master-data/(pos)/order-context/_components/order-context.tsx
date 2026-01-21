@@ -79,12 +79,6 @@ export default function OrderContext() {
   const handleChangeAction = (open: boolean) => {
     if (!open) setSelectedAction(null);
   };
-  const handleClickAction = (row: OrderContext) => {
-    setSelectedAction({
-      data: row,
-      type: "detail",
-    });
-  };
 
   const data: OrderContext[] = orderContexts?.data || [];
   const columns: ColumnDef<OrderContext>[] = [
@@ -196,7 +190,7 @@ export default function OrderContext() {
         </div>
       </div>
       <DataTable
-        onRowClick={handleClickAction}
+        setSelectedAction={setSelectedAction}
         totalData={totalData}
         refetch={refetch}
         data={data}
