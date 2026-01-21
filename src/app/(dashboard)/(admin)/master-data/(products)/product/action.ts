@@ -2,8 +2,8 @@
 
 import { getCurrentProfile } from "@/lib/get-current-profile";
 import { createClient } from "@/lib/supabase/server";
-import { ProductFormState } from "@/types/product";
-import { productSchema } from "@/validations/product-validation";
+import { ProductFormState } from "@/types/products/product";
+import { productSchema } from "@/validations/products/product-validation";
 
 export async function createProduct(
   prevState: ProductFormState,

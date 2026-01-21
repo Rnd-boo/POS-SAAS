@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/supabase/client";
 import { useAuthStore } from "@/stores/auth-store";
 import { useBrandStore } from "@/stores/brand-store";
-import { ProductUnit } from "@/validations/product-validation";
+import { ProductUnit } from "@/validations/products/product-validation";
 import { useQuery } from "@tanstack/react-query";
 import { Plus, X } from "lucide-react";
 import { Fragment, useEffect } from "react";

@@ -2,13 +2,13 @@
 
 import { getProfileFromToken } from "@/actions/auth-action";
 import { createClient } from "@/lib/supabase/server";
-import { CategoryFormState } from "@/types/category";
-import { categorySchema } from "@/validations/category-validation";
+import { CategoryFormState } from "@/types/products/category";
+import { categorySchema } from "@/validations/products/category-validation";
 import { cookies } from "next/headers";
 
 export async function createCategory(
   prevState: CategoryFormState,
-  formData: FormData
+  formData: FormData,
 ) {
   const validatedFields = categorySchema.safeParse({
     name: formData.get("name"),
@@ -66,7 +66,7 @@ export async function createCategory(
 
 export async function updateCategory(
   prevState: CategoryFormState,
-  formData: FormData
+  formData: FormData,
 ) {
   const validatedFields = categorySchema.safeParse({
     name: formData.get("name"),
@@ -112,7 +112,7 @@ export async function updateCategory(
 
 export async function deleteCategory(
   prevState: CategoryFormState,
-  formData: FormData
+  formData: FormData,
 ) {
   const supabase = await createClient();
 

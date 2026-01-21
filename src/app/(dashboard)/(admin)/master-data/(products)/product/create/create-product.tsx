@@ -9,11 +9,11 @@ import {
   ProductForm,
   productFormSchema,
   ProductUnit,
-} from "@/validations/product-validation";
+} from "@/validations/products/product-validation";
 import {
   INITIAL_PRODUCT,
   INITIAL_STATE_PRODUCT,
-} from "@/constants/product.constant";
+} from "@/constants/products/product.constant";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import FormProduct from "../_components/form-product";

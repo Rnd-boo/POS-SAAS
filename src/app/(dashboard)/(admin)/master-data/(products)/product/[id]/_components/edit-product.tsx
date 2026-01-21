@@ -8,11 +8,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   ProductForm,
   productFormSchema,
-} from "@/validations/product-validation";
+} from "@/validations/products/product-validation";
 import {
   INITIAL_PRODUCT,
   INITIAL_STATE_PRODUCT,
-} from "@/constants/product.constant";
+} from "@/constants/products/product.constant";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { startTransition, useActionState, useEffect } from "react";

@@ -10,7 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Pencil, SearchIcon, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Unit } from "@/validations/unit-validation";
+import { Unit } from "@/validations/products/unit-validation";
 import DialogCreateUnit from "./dialog-create-unit";
 import DialogUpdateUnit from "./dialog-update-unit";
 import DialogDeleteUnit from "./dialog-delete-unit";

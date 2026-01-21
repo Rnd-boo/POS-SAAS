@@ -15,8 +15,8 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Product } from "@/validations/product-validation";
-import { FILTER_TABLE_PRODUCT } from "@/constants/product.constant";
+import { Product } from "@/validations/products/product-validation";
+import { FILTER_TABLE_PRODUCT } from "@/constants/products/product.constant";
 import { useAuthStore } from "@/stores/auth-store";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";

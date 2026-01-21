@@ -19,9 +19,12 @@ import { useForm } from "react-hook-form";
 import CardFormBillOfMaterials from "../../_components/card-form-bill-of-materials";
 import { toast } from "sonner";
 import { startTransition, useActionState, useEffect, useState } from "react";
-import { Unit } from "@/validations/unit-validation";
+import { Unit } from "@/validations/products/unit-validation";
 import { updateBillOfMaterials } from "../../action";
-import { Product, ProductUnit } from "@/validations/product-validation";
+import {
+  Product,
+  ProductUnit,
+} from "@/validations/products/product-validation";
 import { error } from "console";
 
 export default function EditBillOfMaterials() {

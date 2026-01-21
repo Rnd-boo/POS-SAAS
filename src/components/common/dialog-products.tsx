@@ -9,7 +9,7 @@ import useDataTable from "@/hooks/use-data-table";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
-import { Category } from "@/validations/category-validation";
+import { Category } from "@/validations/products/category-validation";
 import { ArrowDown, ArrowUp, Funnel, RefreshCcw } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 import DialogFilters from "./dialog-filters";

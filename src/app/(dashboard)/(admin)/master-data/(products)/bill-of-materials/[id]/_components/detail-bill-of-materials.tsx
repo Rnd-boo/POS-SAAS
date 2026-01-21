@@ -18,8 +18,8 @@ import { useBrandStore } from "@/stores/brand-store";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
-import { Unit } from "@/validations/unit-validation";
-import { Product } from "@/validations/product-validation";
+import { Unit } from "@/validations/products/unit-validation";
+import { Product } from "@/validations/products/product-validation";
 
 export default function DetailBillOfMaterials() {
   const params = useParams();

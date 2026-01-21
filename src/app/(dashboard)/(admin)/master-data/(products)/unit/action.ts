@@ -2,8 +2,8 @@
 
 import { getProfileFromToken } from "@/actions/auth-action";
 import { createClient } from "@/lib/supabase/server";
-import { UnitFormState } from "@/types/unit";
-import { unitSchema } from "@/validations/unit-validation";
+import { UnitFormState } from "@/types/products/unit";
+import { unitSchema } from "@/validations/products/unit-validation";
 import { cookies } from "next/headers";
 
 export async function createUnit(prevState: UnitFormState, formData: FormData) {

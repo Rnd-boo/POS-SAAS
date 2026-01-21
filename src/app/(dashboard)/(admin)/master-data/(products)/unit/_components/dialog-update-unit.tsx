@@ -5,8 +5,12 @@ import { toast } from "sonner";
 import { Dialog } from "@/components/ui/dialog";
 import { updateUnit } from "../action";
 
-import { Unit, UnitForm, unitFormSchema } from "@/validations/unit-validation";
-import { INITIAL_STATE_UNIT } from "@/constants/unit.constant";
+import {
+  Unit,
+  UnitForm,
+  unitFormSchema,
+} from "@/validations/products/unit-validation";
+import { INITIAL_STATE_UNIT } from "@/constants/products/unit.constant";
 import FormUnit from "./form-unit";
 
 export default function DialogUpdateUnit({

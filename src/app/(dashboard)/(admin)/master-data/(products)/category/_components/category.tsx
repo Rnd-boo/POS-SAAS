@@ -10,13 +10,13 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import DialogCreateCategory from "./dialog-create-category";
 import DialogUpdateCategory from "./dialog-update-category";
-import { Category } from "@/validations/category-validation";
+import { Category } from "@/validations/products/category-validation";
 import DialogDeleteCategory from "./dialog-delete-category";
 import { useAuthStore } from "@/stores/auth-store";
 import { DataTable } from "@/components/common/tanstack-table";
 import { ColumnDef, SortingState } from "@tanstack/react-table";
 import { applyFilterQuery } from "@/hooks/use-filter-query";
-import { CATEGORY_TABLE_PRODUCT } from "@/constants/category.constant";
+import { CATEGORY_TABLE_PRODUCT } from "@/constants/products/category.constant";
 import { STATUS_LIST } from "@/constants/general.constant";
 import DialogFilters from "@/components/common/dialog-filters";
 import PageHeader from "@/components/common/page-header";
@@ -138,7 +138,7 @@ export default function CategoryManagement() {
           <div
             className={cn(
               "px-2 py-1 rounded-full text-white w-fit",
-              status ? "bg-green-600" : "bg-red-500"
+              status ? "bg-green-600" : "bg-red-500",
             )}
           >
             {status ? "Active" : "Inactive"}

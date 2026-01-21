@@ -1,11 +1,11 @@
 import {
   INITIAL_CATEGORY,
   INITIAL_STATE_CATEGORY,
-} from "@/constants/category.constant";
+} from "@/constants/products/category.constant";
 import {
   CategoryForm,
   categoryFormSchema,
-} from "@/validations/category-validation";
+} from "@/validations/products/category-validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { startTransition, useActionState, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";

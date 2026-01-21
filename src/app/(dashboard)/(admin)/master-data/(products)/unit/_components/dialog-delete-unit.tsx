@@ -1,11 +1,11 @@
 import { startTransition, useActionState, useEffect } from "react";
 import { toast } from "sonner";
-import { Category } from "@/validations/category-validation";
-import { INITIAL_STATE_CATEGORY } from "@/constants/category.constant";
+import { Category } from "@/validations/products/category-validation";
+import { INITIAL_STATE_CATEGORY } from "@/constants/products/category.constant";
 import DialogDelete from "@/components/common/dialog-delete";
-import { Unit } from "@/validations/unit-validation";
+import { Unit } from "@/validations/products/unit-validation";
 import { deleteUnit } from "../action";
-import { INITIAL_STATE_UNIT } from "@/constants/unit.constant";
+import { INITIAL_STATE_UNIT } from "@/constants/products/unit.constant";
 
 export default function DialogDeleteUnit({
   open,

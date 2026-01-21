@@ -6,14 +6,14 @@ import { useForm } from "react-hook-form";
 import {
   ProductForm,
   productFormSchema,
-} from "@/validations/product-validation";
+} from "@/validations/products/product-validation";
 
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import { useAuthStore } from "@/stores/auth-store";
 import { toast } from "sonner";
-import { INITIAL_PRODUCT } from "@/constants/product.constant";
+import { INITIAL_PRODUCT } from "@/constants/products/product.constant";
 import FormDetail from "./form-detail";
 import { useBrandStore } from "@/stores/brand-store";
 

@@ -8,8 +8,8 @@ import {
   Category,
   CategoryForm,
   categoryFormSchema,
-} from "@/validations/category-validation";
-import { INITIAL_STATE_CATEGORY } from "@/constants/category.constant";
+} from "@/validations/products/category-validation";
+import { INITIAL_STATE_CATEGORY } from "@/constants/products/category.constant";
 import FormCategory from "./form-category";
 
 export default function DialogUpdateCategory({

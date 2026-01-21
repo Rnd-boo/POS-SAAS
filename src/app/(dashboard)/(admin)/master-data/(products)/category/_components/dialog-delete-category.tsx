@@ -1,8 +1,8 @@
 import { startTransition, useActionState, useEffect } from "react";
 import { toast } from "sonner";
 import { deleteCategory } from "../action";
-import { Category } from "@/validations/category-validation";
-import { INITIAL_STATE_CATEGORY } from "@/constants/category.constant";
+import { Category } from "@/validations/products/category-validation";
+import { INITIAL_STATE_CATEGORY } from "@/constants/products/category.constant";
 import DialogDelete from "@/components/common/dialog-delete";
 
 export default function DialogDeleteCategory({
