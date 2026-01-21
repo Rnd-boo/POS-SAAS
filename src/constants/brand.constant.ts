@@ -1,5 +1,3 @@
-export const HEADER_TABLE_BRAND = ["NO", "Brand", "Status", "Action"];
-
 export const INITIAL_BRAND = {
   name: "",
   status: "",

@@ -1,5 +1,3 @@
-export const HEADER_TABLE_UNIT = ["NO", "Unit", "Notes", "Status", "Action"];
-
 export const INITIAL_UNIT = {
   name: "",
   notes: "",

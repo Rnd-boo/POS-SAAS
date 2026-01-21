@@ -1,11 +1,3 @@
-export const HEADER_TABLE_TABLE_MAP = [
-  "NO",
-  "Table Map",
-  "Branch",
-  "Status",
-  "Action",
-];
-
 export const INITIAL_TABLE_MAP = {
   name: "",
   branch_id: "",

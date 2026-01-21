@@ -1,10 +1,3 @@
-export const HEADER_TABLE_ORDER_CONTEXT = [
-  "NO",
-  "Order Context",
-  "Status",
-  "Action",
-];
-
 export const INITIAL_ORDER_CONTEXT = {
   name: "",
   tax_value: "",
