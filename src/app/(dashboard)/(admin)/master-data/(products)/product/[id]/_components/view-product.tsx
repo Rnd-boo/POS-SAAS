@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import {
-  Product,
   ProductForm,
   productFormSchema,
 } from "@/validations/product-validation";
@@ -16,12 +15,14 @@ import { useAuthStore } from "@/stores/auth-store";
 import { toast } from "sonner";
 import { INITIAL_PRODUCT } from "@/constants/product.constant";
 import FormDetail from "./form-detail";
+import { useBrandStore } from "@/stores/brand-store";
 
 export default function ViewProduct() {
   const params = useParams();
   const productId = params?.id as string;
   const supabase = createClient();
   const currentId = useAuthStore((state) => state.profile?.clients);
+  const currentBrandId = useBrandStore((s) => s.currentBrandId);
 
   const form = useForm<ProductForm>({
     resolver: zodResolver(productFormSchema),
@@ -33,11 +34,13 @@ export default function ViewProduct() {
       const result = await supabase
         .from("products")
         .select(
-          `*,client_profiles:client_profiles_id(name), categories:categories_id(
+          `id, name,upc,status, brand_id, description, categories_id,created_at,updated_at, client_profiles_id,
+          client_profiles(name), categories:categories_id(
             name
           )`,
         )
         .eq("clients_id", currentId)
+        .eq("brand_id", currentBrandId)
         .eq("id", productId)
         .single();
 
@@ -73,6 +76,7 @@ export default function ViewProduct() {
           )`,
         )
         .eq("clients_id", currentId)
+        .eq("brand_id", currentBrandId)
         .eq("products_id", product?.id);
 
       if (result.error)
@@ -107,7 +111,10 @@ export default function ViewProduct() {
         form={form}
         isLoading={isLoadingProduct || isLoadingProductUnit}
         data={[
-          { label: "Created By", value: product?.client_profiles?.name },
+          {
+            label: "Created By",
+            value: (product?.client_profiles as { name?: string })?.name,
+          },
           { label: "Created At", value: product?.created_at },
           // { label: "Updated By", value: product?.updated_by },
           { label: "Updated At", value: product?.updated_at },

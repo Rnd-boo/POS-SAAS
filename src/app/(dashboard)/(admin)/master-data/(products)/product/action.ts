@@ -7,10 +7,9 @@ import { productSchema } from "@/validations/product-validation";
 
 export async function createProduct(
   prevState: ProductFormState,
-  formData: FormData
+  formData: FormData,
 ) {
   const supabase = await createClient();
-
   const { currentUserId, currentClientId } = await getCurrentProfile();
 
   const validatedProductFields = productSchema.safeParse({
@@ -19,6 +18,7 @@ export async function createProduct(
     upc: formData.get("upc"),
     description: formData.get("description"),
     status: formData.get("status") === "true" ? true : false,
+    brand_id: Number(formData.get("brand_id")),
     units: JSON.parse(formData.get("units") as string),
   });
 
@@ -42,6 +42,7 @@ export async function createProduct(
       upc: validatedProductFields.data.upc,
       categories_id: validatedProductFields.data.categories_id,
       status: validatedProductFields.data.status,
+      brand_id: validatedProductFields.data.brand_id,
     })
     .select()
     .single();
@@ -60,11 +61,12 @@ export async function createProduct(
     (unit, index) => ({
       clients_id: currentClientId,
       products_id: insertedProduct.id,
+      brand_id: Number(unit.brand_id),
       units_id: parseInt(unit.units_id),
       conversion_factor: parseFloat(unit.conversion_factor),
       is_base_unit: index === 0,
       is_sales_unit: unit.is_sales_unit,
-    })
+    }),
   );
 
   const { error: unitError } = await supabase
@@ -87,7 +89,7 @@ export async function createProduct(
 
 export async function updateProduct(
   prevState: ProductFormState,
-  formData: FormData
+  formData: FormData,
 ) {
   const supabase = await createClient();
 
@@ -108,6 +110,7 @@ export async function updateProduct(
     upc: formData.get("upc"),
     description: formData.get("description"),
     status: formData.get("status") === "true" ? true : false,
+    brand_id: Number(formData.get("brand_id")),
     units: JSON.parse(formData.get("units") as string),
   });
 
@@ -148,11 +151,12 @@ export async function updateProduct(
     (unit, index) => ({
       clients_id: currentClientId,
       products_id: updatedProduct.id,
+      brand_id: Number(unit.brand_id),
       units_id: parseInt(unit.units_id),
       conversion_factor: parseFloat(unit.conversion_factor),
       is_base_unit: index === 0, // First unit is base unit
       is_sales_unit: unit.is_sales_unit,
-    })
+    }),
   );
 
   // Delete all existing units for this product
@@ -194,7 +198,7 @@ export async function updateProduct(
 
 export async function deleteProduct(
   prevState: ProductFormState,
-  formData: FormData
+  formData: FormData,
 ) {
   const supabase = await createClient();
 

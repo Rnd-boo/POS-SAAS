@@ -32,10 +32,13 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
+import { useBrandStore } from "@/stores/brand-store";
+import PageHeader from "@/components/common/page-header";
 
 export default function ProductManagement() {
   const supabase = createClient();
   const currentId = useAuthStore((state) => state.profile?.clients);
+  const currentBrandId = useBrandStore((s) => s.currentBrandId);
   const pathname = usePathname();
   const router = useRouter();
   const [openDialogFilters, setOpenDialogFilters] = useState<boolean>(false);
@@ -74,12 +77,13 @@ export default function ProductManagement() {
       let query = supabase
         .from("products")
         .select(
-          `id, name,upc,status, description, categories_id, categories (
+          `id, name,upc,status, brand_id, description, categories_id, categories (
             name
           )`,
-          { count: "exact" }
+          { count: "exact" },
         )
         .eq("clients_id", currentId)
+        .eq("brand_id", currentBrandId)
         .range((currentPage - 1) * 10, currentPage * 10 - 1)
         .ilike("name", `%${currentSearch}%`);
 
@@ -177,7 +181,7 @@ export default function ProductManagement() {
           <div
             className={cn(
               "px-2 py-1 rounded-full text-white w-fit",
-              status ? "bg-green-600" : "bg-red-500"
+              status ? "bg-green-600" : "bg-red-500",
             )}
           >
             {status ? "Active" : "Inactive"}
@@ -233,49 +237,14 @@ export default function ProductManagement() {
   }, [products]);
   return (
     <div className="w-full">
-      <div className="flex flex-col lg:flex-row mb-4 gap-2 justify-between w-full">
-        <h1 className="text-2xl font-semibold">Product Management</h1>
-      </div>
-      <div className="mb-2 flex justify-between ">
-        <div className="flex gap-2 w-full max-w-md">
-          <InputGroup className="max-w-sm">
-            <InputGroupInput
-              placeholder="Search by product name"
-              onChange={(e) => handleChangeSearch(e.target.value)}
-            />
-            <InputGroupAddon>
-              <SearchIcon />
-            </InputGroupAddon>
-          </InputGroup>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setOpenDialogFilters(true)}
-          >
-            <Funnel />
-            Filters
-            {Object.keys(filters).length > 0 && (
-              <>
-                <span className="text-xs font-medium bg-accent rounded-full px-2 py-0.5">
-                  {Object.keys(filters).length}
-                </span>
-                <span
-                  className="ml-1 size-6 rounded hover:bg-muted cursor-pointer"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setFilters({});
-                  }}
-                >
-                  x
-                </span>
-              </>
-            )}
-          </Button>
-        </div>
-        <Link href={`${pathname}/create`}>
-          <Button variant="outline">Create</Button>
-        </Link>
-      </div>
+      <PageHeader
+        handleChangeSearch={handleChangeSearch}
+        title="product"
+        pathname={pathname}
+        filters={filters}
+        setFilters={setFilters}
+        setOpenDialogFilters={setOpenDialogFilters}
+      />
       <DataTable
         data={data}
         columns={columns}

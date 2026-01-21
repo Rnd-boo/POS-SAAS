@@ -16,6 +16,7 @@ import DialogFilters from "./dialog-filters";
 import { DataTable } from "./tanstack-table";
 import { ColumnDef } from "@tanstack/react-table";
 import { UnitProduct } from "@/types/products/product-dialog";
+import { useBrandStore } from "@/stores/brand-store";
 
 export default function DialogProducts({
   form,
@@ -34,6 +35,7 @@ export default function DialogProducts({
 }) {
   const supabase = createClient();
   const currentId = useAuthStore((state) => state.profile?.clients);
+  const currentBrandId = useBrandStore((s) => s.currentBrandId);
   const [openDialogFilters, setOpenDialogFilters] = useState<boolean>(false);
   const {
     currentPage,
@@ -61,6 +63,7 @@ export default function DialogProducts({
           { count: "exact" },
         )
         .eq("clients_id", currentId)
+        .eq("brand_id", currentBrandId)
         .order("products(name)")
         .ilike("products.name", `%${currentSearch}%`)
         .range((currentPage - 1) * 10, currentPage * 10 - 1);

@@ -5,6 +5,7 @@ export const productUnitSchema = z.object({
   conversion_factor: z.string(),
   base_unit: z.string(),
   is_sales_unit: z.boolean(),
+  brand_id: z.number().optional(),
 });
 
 export const productSchema = z.object({
@@ -13,6 +14,7 @@ export const productSchema = z.object({
   description: z.string(),
   upc: z.string(),
   status: z.boolean(),
+  brand_id: z.number(),
   units: z.array(productUnitSchema).optional(),
 });
 
@@ -22,6 +24,7 @@ export const productFormSchema = z.object({
   description: z.string(),
   upc: z.string().min(1, "Product Code is required"),
   status: z.string().min(1, "Status is required"),
+  brand_id: z.string().optional(),
   // Product Unit Fields
   units: z.array(productUnitSchema).min(1, "At least one unit is required"),
 });

@@ -8,6 +8,7 @@ import { createProduct } from "../action";
 import {
   ProductForm,
   productFormSchema,
+  ProductUnit,
 } from "@/validations/product-validation";
 import {
   INITIAL_PRODUCT,
@@ -16,10 +17,12 @@ import {
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import FormProduct from "../_components/form-product";
+import { useBrandStore } from "@/stores/brand-store";
 
 export default function CreateProduct() {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const currentBrandId = useBrandStore((s) => s.currentBrandId);
 
   const form = useForm<ProductForm>({
     resolver: zodResolver(productFormSchema),
@@ -29,22 +32,28 @@ export default function CreateProduct() {
   const [createProductState, createProductAction, isPendingcreateProduct] =
     useActionState(createProduct, INITIAL_STATE_PRODUCT);
 
-  const onSubmit = form.handleSubmit(async (data) => {
-    // Debug: Log the form data
-    const formData = new FormData();
-    Object.entries(data).forEach(([key, value]) => {
-      if (key === "units") {
-        // serialize units array into JSON
-        formData.append("units", JSON.stringify(value));
-      } else {
-        formData.append(key, String(value ?? ""));
-      }
-    });
+  const onSubmit = form.handleSubmit(
+    async (data) => {
+      // Debug: Log the form data
+      const formData = new FormData();
+      Object.entries(data).forEach(([key, value]) => {
+        if (key === "units") {
+          formData.append("units", JSON.stringify(value));
+        } else {
+          formData.append(key, String(value ?? ""));
+        }
+        formData.append("brand_id", String(currentBrandId));
+      });
 
-    startTransition(() => {
-      createProductAction(formData);
-    });
-  });
+      startTransition(() => {
+        createProductAction(formData);
+      });
+      console.log(formData);
+    },
+    (errors) => {
+      console.log(errors);
+    },
+  );
 
   useEffect(() => {
     if (createProductState?.status === "error") {

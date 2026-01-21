@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { startTransition, useActionState, useEffect } from "react";
 import { updateProduct } from "../../action";
 import FormProduct from "../../_components/form-product";
+import { useBrandStore } from "@/stores/brand-store";
 
 export default function EditProduct() {
   const { id } = useParams();
@@ -25,6 +26,7 @@ export default function EditProduct() {
   const currentId = useAuthStore((state) => state.profile?.clients);
   const router = useRouter();
   const queryClient = useQueryClient();
+  const currentBrandId = useBrandStore((s) => s.currentBrandId);
 
   const form = useForm<ProductForm>({
     resolver: zodResolver(productFormSchema),
@@ -45,6 +47,7 @@ export default function EditProduct() {
       } else {
         formData.append(key, String(value ?? ""));
       }
+      formData.append("brand_id", String(currentBrandId));
     });
 
     startTransition(() => {
@@ -59,6 +62,7 @@ export default function EditProduct() {
         .from("products")
         .select(`*,client_profiles:client_profiles_id(name)`)
         .eq("clients_id", currentId)
+        .eq("brand_id", currentBrandId)
         .eq("id", id)
         .single();
 
@@ -80,9 +84,10 @@ export default function EditProduct() {
         .select(
           `id,is_base_unit, products_id, units_id, conversion_factor,is_sales_unit, units:units_id(
             name
-          )`
+          )`,
         )
         .eq("clients_id", currentId)
+        .eq("brand_id", currentBrandId)
         .eq("products_id", product?.id);
 
       if (result.error)
