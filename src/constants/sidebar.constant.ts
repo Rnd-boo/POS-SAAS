@@ -19,20 +19,8 @@ export const SIDEBAR_MENULIST = {
     {
       title: "Inventory",
       icon: Warehouse,
-      url: "#",
-      items: [
-        { title: "Receiving", url: "/inventory/receiving" },
-        { title: "Shipping", url: "/inventory/shipping" },
-        { title: "Stock list", url: "/inventory/stock-list" },
-        { title: "Purchase Return", url: "/inventory/purchase-return" },
-      ],
+      url: "/inventory",
     },
-    // {
-    //   title: "Product",
-    //   url: "/product",
-    //   icon: BookMarked,
-    //   items: [],
-    // },
     {
       title: "Order",
       url: "/order",
