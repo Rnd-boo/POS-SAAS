@@ -1,44 +1,60 @@
 import {
-  BookA,
-  BookText,
-  ClipboardPenLine,
-  DatabaseBackup,
-  Layers,
-  PackageSearch,
-  Ratio,
-  Ruler,
+  Blocks,
+  GalleryHorizontalEnd,
+  LayoutList,
+  LayoutTemplate,
+  PackageCheck,
   ShieldUser,
-  Tag,
-  UsersRound,
-  VectorSquare,
+  Truck,
 } from "lucide-react";
 
 export const INVENTORY_CARD = [
       {
         title: "Receiving",
-        icon: Tag,
-        url: "/inventory/brand",
+        icon: PackageCheck,
+        url: "/inventory/receive",
         description:
-          "Manage company brands to represent different business identities.",
+          "Record and confirm incoming items into inventory.",
+      },
+      {
+        title: "Purchase Order",
+        icon: PackageCheck,
+        url: "/inventory/po",
+        description:
+          "Create and manage purchase requests for items from suppliers before receiving.",
       },
       {
         title: "Shipping",
-        url: "/inventory/branch",
-        icon: VectorSquare,
-        description: "Manage brand branches or store locations.",
+        url: "/inventory/shipping",
+        icon: Truck,
+        description: "Process and record outgoing items for delivery.",
       },
       {
         title: "Stock List",
-        url: "/inventory/user",
-        icon: ShieldUser,
+        url: "/inventory/stock-list",
+        icon: LayoutList,
         description:
-          "Configure user and roles to ensure secure access in system.",
+          "View current inventory levels for all items across locations.",
       },
       {
-        title: "PR",
-        url: "/inventory/user",
-        icon: ShieldUser,
+        title: "Item Journal",
+        url: "/inventory/item-journal",
+        icon: LayoutTemplate,
         description:
-          "Configure user and roles to ensure secure access in system.",
+          "Record manual inventory adjustments and item movements.",
+      },
+      {
+        title: "Stock Adjustment",
+        url: "/inventory/stock-adjustment",
+        icon: Blocks,
+        description:
+          "Update inventory quantities to reflect physical stock differences or corrections.",
+      },
+      {
+        title: "Inventory Transfers",
+        url: "/inventory/transfers",
+        icon: GalleryHorizontalEnd,
+        description:
+          "Move items between locations while keeping inventory records accurate.",
       },
     ]
