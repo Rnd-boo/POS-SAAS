@@ -34,7 +34,7 @@ export async function createMenu(
       clients_id: currentClientId,
       name: validatedFields.data.name,
       brand_id: validatedFields.data.brand_id,
-      products_id: validatedFields.data.products_id,
+      items_id: validatedFields.data.items_id,
       menu_category_id: validatedFields.data.menu_category_id,
       status: validatedFields.data.status,
     })

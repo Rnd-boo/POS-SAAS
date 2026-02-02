@@ -10,7 +10,7 @@ import { useFieldArray, UseFormReturn } from "react-hook-form";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { CircleQuestionMark, Loader2 } from "lucide-react";
 import { FormEvent, Fragment, useEffect, useState } from "react";
 import { MenuForm } from "@/validations/pos/menu.validation";
 import FormInput from "@/components/common/form-input";
@@ -30,6 +30,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import FormSwitch from "@/components/common/form-switch";
 import { cn } from "@/lib/utils";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export const TYPE_STOCK = [
   { value: "product", label: "Product" },
@@ -52,7 +57,7 @@ export default function CardFormMenu({
   const router = useRouter();
   const supabase = createClient();
   const currentId = useAuthStore((state) => state.profile?.clients);
-  const [value, setValue] = useState<comboboxType[]>([]);
+  const [branchValue, branchSetValue] = useState<comboboxType[]>([]);
   const { data: branches } = useBranchQuery();
   const typeStock = form.watch("type_stock");
   const selectedItem = form.watch("items_id");
@@ -99,14 +104,20 @@ export default function CardFormMenu({
     data: productBillOfMaterials,
     isLoading: isLoadingProductBillOfMaterials,
   } = useQuery({
-    queryKey: ["product_bill_of_materials", currentId],
+    queryKey: ["product_bill_of_materials", currentId, selectedItem],
     queryFn: async () => {
-      const result = await supabase
+      const q = supabase
         .from("product_bill_of_materials")
         .select(
-          "id,bill_of_materials_id, bill_of_materials(code),qty,waste,product_units(products(name),units(name))",
+          "id,bill_of_materials_id,bill_of_materials(product_units(products(name),units(name))),qty,waste,product_units(products(name),units(name))",
         )
         .eq("clients_id", currentId);
+
+      if (selectedItem) {
+        q.eq("bill_of_materials_id", Number(selectedItem));
+      }
+
+      const result = await q;
 
       if (result.error)
         toast.error("Get Bill Of Materials Data Failed", {
@@ -114,7 +125,7 @@ export default function CardFormMenu({
         });
       return result.data;
     },
-    enabled: typeStock === "bill_of_material",
+    enabled: typeStock === "bill_of_material" && !!selectedItem,
   });
 
   const { data: MenuCategories, isLoading: isLoadingMenuCategories } = useQuery(
@@ -136,26 +147,25 @@ export default function CardFormMenu({
     },
   );
 
-  const { fields, append, replace } = useFieldArray({
+  const { replace } = useFieldArray({
     control: form.control,
     name: "menu_branches",
   });
+
   useEffect(() => {
     replace(
-      value.map((v) => ({
+      branchValue.map((v) => ({
         menu_id: v.name,
-        branch_id: v.id,
+        branch_id: String(v.id),
       })),
     );
-  }, [value, replace]);
+  }, [branchValue, replace]);
 
   const selectedProduct = products?.find(
     (c) => c.id.toString() === selectedItem,
   );
 
-  const selectedBOM = productBillOfMaterials?.filter(
-    (c) => c.bill_of_materials_id === Number(selectedItem),
-  );
+  const selectedBOM = productBillOfMaterials;
   return (
     <Form {...form}>
       <form
@@ -200,8 +210,8 @@ export default function CardFormMenu({
             <MultipleCombobox
               form={form}
               name="menu_branches"
-              value={value}
-              setValue={setValue}
+              value={branchValue}
+              setValue={branchSetValue}
               label="Branch"
               items={branches ?? []}
             />
@@ -220,7 +230,7 @@ export default function CardFormMenu({
               <FormSelectData
                 form={form}
                 name={"items_id"}
-                label="Product"
+                label="Product Name"
                 data={products || []}
                 disabled={type === "Detail"}
                 isLoading={isLoading}
@@ -230,7 +240,7 @@ export default function CardFormMenu({
               <FormSelectData
                 form={form}
                 name={"items_id"}
-                label="Bill of Material"
+                label="Bill of Material Name"
                 data={billOfMaterials || []}
                 disabled={type === "Detail"}
                 isLoading={isLoading}
@@ -279,6 +289,30 @@ export default function CardFormMenu({
                 </>
               ) : (
                 <>
+                  <div className="flex mb-4">
+                    <Label>Product Name</Label>
+                    <Input
+                      value={
+                        (
+                          selectedBOM?.[0]?.bill_of_materials as {
+                            product_units?: { products: { name: string } };
+                          }
+                        )?.product_units?.products?.name ?? "-"
+                      }
+                      disabled
+                    />
+                    <Label>Product Unit</Label>
+                    <Input
+                      value={
+                        (
+                          selectedBOM?.[0]?.bill_of_materials as {
+                            product_units?: { units: { name: string } };
+                          }
+                        )?.product_units?.units?.name ?? "-"
+                      }
+                      disabled
+                    />
+                  </div>
                   <div className="grid gap-x-2 gap-y-2 grid-cols-[2fr_1fr_1fr_1fr_1fr]">
                     <Label>Product</Label>
                     <Label>Unit</Label>
@@ -335,7 +369,7 @@ export default function CardFormMenu({
               )}
             </CardContent>
             <Separator />
-            <CardContent>
+            <CardContent className="flex gap-x-2  items-center">
               <FormSwitch
                 defaultChecked
                 form={form}
@@ -343,20 +377,28 @@ export default function CardFormMenu({
                 name="auto_decrement"
                 className="flex"
               />
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <CircleQuestionMark className="size-3" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Automatically reduces stock from POS transactions.</p>
+                </TooltipContent>
+              </Tooltip>
             </CardContent>
           </Card>
         )}
-      </form>
-      <div className="fixed bottom-0 right-0 w-full flex justify-end gap-x-2 p-4 bg-background shadow-[0_-4px_12px_rgba(0,0,0,0.08)] dark:shadow-[0_-4px_12px_rgba(0,0,0,0.6)]">
-        <Button type="button" variant="outline" onClick={() => router.back()}>
-          Cancel
-        </Button>
-        {type !== "Detail" && (
-          <Button type="submit">
-            {isPending ? <Loader2 className="animate-spin" /> : type}
+        <div className="fixed bottom-0 right-0 w-full flex justify-end gap-x-2 p-4 bg-background shadow-[0_-4px_12px_rgba(0,0,0,0.08)] dark:shadow-[0_-4px_12px_rgba(0,0,0,0.6)]">
+          <Button type="button" variant="outline" onClick={() => router.back()}>
+            Cancel
           </Button>
-        )}
-      </div>
+          {type !== "Detail" && (
+            <Button type="submit">
+              {isPending ? <Loader2 className="animate-spin" /> : type}
+            </Button>
+          )}
+        </div>
+      </form>
     </Form>
   );
 }

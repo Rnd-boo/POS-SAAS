@@ -27,33 +27,37 @@ export default function CreateMenu() {
   const [createMenuState, createMenuAction, isPendingcreateMenu] =
     useActionState(createMenu, INITIAL_STATE_MENU);
 
-  const onSubmit = form.handleSubmit(async (data) => {
-    const formData = new FormData();
-    Object.entries(data).forEach(([key, value]) => {
-      if (key === "menu_branches") {
-        formData.append("menu_branches", JSON.stringify(value));
-      } else {
-        formData.append(key, String(value));
-      }
-      formData.append("brand_id", String(currentBrandId));
-    });
-    startTransition(() => {
-      createMenuAction(formData);
-    });
-  });
-  useEffect(() => {
-    if (createMenuState?.status === "error") {
-      toast.error("Create Menu Failed", {
-        description: createMenuState.errors?._form?.[0],
+  const onSubmit = form.handleSubmit(
+    async (data) => {
+      const formData = new FormData();
+      Object.entries(data).forEach(([key, value]) => {
+        if (key === "menu_branches") {
+          formData.append("menu_branches", JSON.stringify(value));
+        } else {
+          formData.append(key, String(value));
+        }
+        formData.append("brand_id", String(currentBrandId));
       });
-    }
-    if (createMenuState?.status === "success") {
-      toast.success("Create Menu Success");
-      form.reset();
-      queryClient.refetchQueries({ queryKey: ["menu"] });
-      router.push("/master-data/menu");
-    }
-  }, [createMenuState]);
+      console.log(Object.fromEntries(formData));
+      // startTransition(() => {
+      //   createMenuAction(formData);
+      // });
+    },
+    (errors) => console.log(errors),
+  );
+  // useEffect(() => {
+  //   if (createMenuState?.status === "error") {
+  //     toast.error("Create Menu Failed", {
+  //       description: createMenuState.errors?._form?.[0],
+  //     });
+  //   }
+  //   if (createMenuState?.status === "success") {
+  //     toast.success("Create Menu Success");
+  //     form.reset();
+  //     queryClient.refetchQueries({ queryKey: ["menu"] });
+  //     router.push("/master-data/menu");
+  //   }
+  // }, [createMenuState]);
   return (
     <CardFormMenu
       type="Create"
