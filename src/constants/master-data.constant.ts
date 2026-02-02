@@ -79,13 +79,13 @@ export const MASTER_CARD = [
         title: "Table",
         url: "/master-data/table",
         icon: Ratio,
-        description: "Manage tables in POS",
+        description: "Manage table layouts in POS",
       },
       {
-        title: "User POS",
-        url: "/master-data/pos-user",
+        title: "Point of Sale Users",
+        url: "/master-data/pos-users",
         icon: UsersRound,
-        description: "Manage POS users ",
+        description: "Control POS user access, roles, and operational permissions.",
       },
       {
         title: "Order Context",
