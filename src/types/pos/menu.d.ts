@@ -5,8 +5,10 @@ export type MenuFormState = {
     name?: string[];
     brand_id?: string[];
     menu_category_id?: string[];
-    products_id?: string[];
     status?: string[];
+    menu_branches?: string[];
+    items_id?: string[];
+    auto_decrement?: string[];
     _form?: string[];
   };
 };

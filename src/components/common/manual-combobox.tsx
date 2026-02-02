@@ -49,7 +49,7 @@ export function Combobox({
 
   const selectedLabel = useMemo(
     () => items.find((i) => i.value === value)?.label,
-    [items, value]
+    [items, value],
   );
 
   return (
@@ -64,7 +64,7 @@ export function Combobox({
           className={cn(
             "w-full justify-between",
             !selectedLabel && "text-muted-foreground",
-            className
+            className,
           )}
         >
           {selectedLabel || placeholder}
@@ -92,7 +92,7 @@ export function Combobox({
                   <Check
                     className={cn(
                       "ml-auto h-4 w-4",
-                      value === item.value ? "opacity-100" : "opacity-0"
+                      value === item.value ? "opacity-100" : "opacity-0",
                     )}
                   />
                 </CommandItem>

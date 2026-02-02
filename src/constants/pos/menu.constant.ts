@@ -11,7 +11,7 @@ export const MENU_TABLE_PRODUCT: Omit<FilterConfig, "options">[] = [
     label: "Menu Category",
     type: "combobox",
   },
-   {
+  {
     key: "products_id",
     label: "Product",
     type: "combobox",
@@ -25,9 +25,11 @@ export const MENU_TABLE_PRODUCT: Omit<FilterConfig, "options">[] = [
 
 export const INITIAL_MENU = {
   name: "",
-  status: "",
   menu_category_id: "",
-  products_id: "",
+  status: "",
+  menu_branches: [],
+  items_id: "",
+  auto_decrement: true,
   brand_id: "",
 };
 
@@ -35,9 +37,11 @@ export const INITIAL_STATE_MENU = {
   status: "idle",
   errors: {
     name: [],
-    status: [],
     menu_category_id: [],
-    products_id: [],
+    status: [],
+    menu_branches: [],
+    items_id: [],
+    auto_decrement: [],
     brand_id: [],
     _form: [],
   },

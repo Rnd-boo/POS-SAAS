@@ -15,12 +15,14 @@ export default function FormSwitch<T extends FieldValues>({
   name,
   disabled = false,
   className,
+  defaultChecked = false,
 }: {
   form: UseFormReturn<T>;
   name: Path<T>;
   label: string;
   disabled?: boolean;
   className?: string;
+  defaultChecked?: boolean;
 }) {
   return (
     <FormField
@@ -32,6 +34,7 @@ export default function FormSwitch<T extends FieldValues>({
           <FormControl>
             <Switch
               {...rest}
+              defaultChecked={defaultChecked}
               disabled={disabled}
               onCheckedChange={(e) => {
                 rest.onChange(e);

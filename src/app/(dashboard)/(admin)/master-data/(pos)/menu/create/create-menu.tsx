@@ -30,8 +30,12 @@ export default function CreateMenu() {
   const onSubmit = form.handleSubmit(async (data) => {
     const formData = new FormData();
     Object.entries(data).forEach(([key, value]) => {
+      if (key === "menu_branches") {
+        formData.append("menu_branches", JSON.stringify(value));
+      } else {
+        formData.append(key, String(value));
+      }
       formData.append("brand_id", String(currentBrandId));
-      formData.append(key, value);
     });
     startTransition(() => {
       createMenuAction(formData);

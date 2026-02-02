@@ -15,7 +15,7 @@ export function useBranchQuery() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("branch")
-        .select("id, name, status")
+        .select("id, name")
         .eq("status", true)
         .eq("brand_id", currentBrandId)
         .eq("clients_id", currentId);

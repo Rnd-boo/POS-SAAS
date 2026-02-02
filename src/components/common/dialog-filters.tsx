@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Button } from "../ui/button";
-import { Combobox } from "./combobox";
+import { Combobox } from "./manual-combobox";
 import { FilterConfig } from "@/types/general";
 
 export default function DialogFilters({
