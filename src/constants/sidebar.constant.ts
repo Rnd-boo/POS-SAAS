@@ -1,9 +1,8 @@
 import {
   Archive,
-  BookMarked,
+  CalendarPlus,
   Component,
   FileText,
-  Ratio,
   Users,
   Warehouse,
 } from "lucide-react";
@@ -16,22 +15,17 @@ export const SIDEBAR_MENULIST = {
       icon: Component,
       items: [],
     },
+      {
+      title: "Production Planning",
+      icon: Warehouse,
+      url: "/production",
+       items: [],
+    },
     {
       title: "Inventory",
       icon: Warehouse,
       url: "/inventory",
-    },
-    {
-      title: "Order",
-      url: "/order",
-      icon: FileText,
-      items: [],
-    },
-    {
-      title: "Table",
-      url: "/table",
-      icon: Ratio,
-      items: [],
+       items: [],
     },
     {
       title: "Master Data",
@@ -54,33 +48,16 @@ export const SIDEBAR_MENULIST = {
       items: [],
     },
     {
+      title: "Production Planning",
+      icon: CalendarPlus,
+      url: "/production",
+       items: [],
+    },
+    {
       title: "Inventory",
       icon: Warehouse,
-      url: "#",
-      items: [
-        { title: "Receiving", url: "/inventory/receiving" },
-        { title: "Shipping", url: "/inventory/shipping" },
-        { title: "Stock list", url: "/inventory/stock-list" },
-        { title: "Purchase Return", url: "/inventory/purchase-return" },
-      ],
-    },
-    {
-      title: "Product",
-      url: "/product",
-      icon: BookMarked,
-      items: [],
-    },
-    {
-      title: "Order",
-      url: "/order",
-      icon: FileText,
-      items: [],
-    },
-    {
-      title: "Table",
-      url: "/table",
-      icon: Ratio,
-      items: [],
+      url: "/inventory",
+       items: [],
     },
     {
       title: "Master Data",
