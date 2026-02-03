@@ -155,7 +155,6 @@ export default function CardFormMenu({
   useEffect(() => {
     replace(
       branchValue.map((v) => ({
-        menu_id: v.name,
         branch_id: String(v.id),
       })),
     );
@@ -289,82 +288,91 @@ export default function CardFormMenu({
                 </>
               ) : (
                 <>
-                  <div className="flex mb-4">
-                    <Label>Product Name</Label>
-                    <Input
-                      value={
-                        (
-                          selectedBOM?.[0]?.bill_of_materials as {
-                            product_units?: { products: { name: string } };
-                          }
-                        )?.product_units?.products?.name ?? "-"
-                      }
-                      disabled
-                    />
-                    <Label>Product Unit</Label>
-                    <Input
-                      value={
-                        (
-                          selectedBOM?.[0]?.bill_of_materials as {
-                            product_units?: { units: { name: string } };
-                          }
-                        )?.product_units?.units?.name ?? "-"
-                      }
-                      disabled
-                    />
-                  </div>
-                  <div className="grid gap-x-2 gap-y-2 grid-cols-[2fr_1fr_1fr_1fr_1fr]">
-                    <Label>Product</Label>
-                    <Label>Unit</Label>
-                    <Label>QTY</Label>
-                    <Label>Waste%</Label>
-                    <Label>Waste QTY</Label>
-                    {selectedBOM?.map((bom, index) => {
-                      return (
-                        <Fragment key={bom.id}>
-                          <Input
-                            value={
-                              (
-                                bom.product_units as {
-                                  products?: { name: string };
-                                }
-                              )?.products?.name ?? "-"
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div className="flex flex-col gap-2">
+                      <Label>Product Name</Label>
+                      <Input
+                        value={
+                          (
+                            selectedBOM?.[0]?.bill_of_materials as {
+                              product_units?: { products: { name: string } };
                             }
-                            disabled
-                            className="mt-2"
-                          />
-
-                          <Input
-                            value={
-                              (
-                                bom.product_units as {
-                                  units?: { name: string };
-                                }
-                              )?.units?.name ?? "-"
+                          )?.product_units?.products?.name ?? "-"
+                        }
+                        disabled
+                      />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <Label>Product Unit</Label>
+                      <Input
+                        value={
+                          (
+                            selectedBOM?.[0]?.bill_of_materials as {
+                              product_units?: { units: { name: string } };
                             }
-                            disabled
-                            className="mt-2"
-                          />
-
-                          <Input
-                            value={bom.qty ?? "-"}
-                            disabled
-                            className="mt-2"
-                          />
-                          <Input
-                            value={(bom.waste / bom.qty) * 100 || "-"}
-                            disabled
-                            className="mt-2"
-                          />
-                          <Input
-                            value={bom.waste ?? "-"}
-                            disabled
-                            className="mt-2"
-                          />
-                        </Fragment>
-                      );
-                    })}
+                          )?.product_units?.units?.name ?? "-"
+                        }
+                        disabled
+                      />
+                    </div>
                   </div>
+                  <CardTitle className="text-md mb-2">
+                    Product Materials
+                  </CardTitle>
+                  <Card>
+                    <CardContent className="grid gap-x-2  grid-cols-[2fr_1fr_1fr_1fr_1fr]">
+                      <Label>Product</Label>
+                      <Label>Unit</Label>
+                      <Label>QTY</Label>
+                      <Label>Waste%</Label>
+                      <Label>Waste QTY</Label>
+                      {selectedBOM?.map((bom, index) => {
+                        return (
+                          <Fragment key={bom.id}>
+                            <Input
+                              value={
+                                (
+                                  bom.product_units as {
+                                    products?: { name: string };
+                                  }
+                                )?.products?.name ?? "-"
+                              }
+                              disabled
+                              className="mt-2"
+                            />
+
+                            <Input
+                              value={
+                                (
+                                  bom.product_units as {
+                                    units?: { name: string };
+                                  }
+                                )?.units?.name ?? "-"
+                              }
+                              disabled
+                              className="mt-2"
+                            />
+
+                            <Input
+                              value={bom.qty ?? "-"}
+                              disabled
+                              className="mt-2"
+                            />
+                            <Input
+                              value={(bom.waste / bom.qty) * 100 || "-"}
+                              disabled
+                              className="mt-2"
+                            />
+                            <Input
+                              value={bom.waste ?? "-"}
+                              disabled
+                              className="mt-2"
+                            />
+                          </Fragment>
+                        );
+                      })}
+                    </CardContent>
+                  </Card>
                 </>
               )}
             </CardContent>

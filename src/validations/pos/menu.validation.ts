@@ -10,7 +10,7 @@ export const menuSchema = z.object({
 });
 
 export const menuBranchesSchema = z.object({
-  menu_id: z.string(),
+  menu_id: z.string().optional(),
   branch_id: z.string().min(1, "Order Context is required"),
 });
 
