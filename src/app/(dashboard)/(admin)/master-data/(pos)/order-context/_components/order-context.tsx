@@ -1,8 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogTrigger } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import useDataTable from "@/hooks/use-data-table";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
@@ -20,6 +17,7 @@ import DialogDetailOrderContext from "./dialog-detail-order-context";
 import { DataTable } from "@/components/common/tanstack-table";
 import { ColumnDef } from "@tanstack/react-table";
 import DropdownAction from "@/components/common/dropdown-action";
+import PageHeader from "@/components/common/page-header";
 
 export default function OrderContext() {
   const supabase = createClient();
@@ -94,16 +92,6 @@ export default function OrderContext() {
       cell: ({ row }) => <div>{row.getValue("name")}</div>,
     },
     {
-      accessorKey: "notes",
-      enableHiding: false,
-      header: () => <div>Notes</div>,
-      cell: ({ row }) => (
-        <div className="truncate max-w-xs">
-          {row.getValue("notes") !== null ? row.getValue("notes") : "-"}
-        </div>
-      ),
-    },
-    {
       accessorKey: "status",
       enableHiding: false,
       header: () => <div>Status</div>,
@@ -173,21 +161,11 @@ export default function OrderContext() {
   }, [orderContexts]);
   return (
     <div className="w-full">
-      <div className="flex flex-col lg:flex-row mb-4 gap-2 justify-between w-full">
-        <h1 className="text-xl font-semibold">Order Context Management</h1>
-        <div className="flex gap-2">
-          <Input
-            placeholder="Search by Order Context"
-            onChange={(e) => handleChangeSearch(e.target.value)}
-          />
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="outline">Create</Button>
-            </DialogTrigger>
-            <DialogCreateOrderContext refetch={refetch} />
-          </Dialog>
-        </div>
-      </div>
+      <PageHeader
+        handleChangeSearch={handleChangeSearch}
+        title="Order Context"
+        DialogCreateComponent={<DialogCreateOrderContext refetch={refetch} />}
+      />
       <DataTable
         setSelectedAction={setSelectedAction}
         totalData={totalData}
