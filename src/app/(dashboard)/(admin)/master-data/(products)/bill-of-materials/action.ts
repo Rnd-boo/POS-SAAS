@@ -57,7 +57,7 @@ export async function createBillOfMaterials(
   const productBOMData = validatedFields.data.product_bom.map((bom) => ({
     clients_id: currentClientId,
     client_profiles_id: currentUserId,
-    bill_of_materials: BOMData.id,
+    bill_of_materials_id: BOMData.id,
     product_units_id: bom.product_units_id,
     qty: bom.qty,
     waste: bom.waste,
@@ -130,7 +130,7 @@ export async function updateBillOfMaterials(
   const { error: deleteProductBOMError } = await supabase
     .from("product_bill_of_materials")
     .delete()
-    .eq("bill_of_materials", BOMData.id);
+    .eq("bill_of_materials_id", BOMData.id);
 
   if (deleteProductBOMError) {
     return {
@@ -145,7 +145,7 @@ export async function updateBillOfMaterials(
   const productBOMData = validatedFields.data.product_bom.map((bom) => ({
     clients_id: currentClientId,
     client_profiles_id: currentUserId,
-    bill_of_materials: BOMData.id,
+    bill_of_materials_id: BOMData.id,
     product_units_id: bom.product_units_id,
     qty: bom.qty,
     waste: bom.waste,

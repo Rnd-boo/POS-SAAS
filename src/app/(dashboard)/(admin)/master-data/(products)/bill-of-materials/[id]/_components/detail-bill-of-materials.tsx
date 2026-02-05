@@ -82,7 +82,7 @@ export default function DetailBillOfMaterials() {
               )`,
         )
         .eq("clients_id", currentId)
-        .eq("bill_of_materials", billOfMaterialsId);
+        .eq("bill_of_materials_id", billOfMaterialsId);
 
       if (result.error)
         toast.error("Get Product Bill Of Materials Data Failed", {

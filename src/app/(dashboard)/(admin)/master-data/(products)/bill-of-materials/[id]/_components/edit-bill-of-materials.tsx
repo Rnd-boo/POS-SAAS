@@ -88,7 +88,7 @@ export default function EditBillOfMaterials() {
               )`,
         )
         .eq("clients_id", currentId)
-        .eq("bill_of_materials", billOfMaterialsId);
+        .eq("bill_of_materials_id", billOfMaterialsId);
 
       if (result.error)
         toast.error("Get billOfMaterials Data Failed", {
