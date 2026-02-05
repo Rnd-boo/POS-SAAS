@@ -13,31 +13,26 @@ export const SIDEBAR_MENULIST = {
       title: "Dashboard",
       url: "/",
       icon: Component,
-      items: [],
     },
-      {
+    {
       title: "Production Planning",
-      icon: Warehouse,
+      icon: CalendarPlus,
       url: "/production",
-       items: [],
     },
     {
       title: "Inventory",
       icon: Warehouse,
       url: "/inventory",
-       items: [],
     },
     {
       title: "Master Data",
       url: "/master-data",
       icon: Archive,
-      items: [],
     },
     {
       title: "User",
       url: "/user",
       icon: Users,
-      items: [],
     },
   ],
   admin: [
@@ -45,25 +40,21 @@ export const SIDEBAR_MENULIST = {
       title: "Dashboard",
       url: "/",
       icon: Component,
-      items: [],
     },
     {
       title: "Production Planning",
       icon: CalendarPlus,
       url: "/production",
-       items: [],
     },
     {
       title: "Inventory",
       icon: Warehouse,
       url: "/inventory",
-       items: [],
     },
     {
       title: "Master Data",
       url: "/master-data",
       icon: Archive,
-      items: [],
     },
   ],
   cashier: [
@@ -71,7 +62,6 @@ export const SIDEBAR_MENULIST = {
       title: "Order",
       url: "/order",
       icon: FileText,
-      items: [],
     },
   ],
   kitchen: [
@@ -79,7 +69,6 @@ export const SIDEBAR_MENULIST = {
       title: "Order",
       url: "/order",
       icon: FileText,
-      items: [],
     },
   ],
 };

@@ -10,20 +10,13 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubItem,
   useSidebar,
 } from "@/components/ui/sidebar";
 import { DarkModeToggle } from "./darkmode-toggle";
 import { usePathname } from "next/navigation";
 import { SIDEBAR_MENULIST, SidebarMenuKey } from "@/constants/sidebar.constant";
 import { cn } from "@/lib/utils";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "../ui/collapsible";
-import { ChevronRight, Coffee } from "lucide-react";
+import { Coffee } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useAuthStore } from "@/stores/auth-store";
@@ -40,18 +33,11 @@ export function AppSidebar() {
     const currentSection = SIDEBAR_MENULIST[
       profile?.role as SidebarMenuKey
     ]?.find((item) => {
-      return (
-        item.url === pathname ||
-        item.items?.some((subItem) => subItem.url === pathname)
-      );
+      return item.url === pathname;
     });
 
     // If we found a section with sub-items, open it (and close others)
-    if (
-      currentSection &&
-      currentSection.items &&
-      currentSection.items.length > 0
-    ) {
+    if (currentSection) {
       setOpenItem(currentSection.title);
     }
     // If no matching section found, keep the currently open item (don't close it)
@@ -97,72 +83,21 @@ export function AppSidebar() {
               {SIDEBAR_MENULIST[profile?.role as SidebarMenuKey]?.map(
                 (item) => (
                   <SidebarMenuItem key={item.title}>
-                    {item.items && item.items.length > 0 ? (
-                      <Collapsible
-                        key={item.title}
-                        open={openItem === item.title}
-                        className="group/collapsible"
+                    <SidebarMenuButton asChild tooltip={item.title}>
+                      <a
+                        href={item.url}
+                        className={cn("ring-sidebar-ring px-4 py-3 h-auto ", {
+                          "bg-primary/90 text-white hover:text-white hover:!bg-primary/80 ":
+                            pathname === item.url ||
+                            pathname.startsWith(item.url + "/"),
+                        })}
                       >
-                        <>
-                          <CollapsibleTrigger asChild>
-                            <SidebarMenuButton
-                              tooltip={item.title}
-                              className={cn("px-4 py-3 h-auto", {
-                                " text-white hover:text-primary-foreground hover:bg-primary/90":
-                                  pathname === item.url ||
-                                  pathname.startsWith(item.url + "/"),
-                              })}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                toggleSingleItem(item.title);
-                              }}
-                            >
-                              {item.icon && <item.icon />}
-                              <span>{item.title}</span>
-                              <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                            </SidebarMenuButton>
-                          </CollapsibleTrigger>
-                          <CollapsibleContent>
-                            <SidebarMenuSub className="pt-2">
-                              {item.items?.map((subItem) => (
-                                <SidebarMenuSubItem key={subItem.title}>
-                                  <SidebarMenuButton
-                                    asChild
-                                    tooltip={subItem.title}
-                                  >
-                                    <a
-                                      href={subItem.url}
-                                      className={cn("px-4 py-3 h-auto", {
-                                        " hover:text-primary-foreground ":
-                                          pathname === subItem.url,
-                                      })}
-                                    >
-                                      <span>{subItem.title}</span>
-                                    </a>
-                                  </SidebarMenuButton>
-                                </SidebarMenuSubItem>
-                              ))}
-                            </SidebarMenuSub>
-                          </CollapsibleContent>
-                        </>
-                      </Collapsible>
-                    ) : (
-                      <SidebarMenuButton asChild tooltip={item.title}>
-                        <a
-                          href={item.url}
-                          className={cn("ring-sidebar-ring px-4 py-3 h-auto ", {
-                            "bg-primary/90 text-white hover:text-white hover:!bg-primary/80 ":
-                              pathname === item.url ||
-                              pathname.startsWith(item.url + "/"),
-                          })}
-                        >
-                          {item.icon && <item.icon />}
-                          <span>{item.title}</span>
-                        </a>
-                      </SidebarMenuButton>
-                    )}
+                        {item.icon && <item.icon />}
+                        <span>{item.title}</span>
+                      </a>
+                    </SidebarMenuButton>
                   </SidebarMenuItem>
-                )
+                ),
               )}
             </SidebarMenu>
           </SidebarGroupContent>
