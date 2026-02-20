@@ -8,7 +8,7 @@ export type formState = {
 export interface FilterConfig {
   key: string;
   label: string;
-  type: "select" | "combobox" | "text";
+  type: "select" | "combobox" | "text" | "date";
   operator?: "eq" | "ilike";
   options?: { value: string; label: string }[];
 }

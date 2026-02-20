@@ -18,6 +18,13 @@ import {
 import { Button } from "../ui/button";
 import { Combobox } from "./manual-combobox";
 import { FilterConfig } from "@/types/general";
+import { Calendar } from "../ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import {
+  formatDateLocal,
+  formatDisplayRange,
+  parseRange,
+} from "@/lib/format-date";
 
 export default function DialogFilters({
   open,
@@ -86,6 +93,43 @@ export default function DialogFilters({
                   setValues({ ...values, [config.key]: value })
                 }
               />
+            ) : config.type === "date" ? (
+              <Popover modal>
+                <PopoverTrigger asChild>
+                  <Input
+                    value={
+                      values[config.key]
+                        ? formatDisplayRange(values[config.key])
+                        : ""
+                    }
+                    onChange={(e) =>
+                      setValues({ ...values, [config.key]: e.target.value })
+                    }
+                  />
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0" align="start">
+                  <Calendar
+                    mode="range"
+                    numberOfMonths={2}
+                    selected={
+                      values[config.key]
+                        ? parseRange(values[config.key])
+                        : undefined
+                    }
+                    onSelect={(range) => {
+                      if (!range?.from || !range?.to) return;
+
+                      const formatted = `${formatDateLocal(range.from)}_${formatDateLocal(range.to)}`;
+
+                      setValues((prev) => ({
+                        ...prev,
+                        [config.key]: formatted,
+                      }));
+                    }}
+                    className="rounded-lg border"
+                  />
+                </PopoverContent>
+              </Popover>
             ) : (
               <Input
                 value={values[config.key] ?? ""}
