@@ -1,3 +1,4 @@
+import { formatDateLocal } from "@/lib/format-date";
 import { FilterConfig } from "@/types/general";
 
 export const FILTER_TABLE_PRODUCTION_ORDER: Omit<FilterConfig, "options">[] = [
@@ -9,7 +10,7 @@ export const FILTER_TABLE_PRODUCTION_ORDER: Omit<FilterConfig, "options">[] = [
   {
     key: "production_order_date",
     label: "Date",
-    type: "text",
+    type: "date",
   },
   {
     key: "branch_id",
@@ -29,33 +30,23 @@ export const FILTER_TABLE_PRODUCTION_ORDER: Omit<FilterConfig, "options">[] = [
 ];
 
 export const INITIAL_PRODUCTION_ORDER = {
-  name: "",
-  code: "",
-  type: "",
-  product_units_id: "",
-  description: "",
+  production_order_date: formatDateLocal(new Date()),
+  branch_id: "",
+  notes: "",
   status: "",
-  product_bom: [
-    {
-      products_id: "",
-      product_units_id: "",
-      qty: "",
-      wastePercentage: 0,
-      waste: 0,
-    },
-  ],
+  bill_of_materials_id: "",
+  qty: "",
 };
 
 export const INITIAL_STATE_PRODUCTION_ORDER = {
   status: "idle",
   errors: {
-    name: [],
-    code: [],
-    type: [],
-    product_units_id: [],
-    description: [],
+    production_order_date: [],
+    notes: [],
+    branch_id: [],
     status: [],
-    product_bom: [],
+    bill_of_materials_id: [],
+    qty: [],
     _form: [],
   },
 };

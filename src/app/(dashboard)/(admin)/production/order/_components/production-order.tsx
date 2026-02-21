@@ -5,12 +5,13 @@ import DropdownAction from "@/components/common/dropdown-action";
 import PageHeader from "@/components/common/page-header";
 import { DataTable } from "@/components/common/tanstack-table";
 import { FILTER_TABLE_PRODUCTION_ORDER } from "@/constants/production/production-order.constant";
+import { useBranchQuery } from "@/hooks/queries/use-branches";
 import useDataTable from "@/hooks/use-data-table";
 import { applyFilterQuery } from "@/hooks/use-filter-query";
 import { createClient } from "@/lib/supabase/client";
 import { useAuthStore } from "@/stores/auth-store";
 import { useBrandStore } from "@/stores/brand-store";
-import type { ProductionOrder } from "@/validations/production/production-order";
+import type { ProductionOrder } from "@/validations/production/production-order.validation";
 import { useQuery } from "@tanstack/react-query";
 import { ColumnDef, SortingState } from "@tanstack/react-table";
 import { ArrowDown, ArrowUp, Pencil, Trash2 } from "lucide-react";
@@ -33,7 +34,6 @@ export default function ProductionOrder() {
   const [openDialogFilters, setOpenDialogFilters] = useState<boolean>(false);
   const router = useRouter();
   const pathname = usePathname();
-
   const {
     currentPage,
     handleChangePage,
@@ -42,6 +42,8 @@ export default function ProductionOrder() {
     setTotalData,
     totalData,
   } = useDataTable();
+
+  const { data: branches } = useBranchQuery();
 
   const {
     data: productionOrders,
@@ -61,7 +63,7 @@ export default function ProductionOrder() {
       let query = supabase
         .from("production_orders")
         .select(
-          `id, production_order_date,branch_id, branch(id,name), notes,status`,
+          `id, production_order_date,branch_id, branch(id,name), notes,status,type, qty, bill_of_materials_id,brand_id`,
           { count: "exact" },
         )
         .eq("clients_id", currentId)
@@ -92,9 +94,6 @@ export default function ProductionOrder() {
     },
     enabled: !!currentId,
   });
-
-  const BRANCH_LIST =
-    productionOrders?.data?.map((order) => order.branch).flat() || [];
 
   const handleClickAction = (type: string) => {
     router.push(`${pathname}/${type}`);
@@ -137,12 +136,9 @@ export default function ProductionOrder() {
         );
       },
       cell: ({ row }) => {
-        const raw = row.getValue("production_order_date") as string;
-        const date = new Date(raw);
-
         return (
           <div className="truncate max-w-xs">
-            {date.toLocaleDateString("en-CA")}
+            {row.getValue("production_order_date")}
           </div>
         );
       },
@@ -166,7 +162,7 @@ export default function ProductionOrder() {
       cell: ({ row }) => {
         return (
           <div className="truncate max-w-xs">
-            {row.getValue("notes") !== null ? row.getValue("notes") : "-"}
+            {row.getValue("notes") ? row.getValue("notes") : "-"}
           </div>
         );
       },
@@ -245,6 +241,7 @@ export default function ProductionOrder() {
       <PageHeader
         handleChangeSearch={handleChangeSearch}
         title="Production Order"
+        pathname={pathname}
         filters={filters}
         setFilters={setFilters}
         setOpenDialogFilters={setOpenDialogFilters}
@@ -270,8 +267,8 @@ export default function ProductionOrder() {
           } else if (config.key === "branch_id") {
             return {
               ...config,
-              options: BRANCH_LIST.map((branch) => ({
-                value: branch.id,
+              options: branches?.map((branch) => ({
+                value: String(branch.id),
                 label: branch.name,
               })),
             };

@@ -99,6 +99,7 @@ export default function FormProductionOrderBOM({
       <div>
         <Label className="mb-2">Product</Label>
         <Input
+          disabled
           value={
             (
               selectedBOM?.bill_of_materials as {
@@ -106,12 +107,12 @@ export default function FormProductionOrderBOM({
               }
             )?.product_units?.products?.name ?? ""
           }
-          readOnly
         />
       </div>
       <div>
         <Label className="mb-2">Unit</Label>
         <Input
+          disabled
           value={
             (
               selectedBOM?.bill_of_materials as {
@@ -119,7 +120,6 @@ export default function FormProductionOrderBOM({
               }
             )?.product_units?.units?.name ?? ""
           }
-          readOnly
         />
       </div>
       <FormInput
@@ -137,13 +137,17 @@ export default function FormProductionOrderBOM({
       />
       <Separator className="col-span-full" />
       <div className="col-span-full grid grid-cols-[2fr_1fr_1fr_1fr_1fr] gap-2">
-        <Label>Product Name</Label>
-        <Label>Product Unit</Label>
-        <Label>Stock</Label>
-        <div>
-          <Label>Bill Of Material QTY</Label>
-        </div>
-        <Label>Total QTY</Label>
+        {productBillOfMaterials && (
+          <>
+            <Label>Product Name</Label>
+            <Label>Product Unit</Label>
+            <Label>Stock</Label>
+            <div>
+              <Label>Bill Of Material QTY</Label>
+            </div>
+            <Label>Total QTY</Label>
+          </>
+        )}
         {productBillOfMaterials?.map((productBOM) => {
           const billOfMaterialQTY = productBOM.qty + productBOM.waste;
           const totalQTY = Number(form.watch("qty")) * billOfMaterialQTY;

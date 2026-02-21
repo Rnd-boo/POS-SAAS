@@ -45,10 +45,7 @@ export default function FormDatePicker<T extends FieldValues>({
               <Popover modal>
                 <PopoverTrigger asChild>
                   <Input
-                    value={
-                      formatDateLocal(field.value) ??
-                      formatDateLocal(new Date())
-                    }
+                    value={field.value ?? ""}
                     placeholder="Select a date"
                     // onChange={(e) =>
                     //   setValues((prev) => ({ ...prev, [value]: e.target.value }))
@@ -58,9 +55,11 @@ export default function FormDatePicker<T extends FieldValues>({
                 <PopoverContent className="w-full p-0" align="start">
                   <Calendar
                     mode="single"
-                    className="rounded-lg border"
-                    onSelect={field.onChange}
-                    selected={field.value ?? new Date()}
+                    selected={field.value}
+                    onSelect={(date) => {
+                      if (!date) return;
+                      field.onChange(formatDateLocal(date)); // kirim string
+                    }}
                   />
                 </PopoverContent>
               </Popover>

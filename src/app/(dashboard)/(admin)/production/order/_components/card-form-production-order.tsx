@@ -85,6 +85,7 @@ export default function CardFormProductionOrder({
               )}
             />
             <FormDatePicker
+              required
               form={form}
               label="Production Order Date"
               name="production_order_date"
@@ -108,13 +109,7 @@ export default function CardFormProductionOrder({
         </Card>
         <Card className="my-2">
           <CardContent className="w-full">
-            <FormInput
-              form={form}
-              label="Notes"
-              name="notes"
-              type="textarea"
-              placeholder="Optional"
-            />
+            <FormInput form={form} label="Notes" name="notes" type="textarea" />
           </CardContent>
         </Card>
         <div className="fixed bottom-0 right-0 w-full flex justify-end gap-x-2 p-4 bg-background shadow-[0_-4px_12px_rgba(0,0,0,0.08)] dark:shadow-[0_-4px_12px_rgba(0,0,0,0.6)]">
