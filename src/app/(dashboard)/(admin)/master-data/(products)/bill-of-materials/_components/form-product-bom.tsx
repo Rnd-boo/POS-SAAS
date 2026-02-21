@@ -15,8 +15,8 @@ import { cn } from "@/lib/utils";
 import { UnitProduct } from "@/types/products/product-dialog";
 import { BillOfMaterialsForm } from "@/validations/products/bill-of-materials-validation";
 import { Plus, X } from "lucide-react";
-import { Dispatch, Fragment, SetStateAction, useEffect } from "react";
-import { useFieldArray, UseFormReturn, useWatch } from "react-hook-form";
+import { Dispatch, Fragment, SetStateAction } from "react";
+import { useFieldArray, UseFormReturn } from "react-hook-form";
 
 export default function FormProductBOM({
   form,

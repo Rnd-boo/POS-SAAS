@@ -20,6 +20,7 @@ export default function FormInput<T extends FieldValues>({
   className,
   isLoading,
   readOnly = false,
+  required,
   onChange,
 }: {
   form: UseFormReturn<T>;
@@ -31,6 +32,7 @@ export default function FormInput<T extends FieldValues>({
   className?: string;
   isLoading?: boolean;
   readOnly?: boolean;
+  required?: boolean;
   onChange?: (value: string) => void;
 }) {
   return (
@@ -39,7 +41,9 @@ export default function FormInput<T extends FieldValues>({
       name={name}
       render={({ field: { ...rest } }) => (
         <FormItem className={className}>
-          <FormLabel>{label}</FormLabel>
+          <FormLabel>
+            {label} {required && <span className="text-destructive">*</span>}
+          </FormLabel>
           <FormControl>
             {isLoading ? (
               <Skeleton className="h-10 w-full" />

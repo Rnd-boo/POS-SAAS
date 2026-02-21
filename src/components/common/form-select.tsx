@@ -27,6 +27,7 @@ export default function FormSelect<T extends FieldValues>({
   selectItem,
   isLoading,
   disabled = false,
+  required,
 }: {
   form: UseFormReturn<T>;
   name: Path<T>;
@@ -34,6 +35,7 @@ export default function FormSelect<T extends FieldValues>({
   selectItem: { value: string; label: string; disabled?: boolean }[];
   disabled?: boolean;
   isLoading?: boolean;
+  required?: boolean;
 }) {
   const mountedRef = useRef(false);
   const hasTriggeredOnChangeRef = useRef(false);
@@ -67,7 +69,9 @@ export default function FormSelect<T extends FieldValues>({
       name={name}
       render={({ field }) => (
         <FormItem>
-          <FormLabel>{label}</FormLabel>
+          <FormLabel>
+            {label} {required && <span className="text-destructive">*</span>}
+          </FormLabel>
           <FormControl>
             <Select
               value={field.value || ""}
