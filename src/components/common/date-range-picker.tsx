@@ -25,7 +25,8 @@ export default function DateRangeInput({
     <Popover modal>
       <PopoverTrigger asChild>
         <Input
-          value={value ? formatDisplayRange(value) : ""}
+          value={formatDisplayRange(value)}
+          placeholder="Select a date"
           // onChange={(e) =>
           //   setValues((prev) => ({ ...prev, [value]: e.target.value }))
           // }
