@@ -12,13 +12,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import { createClient } from "@/lib/supabase/client";
 import { useAuthStore } from "@/stores/auth-store";
 import { useBrandStore } from "@/stores/brand-store";
 import { UnitProduct } from "@/types/products/product-dialog";
 import { ProductionOrderForm } from "@/validations/production/production-order.validation";
 import { BillOfMaterials } from "@/validations/products/bill-of-materials-validation";
-import { Product } from "@/validations/products/product-validation";
 import { useQuery } from "@tanstack/react-query";
 import { Fragment, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
@@ -40,6 +40,7 @@ export default function FormProductionOrderBOM({
     Record<string, BillOfMaterials | null>
   >({});
   const billOfMaterialsId = selectedBOM?.bill_of_materials?.id;
+
   const {
     data: productBillOfMaterials,
     isLoading: isLoadingProductBillOfMaterials,
@@ -49,9 +50,9 @@ export default function FormProductionOrderBOM({
       const result = await supabase
         .from("product_bill_of_materials")
         .select(
-          `id, qty, waste, bill_of_materials(id),
+          `id, qty, waste, bill_of_materials(id), product_units_id,
               product_units (
-                id,products_id,units_id,
+                products_id,units_id,
                 products(name), 
                 units (name)
                 )`,
@@ -67,6 +68,27 @@ export default function FormProductionOrderBOM({
       return result.data;
     },
     enabled: !!currentId && !!billOfMaterialsId,
+  });
+  const productUnitIds =
+    productBillOfMaterials?.map((item) => item.product_units_id) ?? [];
+
+  const { data: productStocks, isLoading: isLoadingProductStocks } = useQuery({
+    queryKey: ["product_stocks", productUnitIds],
+    queryFn: async () => {
+      const result = await supabase
+        .from("product_stocks")
+        .select(`id, product_units_id, stock_qty`)
+        .eq("clients_id", currentId)
+        .in("product_units_id", productUnitIds);
+
+      if (result.error)
+        toast.error("Get Product Stocks Data Failed", {
+          description: result.error.message,
+        });
+
+      return result.data;
+    },
+    enabled: !!currentId,
   });
 
   return (
@@ -137,7 +159,7 @@ export default function FormProductionOrderBOM({
       />
       <Separator className="col-span-full" />
       <div className="col-span-full grid grid-cols-[2fr_1fr_1fr_1fr_1fr] gap-2">
-        {productBillOfMaterials && (
+        {billOfMaterialsId && (
           <>
             <Label>Product Name</Label>
             <Label>Product Unit</Label>
@@ -148,32 +170,49 @@ export default function FormProductionOrderBOM({
             <Label>Total QTY</Label>
           </>
         )}
-        {productBillOfMaterials?.map((productBOM) => {
-          const billOfMaterialQTY = productBOM.qty + productBOM.waste;
-          const totalQTY = Number(form.watch("qty")) * billOfMaterialQTY;
-          const result = Math.round(totalQTY * 1000) / 1000;
-          return (
-            <Fragment key={productBOM.id}>
-              <Input
-                value={
-                  (productBOM?.product_units as { products?: { name: string } })
-                    ?.products?.name ?? ""
-                }
-                readOnly
-              />
-              <Input
-                value={
-                  (productBOM?.product_units as { units?: { name: string } })
-                    ?.units?.name ?? ""
-                }
-                readOnly
-              />
-              <Input value={productBOM?.qty ?? ""} readOnly />
-              <Input value={billOfMaterialQTY ?? ""} readOnly />
-              <Input value={result ?? ""} readOnly />
-            </Fragment>
-          );
-        })}
+        {isLoadingProductBillOfMaterials ? (
+          <>
+            <Skeleton className="h-9" />
+            <Skeleton className="h-9" />
+            <Skeleton className="h-9" />
+            <Skeleton className="h-9" />
+            <Skeleton className="h-9" />
+          </>
+        ) : (
+          productBillOfMaterials?.map((productBOM) => {
+            const billOfMaterialQTY = productBOM.qty + productBOM.waste;
+            const totalQTY = Number(form.watch("qty")) * billOfMaterialQTY;
+            const result = Math.round(totalQTY * 1000) / 1000;
+            const stock = productStocks?.find(
+              (s) => s.product_units_id === productBOM.product_units_id,
+            );
+            const stockQty = stock?.stock_qty;
+            return (
+              <Fragment key={productBOM.id}>
+                <Input
+                  value={
+                    (
+                      productBOM?.product_units as {
+                        products?: { name: string };
+                      }
+                    )?.products?.name ?? ""
+                  }
+                  readOnly
+                />
+                <Input
+                  value={
+                    (productBOM?.product_units as { units?: { name: string } })
+                      ?.units?.name ?? ""
+                  }
+                  readOnly
+                />
+                <Input value={stockQty ?? "No"} readOnly />
+                <Input value={billOfMaterialQTY ?? ""} readOnly />
+                <Input value={result ?? ""} readOnly />
+              </Fragment>
+            );
+          })
+        )}
       </div>
     </div>
   );
