@@ -47,6 +47,7 @@ export function DataTable<TData extends { id: string | number }>({
   pathname,
   onRowClick,
   setSelectedAction,
+  isLoading,
 }: {
   columns: ColumnDef<TData>[];
   data: TData[];
@@ -65,6 +66,7 @@ export function DataTable<TData extends { id: string | number }>({
       type: "detail" | "update" | "delete";
     } | null>
   >;
+  isLoading?: boolean;
 }) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -180,56 +182,62 @@ export function DataTable<TData extends { id: string | number }>({
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                  onClick={() => {
-                    if (onRowClick) {
-                      onRowClick(row.original);
-                    } else if (pathname) {
-                      router.push(`${pathname}/${row.original.id}`);
-                    } else {
-                      setSelectedAction?.({
-                        data: row.original,
-                        type: "detail",
-                      });
-                    }
-                  }}
-                  className={cn(
-                    (pathname || setSelectedAction) && "cursor-pointer",
-                  )}
+            {table.getRowModel().rows.map((row) => (
+              <TableRow
+                key={row.id}
+                data-state={row.getIsSelected() && "selected"}
+                onClick={() => {
+                  if (onRowClick) {
+                    onRowClick(row.original);
+                  } else if (pathname) {
+                    router.push(`${pathname}/${row.original.id}`);
+                  } else {
+                    setSelectedAction?.({
+                      data: row.original,
+                      type: "detail",
+                    });
+                  }
+                }}
+                className={cn(
+                  (pathname || setSelectedAction) && "cursor-pointer",
+                )}
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell
+                    key={cell.id}
+                    className={cn(
+                      cell.column.getIsPinned() && "sticky z-20 ",
+                      cell.column.getIsPinned() === "right" &&
+                        cell.column.id === "actions" &&
+                        "text-center",
+                    )}
+                    style={{
+                      left:
+                        cell.column.getIsPinned() === "left"
+                          ? cell.column.getStart("left")
+                          : undefined,
+                      right:
+                        cell.column.getIsPinned() === "right"
+                          ? cell.column.getAfter("right")
+                          : undefined,
+                    }}
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+            {isLoading && (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      className={cn(
-                        cell.column.getIsPinned() && "sticky z-20 ",
-                        cell.column.getIsPinned() === "right" &&
-                          cell.column.id === "actions" &&
-                          "text-center",
-                      )}
-                      style={{
-                        left:
-                          cell.column.getIsPinned() === "left"
-                            ? cell.column.getStart("left")
-                            : undefined,
-                        right:
-                          cell.column.getIsPinned() === "right"
-                            ? cell.column.getAfter("right")
-                            : undefined,
-                      }}
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
+                  Loading...
+                </TableCell>
+              </TableRow>
+            )}
+            {table.getRowModel().rows?.length === 0 && !isLoading && (
               <TableRow>
                 <TableCell
                   colSpan={columns.length}

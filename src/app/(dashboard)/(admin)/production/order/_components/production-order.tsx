@@ -4,6 +4,17 @@ import DialogFilters from "@/components/common/dialog-filters";
 import DropdownAction from "@/components/common/dropdown-action";
 import PageHeader from "@/components/common/page-header";
 import { DataTable } from "@/components/common/tanstack-table";
+import { Button } from "@/components/ui/button";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { FILTER_TABLE_PRODUCTION_ORDER } from "@/constants/production/production-order.constant";
 import { useBranchQuery } from "@/hooks/queries/use-branches";
 import useDataTable from "@/hooks/use-data-table";
@@ -14,7 +25,16 @@ import { useBrandStore } from "@/stores/brand-store";
 import type { ProductionOrder } from "@/validations/production/production-order.validation";
 import { useQuery } from "@tanstack/react-query";
 import { ColumnDef, SortingState } from "@tanstack/react-table";
-import { ArrowDown, ArrowUp, Pencil, Trash2 } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUp,
+  ChevronDown,
+  Funnel,
+  Pencil,
+  SearchIcon,
+  Trash2,
+} from "lucide-react";
+import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -32,6 +52,8 @@ export default function ProductionOrder() {
   const [filters, setFilters] = useState<Record<string, string>>({});
   const [sorting, setSorting] = useState<SortingState>([]);
   const [openDialogFilters, setOpenDialogFilters] = useState<boolean>(false);
+  const [type, setType] = useState("");
+
   const router = useRouter();
   const pathname = usePathname();
   const {
@@ -238,15 +260,73 @@ export default function ProductionOrder() {
 
   return (
     <div className="w-full">
-      <PageHeader
-        handleChangeSearch={handleChangeSearch}
-        title="Production Order"
-        pathname={pathname}
-        filters={filters}
-        setFilters={setFilters}
-        setOpenDialogFilters={setOpenDialogFilters}
-      />
+      <div className="flex flex-col lg:flex-row mb-4 gap-2 justify-between w-full">
+        <h1 className="text-2xl font-semibold capitalize">Production Order</h1>
+      </div>
+      <div className="mb-2 flex justify-between ">
+        <div className="flex gap-2 w-full max-w-md">
+          <InputGroup className="max-w-sm">
+            <InputGroupInput
+              placeholder={`Search by production order number`}
+              onChange={(e) => handleChangeSearch(e.target.value)}
+            />
+            <InputGroupAddon>
+              <SearchIcon />
+            </InputGroupAddon>
+          </InputGroup>
+          {filters !== undefined && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setOpenDialogFilters && setOpenDialogFilters(true)}
+            >
+              <Funnel />
+              Filters
+              {Object.keys(filters).length > 0 && (
+                <>
+                  <span className="text-xs font-medium bg-accent rounded-full px-2 py-0.5">
+                    {Object.keys(filters).length}
+                  </span>
+                  <span
+                    className="ml-1 size-6 rounded hover:bg-muted cursor-pointer"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (setFilters) {
+                        setFilters({});
+                      }
+                    }}
+                  >
+                    x
+                  </span>
+                </>
+              )}
+            </Button>
+          )}
+        </div>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline">
+              Create
+              <ChevronDown />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent
+            className="w-full p-0 flex flex-col border-none "
+            align="end"
+          >
+            <Link href={`${pathname}/create?type=assembly`} className="w-full">
+              <Button variant="ghost" className="w-full">
+                Assembly
+              </Button>
+            </Link>
+            <Link href={`${pathname}/create?type=disassembly`}>
+              <Button variant="ghost">Disassembly</Button>
+            </Link>
+          </PopoverContent>
+        </Popover>
+      </div>
       <DataTable
+        isLoading={isLoadingproductionOrders}
         data={data}
         columns={columns}
         currentPage={currentPage}
