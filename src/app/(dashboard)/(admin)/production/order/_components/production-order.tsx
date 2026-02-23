@@ -2,7 +2,6 @@
 
 import DialogFilters from "@/components/common/dialog-filters";
 import DropdownAction from "@/components/common/dropdown-action";
-import PageHeader from "@/components/common/page-header";
 import { DataTable } from "@/components/common/tanstack-table";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,6 +31,7 @@ import {
   Funnel,
   Pencil,
   SearchIcon,
+  SquareCheckBig,
   Trash2,
 } from "lucide-react";
 import Link from "next/link";
@@ -52,7 +52,6 @@ export default function ProductionOrder() {
   const [filters, setFilters] = useState<Record<string, string>>({});
   const [sorting, setSorting] = useState<SortingState>([]);
   const [openDialogFilters, setOpenDialogFilters] = useState<boolean>(false);
-  const [type, setType] = useState("");
 
   const router = useRouter();
   const pathname = usePathname();
@@ -229,6 +228,18 @@ export default function ProductionOrder() {
         return (
           <DropdownAction
             menu={[
+              {
+                label: (
+                  <span className="flex items-center gap-2">
+                    <SquareCheckBig />
+                    Authorized
+                  </span>
+                ),
+                action: () => {
+                  handleClickAction(`${row?.original.id}`);
+                },
+              },
+              { separator: true },
               {
                 label: (
                   <span className="flex items-center gap-2">
