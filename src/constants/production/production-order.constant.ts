@@ -36,6 +36,7 @@ export const INITIAL_PRODUCTION_ORDER = {
   status: "",
   bill_of_materials_id: "",
   qty: "",
+  type: "",
 };
 
 export const INITIAL_STATE_PRODUCTION_ORDER = {
@@ -47,6 +48,7 @@ export const INITIAL_STATE_PRODUCTION_ORDER = {
     status: [],
     bill_of_materials_id: [],
     qty: [],
+    type: [],
     _form: [],
   },
 };

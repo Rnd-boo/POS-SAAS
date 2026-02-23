@@ -13,7 +13,7 @@ import {
 } from "@/constants/production/production-order.constant";
 import { useQueryClient } from "@tanstack/react-query";
 import { useBrandStore } from "@/stores/brand-store";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { startTransition, useActionState, useEffect } from "react";
 import { createProductionOrder } from "../action";
 import { toast } from "sonner";
@@ -22,7 +22,8 @@ export default function CreateProductionOrder() {
   const queryClient = useQueryClient();
   const currentBrandId = useBrandStore((s) => s.currentBrandId);
   const router = useRouter();
-
+  const searchParams = useSearchParams();
+  const type = searchParams.get("type");
   const form = useForm<ProductionOrderForm>({
     resolver: zodResolver(productionOrderFormSchema),
     defaultValues: INITIAL_PRODUCTION_ORDER,
@@ -52,10 +53,14 @@ export default function CreateProductionOrder() {
     if (createProductionOrderState?.status === "success") {
       toast.success("Create Production Order Success");
       form.reset();
-      queryClient.refetchQueries({ queryKey: ["production_order"] });
+      queryClient.refetchQueries({ queryKey: ["production_orders"] });
       router.push("/production/order");
     }
   }, [createProductionOrderState]);
+
+  useEffect(() => {
+    form.setValue("type", type ?? "");
+  }, [type]);
 
   return (
     <div className="w-full">

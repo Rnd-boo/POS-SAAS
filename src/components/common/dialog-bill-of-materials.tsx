@@ -25,6 +25,7 @@ export default function DialogBillOfMaterials({
   open,
   onOpenChange,
   setSelectedBOM,
+  type,
 }: {
   form: UseFormReturn<any>;
   open: boolean;
@@ -32,12 +33,11 @@ export default function DialogBillOfMaterials({
   setSelectedBOM: React.Dispatch<
     React.SetStateAction<Record<string, BillOfMaterials | null>>
   >;
+  type?: string;
 }) {
   const supabase = createClient();
   const currentId = useAuthStore((state) => state.profile?.clients);
   const currentBrandId = useBrandStore((s) => s.currentBrandId);
-  const [openDialogFilters, setOpenDialogFilters] = useState<boolean>(false);
-  const [filters, setFilters] = useState<Record<string, string>>({});
   const {
     currentPage,
     handleChangePage,
@@ -56,11 +56,11 @@ export default function DialogBillOfMaterials({
       "billOfMaterials",
       currentPage,
       currentSearch,
-      filters,
       currentBrandId,
+      open,
     ],
     queryFn: async () => {
-      let query = supabase
+      const result = await supabase
         .from("bill_of_materials")
         .select(
           `id, name, code, type, product_units_id, status, description,  
@@ -73,13 +73,11 @@ export default function DialogBillOfMaterials({
         )
         .eq("clients_id", currentId)
         .eq("brand_id", currentBrandId)
+        .eq("type", type)
+        .or(`name.ilike.%${currentSearch}%,code.ilike.%${currentSearch}%`)
         .range((currentPage - 1) * 10, currentPage * 10 - 1)
-        .order("name")
-        .or(`name.ilike.%${currentSearch}%,code.ilike.%${currentSearch}%`);
+        .order("name");
 
-      query = applyFilterQuery(query, filters);
-
-      const result = await query;
       setTotalData(result.count || 0);
       if (result.error)
         toast.error("Get BOM Data Failed", {
@@ -114,6 +112,7 @@ export default function DialogBillOfMaterials({
     },
     {
       accessorKey: "code",
+      enableHiding: false,
       header: ({ column }) => {
         const sorted = column.getIsSorted();
         return (
@@ -196,27 +195,16 @@ export default function DialogBillOfMaterials({
         forceMount
       >
         <DialogHeader>
-          <DialogTitle>Products</DialogTitle>
+          <DialogTitle>Bill Of Materials</DialogTitle>
         </DialogHeader>
-        <div className="flex w-1/2 ml-auto gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setOpenDialogFilters(true)}
-          >
-            Filters
-            <Funnel />
-          </Button>
-          <DialogFilters
-            onOpenChange={setOpenDialogFilters}
-            open={openDialogFilters}
-          />
+        <div className="flex w-1/3 ml-auto gap-2">
           <Input
-            placeholder="Search by Product Name"
+            placeholder="Search by Bill Of Material Name/Code"
             onChange={(e) => handleChangeSearch(e.target.value)}
           />
         </div>
         <DataTable
+          isLoading={isLoading}
           totalData={totalData}
           onRowClick={handleRowClick}
           columns={columns}

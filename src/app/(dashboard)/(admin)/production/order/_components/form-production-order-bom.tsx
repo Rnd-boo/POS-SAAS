@@ -15,7 +15,6 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { createClient } from "@/lib/supabase/client";
 import { useAuthStore } from "@/stores/auth-store";
-import { useBrandStore } from "@/stores/brand-store";
 import { UnitProduct } from "@/types/products/product-dialog";
 import { ProductionOrderForm } from "@/validations/production/production-order.validation";
 import { BillOfMaterials } from "@/validations/products/bill-of-materials-validation";
@@ -33,7 +32,6 @@ export default function FormProductionOrderBOM({
 }) {
   const supabase = createClient();
   const currentId = useAuthStore((state) => state.profile?.clients);
-  const currentBrandId = useBrandStore((s) => s.currentBrandId);
   const [open, setOpen] = useState(false);
 
   const [selectedBOM, setSelectedBOM] = useState<
@@ -50,10 +48,10 @@ export default function FormProductionOrderBOM({
       const result = await supabase
         .from("product_bill_of_materials")
         .select(
-          `id, qty, waste, bill_of_materials(id), product_units_id,
+          `id, qty, waste, bill_of_materials(id),
               product_units (
-                products_id,units_id,
-                products(name), 
+                products_id,units_id, conversion_factor,
+                products(name,upc), 
                 units (name)
                 )`,
         )
@@ -68,27 +66,6 @@ export default function FormProductionOrderBOM({
       return result.data;
     },
     enabled: !!currentId && !!billOfMaterialsId,
-  });
-  const productUnitIds =
-    productBillOfMaterials?.map((item) => item.product_units_id) ?? [];
-
-  const { data: productStocks, isLoading: isLoadingProductStocks } = useQuery({
-    queryKey: ["product_stocks", productUnitIds],
-    queryFn: async () => {
-      const result = await supabase
-        .from("product_stocks")
-        .select(`id, product_units_id, stock_qty`)
-        .eq("clients_id", currentId)
-        .in("product_units_id", productUnitIds);
-
-      if (result.error)
-        toast.error("Get Product Stocks Data Failed", {
-          description: result.error.message,
-        });
-
-      return result.data;
-    },
-    enabled: !!currentId,
   });
 
   return (
@@ -152,6 +129,7 @@ export default function FormProductionOrderBOM({
         placeholder="Insert QTY"
       />
       <DialogBillOfMaterials
+        type={form.getValues("type")}
         setSelectedBOM={setSelectedBOM}
         open={open}
         onOpenChange={setOpen}
@@ -162,8 +140,8 @@ export default function FormProductionOrderBOM({
         {billOfMaterialsId && (
           <>
             <Label>Product Name</Label>
-            <Label>Product Unit</Label>
-            <Label>Stock</Label>
+            <Label>UPC</Label>
+            <Label>Unit</Label>
             <div>
               <Label>Bill Of Material QTY</Label>
             </div>
@@ -183,10 +161,7 @@ export default function FormProductionOrderBOM({
             const billOfMaterialQTY = productBOM.qty + productBOM.waste;
             const totalQTY = Number(form.watch("qty")) * billOfMaterialQTY;
             const result = Math.round(totalQTY * 1000) / 1000;
-            const stock = productStocks?.find(
-              (s) => s.product_units_id === productBOM.product_units_id,
-            );
-            const stockQty = stock?.stock_qty;
+
             return (
               <Fragment key={productBOM.id}>
                 <Input
@@ -201,12 +176,21 @@ export default function FormProductionOrderBOM({
                 />
                 <Input
                   value={
+                    (
+                      productBOM?.product_units as {
+                        products?: { upc: string };
+                      }
+                    )?.products?.upc ?? ""
+                  }
+                  readOnly
+                />
+                <Input
+                  value={
                     (productBOM?.product_units as { units?: { name: string } })
                       ?.units?.name ?? ""
                   }
                   readOnly
                 />
-                <Input value={stockQty ?? "No"} readOnly />
                 <Input value={billOfMaterialQTY ?? ""} readOnly />
                 <Input value={result ?? ""} readOnly />
               </Fragment>

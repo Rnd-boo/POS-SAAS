@@ -91,11 +91,11 @@ export default function CardFormProductionOrder({
               name="production_order_date"
             />
             <FormSelect
-              required
               form={form}
               name="type"
               selectItem={TYPE_LIST}
               label="Type"
+              disabled
             />
           </CardContent>
         </Card>

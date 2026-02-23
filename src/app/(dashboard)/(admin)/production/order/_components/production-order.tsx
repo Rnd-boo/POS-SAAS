@@ -200,6 +200,16 @@ export default function ProductionOrder() {
       ),
     },
     {
+      accessorKey: "type",
+      enableHiding: false,
+      header: () => {
+        return <div className="!cursor-default">Type</div>;
+      },
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue("type")}</div>
+      ),
+    },
+    {
       accessorKey: "status",
       enableHiding: false,
       header: () => <div className="!cursor-default">Status</div>,
