@@ -225,50 +225,57 @@ export default function ProductionOrder() {
       enableHiding: false,
       header: () => <div className="flex justify-center">Actions</div>,
       cell: ({ row }) => {
-        return (
-          <DropdownAction
-            menu={[
-              {
-                label: (
-                  <span className="flex items-center gap-2">
-                    <SquareCheckBig />
-                    Authorized
-                  </span>
-                ),
-                action: () => {
-                  handleClickAction(`${row?.original.id}`);
-                },
+        const menu: {
+          label?: React.ReactNode;
+          variant?: "destructive" | "default";
+          action?: () => void;
+          separator?: boolean;
+        }[] = [
+          {
+            label: (
+              <span className="flex items-center gap-2">
+                <Pencil />
+                Edit
+              </span>
+            ),
+            action: () => {
+              handleClickAction(`${row?.original.id}/edit`);
+            },
+          },
+          {
+            label: (
+              <span className="flex items-center gap-2">
+                <Trash2 className="text-red-400" />
+                Delete
+              </span>
+            ),
+            variant: "destructive",
+            action: () => {
+              //   setSelectedAction({
+              //     data: row.original,
+              //     type: "delete",
+              //   });
+            },
+          },
+        ];
+        const status = row.getValue("status");
+        if (status !== "authorized" && status !== "rejected") {
+          menu.unshift(
+            {
+              label: (
+                <span className="flex items-center gap-2">
+                  <SquareCheckBig />
+                  Create PO
+                </span>
+              ),
+              action: () => {
+                handleClickAction(`create/${row?.original.id}`);
               },
-              { separator: true },
-              {
-                label: (
-                  <span className="flex items-center gap-2">
-                    <Pencil />
-                    Edit
-                  </span>
-                ),
-                action: () => {
-                  handleClickAction(`${row?.original.id}/edit`);
-                },
-              },
-              {
-                label: (
-                  <span className="flex items-center gap-2">
-                    <Trash2 className="text-red-400" />
-                    Delete
-                  </span>
-                ),
-                variant: "destructive",
-                action: () => {
-                  //   setSelectedAction({
-                  //     data: row.original,
-                  //     type: "delete",
-                  //   });
-                },
-              },
-            ]}
-          />
-        );
+            },
+            { separator: true },
+          );
+        }
+        return <DropdownAction menu={menu} />;
       },
     },
   ];

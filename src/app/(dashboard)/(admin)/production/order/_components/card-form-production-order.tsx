@@ -34,11 +34,13 @@ export default function CardFormProductionOrder({
   isPending,
   type,
   onSubmit,
+  handleReject,
 }: {
   form: UseFormReturn<ProductionOrderForm>;
   isPending?: boolean;
-  type: "Create" | "Detail" | "Update";
+  type: "Create" | "Detail" | "Update" | "Authorize";
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  handleReject?: () => void;
 }) {
   const { data: branches } = useBranchQuery();
 
@@ -52,9 +54,12 @@ export default function CardFormProductionOrder({
       <form className="w-full pb-28" onSubmit={onSubmit}>
         <Card>
           <CardHeader>
-            <CardTitle>{type} Production Order</CardTitle>
+            <CardTitle>
+              {type === "Authorize" ? "Create" : type} Production Order
+            </CardTitle>
             <CardDescription>
-              {type} Production Order information as needed.
+              {type === "Authorize" ? "Confirm" : type} Production Order
+              information as needed.
             </CardDescription>
           </CardHeader>
           <CardContent className="grid grid-cols-[2fr_2fr_1fr] gap-4">
@@ -68,6 +73,7 @@ export default function CardFormProductionOrder({
                   </FormLabel>
                   <FormControl>
                     <Combobox
+                      disabled={type === "Authorize" || type === "Detail"}
                       placeholder="Select Branch"
                       modal
                       items={
@@ -85,6 +91,7 @@ export default function CardFormProductionOrder({
               )}
             />
             <FormDatePicker
+              disabled={type === "Authorize" || type === "Detail"}
               required
               form={form}
               label="Production Order Date"
@@ -109,16 +116,33 @@ export default function CardFormProductionOrder({
         </Card>
         <Card className="my-2">
           <CardContent className="w-full">
-            <FormInput form={form} label="Notes" name="notes" type="textarea" />
+            <FormInput
+              form={form}
+              label="Notes"
+              name="notes"
+              type="textarea"
+              disabled={type === "Authorize" || type === "Detail"}
+            />
           </CardContent>
         </Card>
         <div className="fixed bottom-0 right-0 w-full flex justify-end gap-x-2 p-4 bg-background shadow-[0_-4px_12px_rgba(0,0,0,0.08)] dark:shadow-[0_-4px_12px_rgba(0,0,0,0.6)]">
           <Button type="button" variant="outline" onClick={() => router.back()}>
             Cancel
           </Button>
+          {type === "Authorize" && (
+            <Button type="button" variant="destructive" onClick={handleReject}>
+              {isPending ? <Loader2 className="animate-spin" /> : "Reject"}
+            </Button>
+          )}
           {type !== "Detail" && (
             <Button type="submit">
-              {isPending ? <Loader2 className="animate-spin" /> : type}
+              {isPending ? (
+                <Loader2 className="animate-spin" />
+              ) : type === "Authorize" ? (
+                "Approve"
+              ) : (
+                type
+              )}
             </Button>
           )}
         </div>

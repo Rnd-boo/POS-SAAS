@@ -21,6 +21,7 @@ export default function FormDatePicker<T extends FieldValues>({
   className,
   isLoading,
   required,
+  disabled,
 }: {
   form: UseFormReturn<T>;
   name: Path<T>;
@@ -28,6 +29,7 @@ export default function FormDatePicker<T extends FieldValues>({
   className?: string;
   isLoading?: boolean;
   required?: boolean;
+  disabled?: boolean;
 }) {
   return (
     <FormField
@@ -47,6 +49,7 @@ export default function FormDatePicker<T extends FieldValues>({
                   <Input
                     value={field.value ?? ""}
                     placeholder="Select a date"
+                    disabled={disabled}
                     // onChange={(e) =>
                     //   setValues((prev) => ({ ...prev, [value]: e.target.value }))
                     // }

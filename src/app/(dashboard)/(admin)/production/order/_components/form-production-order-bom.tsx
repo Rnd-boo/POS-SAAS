@@ -19,7 +19,7 @@ import { UnitProduct } from "@/types/products/product-dialog";
 import { ProductionOrderForm } from "@/validations/production/production-order.validation";
 import { BillOfMaterials } from "@/validations/products/bill-of-materials-validation";
 import { useQuery } from "@tanstack/react-query";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -28,7 +28,7 @@ export default function FormProductionOrderBOM({
   type,
 }: {
   form: UseFormReturn<ProductionOrderForm>;
-  type: "Detail" | "Create" | "Update";
+  type: "Detail" | "Create" | "Update" | "Authorize";
 }) {
   const supabase = createClient();
   const currentId = useAuthStore((state) => state.profile?.clients);
@@ -37,7 +37,35 @@ export default function FormProductionOrderBOM({
   const [selectedBOM, setSelectedBOM] = useState<
     Record<string, BillOfMaterials | null>
   >({});
-  const billOfMaterialsId = selectedBOM?.bill_of_materials?.id;
+  const viewBOMId = form.watch("bill_of_materials_id");
+
+  const billOfMaterialsId = selectedBOM?.bill_of_materials?.id ?? viewBOMId;
+
+  const { data: billOfMaterials, isLoading: isLoadingbillOfMaterials } =
+    useQuery({
+      queryKey: ["bill_of_materials", viewBOMId],
+      queryFn: async () => {
+        const result = await supabase
+          .from("bill_of_materials")
+          .select(
+            `name,code, product_units (
+                products!inner (name),
+                units!inner (name)
+                )`,
+          )
+          .eq("clients_id", currentId)
+          .eq("id", viewBOMId)
+          .single();
+
+        if (result.error)
+          toast.error("Get Product Bill Of Materials Data Failed", {
+            description: result.error.message,
+          });
+
+        return result.data;
+      },
+      enabled: !!currentId && !!viewBOMId,
+    });
 
   const {
     data: productBillOfMaterials,
@@ -80,8 +108,13 @@ export default function FormProductionOrderBOM({
             </FormLabel>
             <FormControl>
               <Input
+                disabled={type === "Authorize" || type === "Detail"}
                 placeholder="Select Bill Of Material"
-                value={selectedBOM?.bill_of_materials?.name ?? ""}
+                value={
+                  selectedBOM?.bill_of_materials?.name ??
+                  billOfMaterials?.name ??
+                  ""
+                }
                 onClick={() => setOpen(true)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
@@ -104,7 +137,10 @@ export default function FormProductionOrderBOM({
               selectedBOM?.bill_of_materials as {
                 product_units?: UnitProduct;
               }
-            )?.product_units?.products?.name ?? ""
+            )?.product_units?.products?.name ??
+            (billOfMaterials?.product_units as { products?: { name: string } })
+              ?.products?.name ??
+            ""
           }
         />
       </div>
@@ -117,11 +153,15 @@ export default function FormProductionOrderBOM({
               selectedBOM?.bill_of_materials as {
                 product_units?: UnitProduct;
               }
-            )?.product_units?.units?.name ?? ""
+            )?.product_units?.units?.name ??
+            (billOfMaterials?.product_units as { units?: { name: string } })
+              ?.units?.name ??
+            ""
           }
         />
       </div>
       <FormInput
+        disabled={type === "Authorize" || type === "Detail"}
         form={form}
         name="qty"
         label="QTY"
@@ -172,7 +212,7 @@ export default function FormProductionOrderBOM({
                       }
                     )?.products?.name ?? ""
                   }
-                  readOnly
+                  disabled
                 />
                 <Input
                   value={
@@ -182,17 +222,17 @@ export default function FormProductionOrderBOM({
                       }
                     )?.products?.upc ?? ""
                   }
-                  readOnly
+                  disabled
                 />
                 <Input
                   value={
                     (productBOM?.product_units as { units?: { name: string } })
                       ?.units?.name ?? ""
                   }
-                  readOnly
+                  disabled
                 />
-                <Input value={billOfMaterialQTY ?? ""} readOnly />
-                <Input value={result ?? ""} readOnly />
+                <Input value={billOfMaterialQTY ?? ""} disabled />
+                <Input value={result ?? ""} disabled />
               </Fragment>
             );
           })
