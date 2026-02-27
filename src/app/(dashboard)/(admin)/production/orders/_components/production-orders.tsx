@@ -174,9 +174,28 @@ export default function ProductionOrder() {
         );
       },
     },
+
+    {
+      accessorKey: "branch",
+      header: () => {
+        return <div className="!cursor-default">Branch</div>;
+      },
+      cell: ({ row }) => (
+        <div>{(row.getValue("branch") as { name: string }).name}</div>
+      ),
+    },
+    {
+      accessorKey: "type",
+      enableHiding: false,
+      header: () => {
+        return <div className="!cursor-default">Type</div>;
+      },
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue("type")}</div>
+      ),
+    },
     {
       accessorKey: "notes",
-      enableHiding: false,
       header: ({ column }) => {
         const sorted = column.getIsSorted();
         return (
@@ -197,26 +216,6 @@ export default function ProductionOrder() {
           </div>
         );
       },
-    },
-    {
-      accessorKey: "branch",
-      enableHiding: false,
-      header: () => {
-        return <div className="!cursor-default">Branch</div>;
-      },
-      cell: ({ row }) => (
-        <div>{(row.getValue("branch") as { name: string }).name}</div>
-      ),
-    },
-    {
-      accessorKey: "type",
-      enableHiding: false,
-      header: () => {
-        return <div className="!cursor-default">Type</div>;
-      },
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("type")}</div>
-      ),
     },
     {
       accessorKey: "status",
