@@ -147,3 +147,27 @@ export async function rejectProductionOrder(
 
   return { status: "success" };
 }
+
+export async function deleteProductionOrder(
+  prevState: ProductionOrderFormState,
+  formData: FormData,
+) {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("production_orders")
+    .delete()
+    .eq("id", formData.get("id"));
+
+  if (error) {
+    return {
+      status: "error",
+      errors: {
+        ...prevState.errors,
+        _form: [error.message],
+      },
+    };
+  }
+
+  return { status: "success" };
+}

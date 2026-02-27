@@ -38,6 +38,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import DialogDeleteProductionOrder from "./dialog-delete-production-order";
 
 const STATUS_LIST = [
   { value: "new", label: "New" },
@@ -118,6 +119,15 @@ export default function ProductionOrder() {
 
   const handleClickAction = (type: string) => {
     router.push(`${pathname}/${type}`);
+  };
+
+  const [selectedAction, setSelectedAction] = useState<{
+    data: ProductionOrder;
+    type: "delete";
+  } | null>(null);
+
+  const handleChangeAction = (open: boolean) => {
+    if (!open) setSelectedAction(null);
   };
 
   const data: ProductionOrder[] = productionOrders?.data ?? [];
@@ -234,27 +244,16 @@ export default function ProductionOrder() {
           {
             label: (
               <span className="flex items-center gap-2">
-                <Pencil />
-                Edit
-              </span>
-            ),
-            action: () => {
-              handleClickAction(`${row?.original.id}/edit`);
-            },
-          },
-          {
-            label: (
-              <span className="flex items-center gap-2">
                 <Trash2 className="text-red-400" />
                 Delete
               </span>
             ),
             variant: "destructive",
             action: () => {
-              //   setSelectedAction({
-              //     data: row.original,
-              //     type: "delete",
-              //   });
+              setSelectedAction({
+                data: row.original,
+                type: "delete",
+              });
             },
           },
         ];
@@ -273,6 +272,17 @@ export default function ProductionOrder() {
               },
             },
             { separator: true },
+            {
+              label: (
+                <span className="flex items-center gap-2">
+                  <Pencil />
+                  Edit
+                </span>
+              ),
+              action: () => {
+                handleClickAction(`${row?.original.id}/edit`);
+              },
+            },
           );
         }
         return <DropdownAction menu={menu} />;
@@ -386,6 +396,12 @@ export default function ProductionOrder() {
         onOpenChange={setOpenDialogFilters}
         open={openDialogFilters}
         onChange={setFilters}
+      />
+      <DialogDeleteProductionOrder
+        open={selectedAction !== null && selectedAction.type === "delete"}
+        refetch={refetch}
+        currentData={selectedAction?.data}
+        handleChangeAction={handleChangeAction}
       />
     </div>
   );
