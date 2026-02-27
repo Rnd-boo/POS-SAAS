@@ -7,6 +7,7 @@ export type ProductionOrderFormState = {
     bill_of_materials_id?: string[];
     qty?: string[];
     type?: string[];
+    status?: string[];
     _form?: string[];
   };
 };

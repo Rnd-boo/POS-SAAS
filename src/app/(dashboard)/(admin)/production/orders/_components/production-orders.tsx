@@ -42,7 +42,7 @@ import DialogDeleteProductionOrder from "./dialog-delete-production-order";
 
 const STATUS_LIST = [
   { value: "new", label: "New" },
-  { value: "inprogress", label: "In Progress" },
+  { value: "rejected", label: "Rejected" },
   { value: "authorized", label: "Authorized" },
 ];
 
