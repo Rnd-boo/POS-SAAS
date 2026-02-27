@@ -1,31 +1,54 @@
 "use client";
 
-import { INITIAL_PRODUCTION_ORDER } from "@/constants/production/production-order.constant";
-import { createClient } from "@/lib/supabase/client";
-import { useAuthStore } from "@/stores/auth-store";
-import { useBrandStore } from "@/stores/brand-store";
+import { useForm } from "react-hook-form";
+import CardFormProductionOrder from "../../_components/card-form-production-order";
 import {
   ProductionOrderForm,
   productionOrderFormSchema,
 } from "@/validations/production/production-order.validation";
+import {
+  INITIAL_PRODUCTION_ORDER,
+  INITIAL_STATE_PRODUCTION_ORDER,
+} from "@/constants/production/production-order.constant";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQuery } from "@tanstack/react-query";
-import { useParams } from "next/navigation";
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useParams, useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { useAuthStore } from "@/stores/auth-store";
+import { useBrandStore } from "@/stores/brand-store";
 import { toast } from "sonner";
-import CardFormProductionOrder from "../../_components/card-form-production-order";
+import { startTransition, useActionState, useEffect } from "react";
+import { updateProductionOrder } from "../../action";
 
-export default function DetailProductionOrder() {
+export default function EditProductionOrder() {
   const params = useParams();
-  const productionOrderId = params?.id as string;
+  const productionOrderId = params.id;
   const supabase = createClient();
   const currentId = useAuthStore((state) => state.profile?.clients);
   const currentBrandId = useBrandStore((s) => s.currentBrandId);
+  const queryClient = useQueryClient();
+  const router = useRouter();
 
   const form = useForm<ProductionOrderForm>({
     resolver: zodResolver(productionOrderFormSchema),
     defaultValues: INITIAL_PRODUCTION_ORDER,
+  });
+
+  const [
+    updateProductionOrderState,
+    updateProductionOrderAction,
+    isPendingUpdateProductionOrder,
+  ] = useActionState(updateProductionOrder, INITIAL_STATE_PRODUCTION_ORDER);
+
+  const onSubmit = form.handleSubmit(async (data) => {
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, value]) => {
+      formData.append(key, String(value));
+    });
+    formData.append("id", String(productionOrderId));
+    startTransition(() => {
+      updateProductionOrderAction(formData);
+    });
   });
 
   const { data: productionOrders, isLoading: isLoadingproductionOrders } =
@@ -72,9 +95,25 @@ export default function DetailProductionOrder() {
     form.setValue("status", productionOrders?.status);
   }, [productionOrders, form]);
 
+  useEffect(() => {
+    if (updateProductionOrderState?.status === "error") {
+      toast.error("Create Production Order Failed", {
+        description: updateProductionOrderState.errors?._form?.[0],
+      });
+    }
+    if (updateProductionOrderState?.status === "success") {
+      toast.success("Create Production Order Success");
+      queryClient.refetchQueries({ queryKey: ["production_orders"] });
+      router.push("/production/orders");
+    }
+  }, [updateProductionOrderState]);
+
   return (
-    <div className="w-full">
-      <CardFormProductionOrder form={form} type="Detail" />
-    </div>
+    <CardFormProductionOrder
+      type="Update"
+      form={form}
+      onSubmit={onSubmit}
+      isPending={isPendingUpdateProductionOrder}
+    />
   );
 }

@@ -5,7 +5,7 @@ export const productionOrderSchema = z.object({
   branch_id: z.number(),
   brand_id: z.number(),
   notes: z.string().optional(),
-  status: z.string(),
+  status: z.string().optional(),
   type: z.string(),
   bill_of_materials_id: z.string(),
   qty: z.string(),

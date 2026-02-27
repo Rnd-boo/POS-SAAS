@@ -1,4 +1,4 @@
-import ProductionOrder from "./_components/production-order";
+import ProductionOrder from "./_components/production-orders";
 
 export const metadata = {
   title: "LEV | Production Order",

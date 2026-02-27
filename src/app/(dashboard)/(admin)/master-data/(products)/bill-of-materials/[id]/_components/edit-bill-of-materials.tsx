@@ -152,7 +152,6 @@ export default function EditBillOfMaterials() {
     updateBillOfMaterials,
     INITIAL_STATE_BOM,
   );
-  console.log(form.getValues("product_units_id"));
   const onSubmit = form.handleSubmit(
     async (data) => {
       // Debug: Log the form data

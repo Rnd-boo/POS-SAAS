@@ -41,31 +41,30 @@ export default function FormProductionOrderBOM({
 
   const billOfMaterialsId = selectedBOM?.bill_of_materials?.id ?? viewBOMId;
 
-  const { data: billOfMaterials, isLoading: isLoadingbillOfMaterials } =
-    useQuery({
-      queryKey: ["bill_of_materials", viewBOMId],
-      queryFn: async () => {
-        const result = await supabase
-          .from("bill_of_materials")
-          .select(
-            `name,code, product_units (
+  const { data: billOfMaterials } = useQuery({
+    queryKey: ["bill_of_materials", viewBOMId],
+    queryFn: async () => {
+      const result = await supabase
+        .from("bill_of_materials")
+        .select(
+          `name,code, product_units (
                 products!inner (name),
                 units!inner (name)
                 )`,
-          )
-          .eq("clients_id", currentId)
-          .eq("id", viewBOMId)
-          .single();
+        )
+        .eq("clients_id", currentId)
+        .eq("id", viewBOMId)
+        .single();
 
-        if (result.error)
-          toast.error("Get Product Bill Of Materials Data Failed", {
-            description: result.error.message,
-          });
+      if (result.error)
+        toast.error("Get Product Bill Of Materials Data Failed", {
+          description: result.error.message,
+        });
 
-        return result.data;
-      },
-      enabled: !!currentId && !!viewBOMId,
-    });
+      return result.data;
+    },
+    enabled: !!currentId && !!viewBOMId,
+  });
 
   const {
     data: productBillOfMaterials,

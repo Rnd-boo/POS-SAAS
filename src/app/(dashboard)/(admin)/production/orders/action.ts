@@ -122,6 +122,7 @@ export async function authorizeProductionOrder(
     status: "success",
   };
 }
+
 export async function rejectProductionOrder(
   prevState: any,
   formData: FormData,
@@ -145,6 +146,57 @@ export async function rejectProductionOrder(
     };
   }
 
+  return { status: "success" };
+}
+
+export async function updateProductionOrder(
+  prevState: ProductionOrderFormState,
+  formData: FormData,
+) {
+  const supabase = await createClient();
+
+  const validatedProductionOrderFields = productionOrderSchema.safeParse({
+    production_order_date: formData.get("production_order_date"),
+    notes: formData.get("notes"),
+    branch_id: Number(formData.get("branch_id")),
+    bill_of_materials_id: formData.get("bill_of_materials_id"),
+    qty: formData.get("qty"),
+    brand_id: Number(formData.get("brand_id")),
+    type: formData.get("type"),
+  });
+
+  if (!validatedProductionOrderFields.success) {
+    return {
+      status: "error",
+      errors: {
+        ...validatedProductionOrderFields.error.flatten().fieldErrors,
+        _form: [],
+      },
+    };
+  }
+
+  const { error } = await supabase
+    .from("production_orders")
+    .update({
+      branch_id: validatedProductionOrderFields.data?.branch_id,
+      production_order_date:
+        validatedProductionOrderFields.data?.production_order_date,
+      bill_of_materials_id:
+        validatedProductionOrderFields.data?.bill_of_materials_id,
+      qty: validatedProductionOrderFields.data?.qty,
+      notes: validatedProductionOrderFields.data?.notes,
+    })
+    .eq("id", formData.get("id"));
+
+  if (error) {
+    return {
+      status: "error",
+      errors: {
+        ...prevState.errors,
+        _form: [error.message],
+      },
+    };
+  }
   return { status: "success" };
 }
 

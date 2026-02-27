@@ -38,7 +38,7 @@ export default function AuthorizeProductionOrder() {
     isPendingauthorizeProductionOrder,
   ] = useActionState(authorizeProductionOrder, INITIAL_STATE_PRODUCTION_ORDER);
 
-  const [rejectState, rejectAction, isPendingReject] = useActionState(
+  const [rejectState, rejectAction] = useActionState(
     rejectProductionOrder,
     INITIAL_STATE_PRODUCTION_ORDER,
   );
@@ -114,7 +114,7 @@ export default function AuthorizeProductionOrder() {
     if (authorizeProductionOrderState?.status === "success") {
       toast.success("Create Production Order Success");
       queryClient.refetchQueries({ queryKey: ["production_orders"] });
-      router.push("/production/order");
+      router.push("/production/orders");
     }
   }, [authorizeProductionOrderState]);
 
@@ -127,7 +127,7 @@ export default function AuthorizeProductionOrder() {
     if (rejectState?.status === "success") {
       toast.success("Reject Production Order Success");
       queryClient.refetchQueries({ queryKey: ["production_orders"] });
-      router.push("/production/order");
+      router.push("/production/orders");
     }
   }, [rejectState]);
 

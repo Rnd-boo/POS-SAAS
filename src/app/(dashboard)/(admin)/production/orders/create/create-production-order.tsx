@@ -54,7 +54,7 @@ export default function CreateProductionOrder() {
       toast.success("Create Production Order Success");
       form.reset();
       queryClient.refetchQueries({ queryKey: ["production_orders"] });
-      router.push("/production/order");
+      router.push("/production/orders");
     }
   }, [createProductionOrderState]);
 
