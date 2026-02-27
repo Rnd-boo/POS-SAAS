@@ -26,9 +26,11 @@ import { toast } from "sonner";
 export default function FormProductionOrderBOM({
   form,
   type,
+  isLoading,
 }: {
   form: UseFormReturn<ProductionOrderForm>;
   type: "Detail" | "Create" | "Update" | "Authorize";
+  isLoading?: boolean;
 }) {
   const supabase = createClient();
   const currentId = useAuthStore((state) => state.profile?.clients);
@@ -106,22 +108,26 @@ export default function FormProductionOrderBOM({
               Bill Of Material <span className="text-destructive">*</span>
             </FormLabel>
             <FormControl>
-              <Input
-                disabled={type === "Authorize" || type === "Detail"}
-                placeholder="Select Bill Of Material"
-                value={
-                  selectedBOM?.bill_of_materials?.name ??
-                  billOfMaterials?.name ??
-                  ""
-                }
-                onClick={() => setOpen(true)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    setOpen(true);
+              {isLoading ? (
+                <Skeleton className="h-10 w-full" />
+              ) : (
+                <Input
+                  disabled={type === "Authorize" || type === "Detail"}
+                  placeholder="Select Bill Of Material"
+                  value={
+                    selectedBOM?.bill_of_materials?.name ??
+                    billOfMaterials?.name ??
+                    ""
                   }
-                }}
-                onChange={() => setOpen(true)}
-              />
+                  onClick={() => setOpen(true)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      setOpen(true);
+                    }
+                  }}
+                  onChange={() => setOpen(true)}
+                />
+              )}
             </FormControl>
             <FormMessage className="text-xs" />
           </FormItem>
@@ -129,37 +135,49 @@ export default function FormProductionOrderBOM({
       />
       <div>
         <Label className="mb-2">Product</Label>
-        <Input
-          disabled
-          value={
-            (
-              selectedBOM?.bill_of_materials as {
-                product_units?: UnitProduct;
-              }
-            )?.product_units?.products?.name ??
-            (billOfMaterials?.product_units as { products?: { name: string } })
-              ?.products?.name ??
-            ""
-          }
-        />
+        {isLoading ? (
+          <Skeleton className="h-10 w-full" />
+        ) : (
+          <Input
+            disabled
+            value={
+              (
+                selectedBOM?.bill_of_materials as {
+                  product_units?: UnitProduct;
+                }
+              )?.product_units?.products?.name ??
+              (
+                billOfMaterials?.product_units as {
+                  products?: { name: string };
+                }
+              )?.products?.name ??
+              ""
+            }
+          />
+        )}
       </div>
       <div>
         <Label className="mb-2">Unit</Label>
-        <Input
-          disabled
-          value={
-            (
-              selectedBOM?.bill_of_materials as {
-                product_units?: UnitProduct;
-              }
-            )?.product_units?.units?.name ??
-            (billOfMaterials?.product_units as { units?: { name: string } })
-              ?.units?.name ??
-            ""
-          }
-        />
+        {isLoading ? (
+          <Skeleton className="h-10 w-full" />
+        ) : (
+          <Input
+            disabled
+            value={
+              (
+                selectedBOM?.bill_of_materials as {
+                  product_units?: UnitProduct;
+                }
+              )?.product_units?.units?.name ??
+              (billOfMaterials?.product_units as { units?: { name: string } })
+                ?.units?.name ??
+              ""
+            }
+          />
+        )}
       </div>
       <FormInput
+        isLoading={isLoading}
         disabled={type === "Authorize" || type === "Detail"}
         form={form}
         name="qty"
@@ -187,7 +205,7 @@ export default function FormProductionOrderBOM({
             <Label>Total QTY</Label>
           </>
         )}
-        {isLoadingProductBillOfMaterials ? (
+        {isLoadingProductBillOfMaterials || isLoading ? (
           <>
             <Skeleton className="h-9" />
             <Skeleton className="h-9" />

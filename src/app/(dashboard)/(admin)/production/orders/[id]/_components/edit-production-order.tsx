@@ -114,6 +114,7 @@ export default function EditProductionOrder() {
       form={form}
       onSubmit={onSubmit}
       isPending={isPendingUpdateProductionOrder}
+      isLoading={isLoadingproductionOrders}
     />
   );
 }

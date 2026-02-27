@@ -74,7 +74,11 @@ export default function DetailProductionOrder() {
 
   return (
     <div className="w-full">
-      <CardFormProductionOrder form={form} type="Detail" />
+      <CardFormProductionOrder
+        form={form}
+        type="Detail"
+        isLoading={isLoadingproductionOrders}
+      />
     </div>
   );
 }

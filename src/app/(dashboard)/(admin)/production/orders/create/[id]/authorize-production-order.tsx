@@ -134,6 +134,7 @@ export default function AuthorizeProductionOrder() {
   return (
     <div className="w-full">
       <CardFormProductionOrder
+        isLoading={isLoadingproductionOrders}
         form={form}
         type="Authorize"
         onSubmit={onSubmit}
