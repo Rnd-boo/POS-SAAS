@@ -29,6 +29,7 @@ export default function FormSelectData<T extends FieldValues>({
   disabledKey,
   className = "w-full",
   isLoading,
+  noDataPlaceholder = "No data...",
 }: {
   form: UseFormReturn<T>;
   name: Path<T>;
@@ -40,6 +41,7 @@ export default function FormSelectData<T extends FieldValues>({
   disabledKey?: string;
   className?: string;
   isLoading?: boolean;
+  noDataPlaceholder?: string;
 }) {
   const mountedRef = useRef(false);
   const initialValueSetRef = useRef(false);
@@ -57,9 +59,17 @@ export default function FormSelectData<T extends FieldValues>({
     if (data && data.length > 0) {
       const timer = setTimeout(() => {
         mountedRef.current = true;
-      }, 50); // Small delay to ensure data is ready
+
+        if (data.length === 1) {
+          const singleValue = data[0][valueKey]?.toString() || "";
+          form.setValue(name, singleValue as any);
+        }
+      }, 50);
 
       return () => clearTimeout(timer);
+    } else {
+      mountedRef.current = false;
+      form.setValue(name, "" as any);
     }
   }, [data]);
 
@@ -70,7 +80,7 @@ export default function FormSelectData<T extends FieldValues>({
         <FormControl>
           <Select disabled={true}>
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="No data..." />
+              <SelectValue placeholder={noDataPlaceholder} />
             </SelectTrigger>
           </Select>
         </FormControl>
