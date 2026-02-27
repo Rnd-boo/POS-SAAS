@@ -374,6 +374,7 @@ export default function ProductionOrder() {
         onSortingChange={setSorting}
         totalData={totalData}
         totalPages={totalPages}
+        pathname={pathname}
       />
       <DialogFilters
         configs={FILTER_TABLE_PRODUCTION_ORDER.map((config) => {

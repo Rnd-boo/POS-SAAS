@@ -17,6 +17,7 @@ export const productionOrderFormSchema = z.object({
   notes: z.string().optional(),
   type: z.string().min(1, "Type is required"),
   bill_of_materials_id: z.string().min(1, "Bill Of Material is required"),
+  status: z.string().optional(),
   qty: z.string().min(1, "QTY is required"),
 });
 
