@@ -29,7 +29,7 @@ export default function FormSelectData<T extends FieldValues>({
   disabledKey,
   className = "w-full",
   isLoading,
-  noDataPlaceholder = "No data...",
+  required,
 }: {
   form: UseFormReturn<T>;
   name: Path<T>;
@@ -41,7 +41,7 @@ export default function FormSelectData<T extends FieldValues>({
   disabledKey?: string;
   className?: string;
   isLoading?: boolean;
-  noDataPlaceholder?: string;
+  required?: boolean;
 }) {
   const mountedRef = useRef(false);
   const initialValueSetRef = useRef(false);
@@ -82,38 +82,6 @@ export default function FormSelectData<T extends FieldValues>({
     }
   }, [data, form, name, valueKey]);
 
-  if (!data || data.length === 0) {
-    return (
-      <FormItem className={className}>
-        <FormLabel>{label}</FormLabel>
-        <FormControl>
-          <Select disabled={true}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder={noDataPlaceholder} />
-            </SelectTrigger>
-          </Select>
-        </FormControl>
-        <FormMessage className="text-xs" />
-      </FormItem>
-    );
-  }
-
-  if (isLoading) {
-    return (
-      <FormItem className={className}>
-        <FormLabel>{label}</FormLabel>
-        <FormControl>
-          <Select disabled={true}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Loading..." />
-            </SelectTrigger>
-          </Select>
-        </FormControl>
-        <FormMessage className="text-xs" />
-      </FormItem>
-    );
-  }
-
   return (
     <FormField
       control={form.control}
@@ -123,7 +91,9 @@ export default function FormSelectData<T extends FieldValues>({
 
         return (
           <FormItem className={className}>
-            <FormLabel>{label}</FormLabel>
+            <FormLabel>
+              {label} {required && <span className="text-destructive">*</span>}
+            </FormLabel>
             <FormControl>
               <Select
                 value={currentValue}
@@ -140,14 +110,22 @@ export default function FormSelectData<T extends FieldValues>({
                   initialValueSetRef.current = true;
                   field.onChange(value || "");
                 }}
-                disabled={disabled}
+                disabled={disabled || !data || data.length === 0 || isLoading}
               >
                 <SelectTrigger
                   className={cn("w-full", {
                     "border-red-500": form.formState.errors[name]?.message,
                   })}
                 >
-                  <SelectValue placeholder={`Select ${label}`} />
+                  <SelectValue
+                    placeholder={
+                      !data || data.length === 0
+                        ? "No data..."
+                        : isLoading
+                          ? "Loading..."
+                          : `Select ${label}`
+                    }
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
