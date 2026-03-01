@@ -77,7 +77,7 @@ export default function ProductionProcess() {
       let query = supabase
         .from("production_process")
         .select(
-          `id, production_process_date,production_orders_id,branch_id,branch(id,name), branch_location_id, notes,status,brand_id`,
+          `id, production_process_date, production_orders_id, branch_id, branch(name), notes, status`,
           { count: "exact" },
         )
         .eq("clients_id", currentId)
@@ -183,9 +183,19 @@ export default function ProductionProcess() {
         );
       },
       cell: ({ row }) => {
+        const productionOrderId = row.getValue(
+          "production_orders_id",
+        ) as string;
         return (
-          <div className="truncate max-w-xs">
-            {row.getValue("production_orders_id")}
+          <div
+            className="truncate max-w-xs text-primary hover:text-foreground"
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <Link href={`/production/orders/${productionOrderId}`}>
+              {productionOrderId}
+            </Link>
           </div>
         );
       },
@@ -199,6 +209,18 @@ export default function ProductionProcess() {
       cell: ({ row }) => (
         <div>{(row.getValue("branch") as { name: string }).name}</div>
       ),
+    },
+    {
+      accessorKey: "status",
+      enableHiding: false,
+      header: () => <div className="!cursor-default">Status</div>,
+      cell: ({ row }) => {
+        return (
+          <div className="truncate max-w-xs capitalize">
+            {row.getValue("status")}
+          </div>
+        );
+      },
     },
     {
       accessorKey: "notes",
@@ -219,18 +241,6 @@ export default function ProductionProcess() {
         return (
           <div className="truncate max-w-xs">
             {row.getValue("notes") ? row.getValue("notes") : "-"}
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: "status",
-      enableHiding: false,
-      header: () => <div className="!cursor-default">Status</div>,
-      cell: ({ row }) => {
-        return (
-          <div className="truncate max-w-xs capitalize">
-            {row.getValue("status")}
           </div>
         );
       },

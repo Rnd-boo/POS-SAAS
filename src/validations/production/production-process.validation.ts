@@ -21,7 +21,10 @@ export const productionProcessFormSchema = z.object({
   status: z.string().optional(),
 });
 
-export type ProductionProcess = z.infer<typeof productionProcessSchema> & {
+export type ProductionProcess = Omit<
+  z.infer<typeof productionProcessSchema>,
+  "qty" | "brand_id" | "branch_location_id"
+> & {
   id: string;
 };
 export type ProductionProcessForm = z.infer<typeof productionProcessFormSchema>;

@@ -11,8 +11,12 @@ import {
   ProductionProcessForm,
   productionProcessFormSchema,
 } from "@/validations/production/production-process.validation";
-import { INITIAL_PRODUCTION_PROCESS } from "@/constants/production/production-process.constant";
+import {
+  INITIAL_PRODUCTION_PROCESS,
+  INITIAL_STATE_PRODUCTION_PROCESS,
+} from "@/constants/production/production-process.constant";
 import CardFormProductionProcess from "../_components/card-form-production-process";
+import { createProductionProcess } from "../action";
 
 export default function CreateProductionProcess() {
   const queryClient = useQueryClient();
@@ -24,12 +28,46 @@ export default function CreateProductionProcess() {
     defaultValues: INITIAL_PRODUCTION_PROCESS,
   });
 
+  const [
+    createProductionProcessState,
+    createProductionProcessAction,
+    isPendingcreateProductionProcess,
+  ] = useActionState(createProductionProcess, INITIAL_STATE_PRODUCTION_PROCESS);
+
+  const onSubmit = form.handleSubmit(async (data) => {
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, value]) => {
+      formData.append(key, String(value));
+      formData.append("brand_id", String(currentBrandId));
+    });
+    startTransition(() => {
+      createProductionProcessAction(formData);
+    });
+  });
+  useEffect(() => {
+    if (createProductionProcessState?.status === "error") {
+      toast.error("Create Production Process Failed", {
+        description: createProductionProcessState.errors?._form?.[0],
+      });
+    }
+    if (createProductionProcessState?.status === "success") {
+      toast.success("Create Production Process Success");
+      form.reset();
+      queryClient.refetchQueries({ queryKey: ["production_process"] });
+      router.push("/production/process");
+    }
+  }, [createProductionProcessState]);
+
   useEffect(() => {
     form.reset(INITIAL_PRODUCTION_PROCESS);
   }, [currentBrandId]);
   return (
     <div className="w-full">
-      <CardFormProductionProcess form={form} type="Create" />
+      <CardFormProductionProcess
+        form={form}
+        type="Create"
+        onSubmit={onSubmit}
+      />
     </div>
   );
 }

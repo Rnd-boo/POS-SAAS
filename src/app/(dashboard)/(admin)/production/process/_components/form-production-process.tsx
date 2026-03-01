@@ -89,9 +89,26 @@ export default function FormProductionOrderBOM({
       enabled: !!currentId && !!branchId,
     });
 
+  const { data: productionProcess } = useQuery({
+    queryKey: ["production_process", productionOrderId],
+    queryFn: async () => {
+      const result = await supabase
+        .from("production_order_summary")
+        .select("*")
+        .eq("id", productionOrderId)
+        .single();
+
+      return result.data;
+    },
+    enabled: !!currentId && !!productionOrderId,
+  });
+
   const selectedProductionOrders = productionOrders?.find(
     (s) => s.id === productionOrderId,
   );
+  const handleGetOutstanding = () => {
+    form.setValue("qty", String(productionProcess.outstanding_qty) ?? "");
+  };
 
   return (
     <div className="grid grid-cols-[2fr_3fr_2fr] gap-4">
@@ -118,7 +135,12 @@ export default function FormProductionOrderBOM({
                     })) || []
                   }
                   value={field.value}
-                  onChange={field.onChange}
+                  onChange={(value) => {
+                    field.onChange(value);
+                    form.setValue("production_orders_id", "");
+                    form.setValue("branch_location_id", "");
+                    form.setValue("qty", "");
+                  }}
                 />
               )}
             </FormControl>
@@ -175,7 +197,12 @@ export default function FormProductionOrderBOM({
       <div className="col-span-full">
         <div className="flex justify-between">
           <h2 className="font-semibold">Production Result Detail</h2>
-          <Button size="sm" variant="outline">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={handleGetOutstanding}
+            type="button"
+          >
             Get Outstanding Qty
           </Button>
         </div>
