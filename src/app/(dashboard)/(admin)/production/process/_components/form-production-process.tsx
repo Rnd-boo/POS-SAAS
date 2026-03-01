@@ -64,7 +64,7 @@ export default function FormProductionOrderBOM({
 
   const { data: productionOrders, isLoading: isLoadingProductionOrders } =
     useQuery({
-      queryKey: ["production_orders", branchId, productionOrderId],
+      queryKey: ["production_orders", branchId],
       queryFn: async () => {
         const result = await supabase
           .from("production_orders")
@@ -93,7 +93,6 @@ export default function FormProductionOrderBOM({
     (s) => s.id === productionOrderId,
   );
 
-  console.log(selectedProductionOrders);
   return (
     <div className="grid grid-cols-[2fr_3fr_2fr] gap-4">
       <FormField
@@ -141,7 +140,7 @@ export default function FormProductionOrderBOM({
         name="branch_location_id"
         data={branchLocations || []}
         label="Location"
-        noDataPlaceholder="Select Branch"
+        required
       />
       <FormSelectData
         isLoading={isLoadingProductionOrders}
@@ -150,13 +149,13 @@ export default function FormProductionOrderBOM({
         data={productionOrders || []}
         labelKey="id"
         label="Production Order"
-        noDataPlaceholder="Select Branch"
+        required
       />
       <div>
         <Label className="mb-2">Bill Of Material Name</Label>
         <Input
           value={
-            (productionOrders?.[0].bill_of_materials as { name?: string })
+            (selectedProductionOrders?.bill_of_materials as { name?: string })
               ?.name ?? ""
           }
           disabled
@@ -166,7 +165,7 @@ export default function FormProductionOrderBOM({
       <div>
         <Label className="mb-2">Bill Of Material Type</Label>
         <Input
-          value={productionOrders?.[0].type ?? ""}
+          value={selectedProductionOrders?.type ?? ""}
           disabled
           className="capitalize"
           placeholder="Select Production Order"
