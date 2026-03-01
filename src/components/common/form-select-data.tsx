@@ -62,16 +62,25 @@ export default function FormSelectData<T extends FieldValues>({
 
         if (data.length === 1) {
           const singleValue = data[0][valueKey]?.toString() || "";
-          form.setValue(name, singleValue as any);
+
+          const currentValue = form.getValues(name);
+
+          if (currentValue !== singleValue) {
+            form.setValue(name, singleValue as any);
+          }
         }
       }, 50);
 
       return () => clearTimeout(timer);
     } else {
       mountedRef.current = false;
-      form.setValue(name, "" as any);
+
+      const currentValue = form.getValues(name);
+      if (currentValue !== "") {
+        form.setValue(name, "" as any);
+      }
     }
-  }, [data]);
+  }, [data, form, name, valueKey]);
 
   if (!data || data.length === 0) {
     return (

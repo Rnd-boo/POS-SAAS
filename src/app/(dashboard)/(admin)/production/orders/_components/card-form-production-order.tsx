@@ -61,7 +61,7 @@ export default function CardFormProductionOrder({
     <Form {...form}>
       <form className="w-full pb-28" onSubmit={onSubmit}>
         <div className={cn(type === "Detail" ? "flex gap-2" : "")}>
-          <Card className={cn(type === "Detail" ? "w-2/3" : "w-full")}>
+          <Card className={cn(type === "Detail" ? "w-3/4" : "w-full")}>
             <CardHeader>
               <CardTitle>
                 {type === "Authorize" ? "Create" : type} Production Order
@@ -122,7 +122,7 @@ export default function CardFormProductionOrder({
             </CardContent>
           </Card>
           {type === "Detail" && (
-            <Card className="w-1/3 h-fit">
+            <Card className="w-1/4 h-fit">
               <CardContent>
                 <div className="flex items-center justify-between">
                   <Label>Status</Label>

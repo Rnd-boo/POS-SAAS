@@ -40,6 +40,7 @@ export const INITIAL_PRODUCTION_PROCESS = {
   production_orders_id: "",
   branch_id: "",
   branch_location_id: "",
+  qty: "",
   notes: "",
   status: "",
 };
@@ -51,6 +52,7 @@ export const INITIAL_STATE_PRODUCTION_PROCESS = {
     production_orders_id: [],
     branch_id: [],
     branch_location_id: [],
+    qty: [],
     notes: [],
     status: [],
     _form: [],
