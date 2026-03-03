@@ -37,14 +37,8 @@ export default function DialogProducts({
   const currentId = useAuthStore((state) => state.profile?.clients);
   const currentBrandId = useBrandStore((s) => s.currentBrandId);
   const [openDialogFilters, setOpenDialogFilters] = useState<boolean>(false);
-  const {
-    currentPage,
-    handleChangePage,
-    currentSearch,
-    handleChangeSearch,
-    setTotalData,
-    totalData,
-  } = useDataTable();
+  const { currentPage, handleChangePage, currentSearch, handleChangeSearch } =
+    useDataTable();
 
   const {
     data: productUnit,
@@ -67,7 +61,6 @@ export default function DialogProducts({
         .order("products(name)")
         .ilike("products.name", `%${currentSearch}%`)
         .range((currentPage - 1) * 10, currentPage * 10 - 1);
-      setTotalData(result.count || 0);
       if (result.error)
         toast.error("Get Product Data Failed", {
           description: result.error.message,
@@ -159,6 +152,8 @@ export default function DialogProducts({
       ),
     },
   ];
+
+  const totalData = productUnit?.count ?? 0;
 
   const totalPages = useMemo(() => {
     return productUnit && productUnit.count !== null

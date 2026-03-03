@@ -30,14 +30,8 @@ export default function Menu() {
   const [openDialogFilters, setOpenDialogFilters] = useState<boolean>(false);
   const [filters, setFilters] = useState<Record<string, string>>({});
 
-  const {
-    currentPage,
-    handleChangePage,
-    currentSearch,
-    handleChangeSearch,
-    totalData,
-    setTotalData,
-  } = useDataTable();
+  const { currentPage, handleChangePage, currentSearch, handleChangeSearch } =
+    useDataTable();
 
   const {
     data: menus,
@@ -57,10 +51,10 @@ export default function Menu() {
       let query = supabase
         .from("menu")
         .select(
-          "id,name,menu_category_id,brand_id,status,products_id,products(name),menu_category(name)",
+          "id,name,menu_category_id,brand_id,status,products_id,products(name),menu_category(name),items_id,auto_decrement",
           {
             count: "exact",
-          }
+          },
         )
         .eq("clients_id", currentId)
         .eq("brand_id", currentBrandId)
@@ -77,7 +71,6 @@ export default function Menu() {
 
       const result = await query;
 
-      setTotalData(result.count || 0);
       if (result.error)
         toast.error("Get Menu Data Failed", {
           description: result.error.message,
@@ -121,7 +114,7 @@ export default function Menu() {
           });
         return result.data;
       },
-    }
+    },
   );
 
   const [selectedAction, setSelectedAction] = useState<{
@@ -192,7 +185,7 @@ export default function Menu() {
           <div
             className={cn(
               "px-2 py-1 rounded-full text-white w-fit",
-              status ? "bg-green-600" : "bg-red-500"
+              status ? "bg-green-600" : "bg-red-500",
             )}
           >
             {status ? "Active" : "Inactive"}
@@ -240,6 +233,8 @@ export default function Menu() {
       },
     },
   ];
+
+  const totalData = menus?.count ?? 0;
 
   const totalPages = useMemo(() => {
     return menus && menus.count !== null ? Math.ceil(menus.count / 10) : 0;

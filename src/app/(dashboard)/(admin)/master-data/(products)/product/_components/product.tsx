@@ -45,14 +45,8 @@ export default function ProductManagement() {
   const [filters, setFilters] = useState<Record<string, string>>({});
   const [sorting, setSorting] = useState<SortingState>([]);
 
-  const {
-    currentPage,
-    handleChangePage,
-    currentSearch,
-    handleChangeSearch,
-    setTotalData,
-    totalData,
-  } = useDataTable();
+  const { currentPage, handleChangePage, currentSearch, handleChangeSearch } =
+    useDataTable();
 
   const { data: categoriesResult } = useQuery({
     queryKey: ["categories", currentId],
@@ -96,7 +90,6 @@ export default function ProductManagement() {
       query = applyFilterQuery(query, filters);
 
       const result = await query;
-      setTotalData(result.count ?? 0);
       if (result.error)
         toast.error("Get Product Data Failed", {
           description: result.error.message,
@@ -229,6 +222,8 @@ export default function ProductManagement() {
       },
     },
   ];
+
+  const totalData = products?.count ?? 0;
 
   const totalPages = useMemo(() => {
     return products && products.count !== null

@@ -31,14 +31,8 @@ export default function POSUser() {
   const router = useRouter();
   const pathname = usePathname();
 
-  const {
-    currentPage,
-    handleChangePage,
-    currentSearch,
-    handleChangeSearch,
-    setTotalData,
-    totalData,
-  } = useDataTable();
+  const { currentPage, handleChangePage, currentSearch, handleChangeSearch } =
+    useDataTable();
 
   const {
     data: POSUserBranches,
@@ -104,9 +98,6 @@ export default function POSUser() {
       }, new Map())
       .values(),
   );
-  useEffect(() => {
-    setTotalData(grouped.length || 0);
-  }, [grouped]);
 
   const data: GroupedPOSUser[] = grouped || [];
   const columns: ColumnDef<GroupedPOSUser>[] = [
@@ -224,11 +215,12 @@ export default function POSUser() {
     },
   ];
 
+  const totalData = grouped.length ?? 0;
   const totalPages = useMemo(() => {
-    return POSUserBranches && POSUserBranches.count !== null
-      ? Math.ceil(POSUserBranches.count / 10)
+    return grouped && grouped.length !== null
+      ? Math.ceil(grouped.length / 10)
       : 0;
-  }, [POSUserBranches]);
+  }, [grouped]);
 
   return (
     <div className="w-full">

@@ -32,14 +32,8 @@ export default function BillOfMaterials() {
   const [filters, setFilters] = useState<Record<string, string>>({});
   const [sorting, setSorting] = useState<SortingState>([]);
   const currentBrandId = useBrandStore((s) => s.currentBrandId);
-  const {
-    currentPage,
-    handleChangePage,
-    currentSearch,
-    handleChangeSearch,
-    totalData,
-    setTotalData,
-  } = useDataTable();
+  const { currentPage, handleChangePage, currentSearch, handleChangeSearch } =
+    useDataTable();
 
   const {
     data: billOfMaterials,
@@ -74,7 +68,6 @@ export default function BillOfMaterials() {
       query = applyFilterQuery(query, filters);
 
       const result = await query;
-      setTotalData(result.count || 0);
       if (result.error)
         toast.error("Get BOM Data Failed", {
           description: result.error.message,
@@ -228,6 +221,8 @@ export default function BillOfMaterials() {
       },
     },
   ];
+
+  const totalData = billOfMaterials?.count ?? 0;
 
   const totalPages = useMemo(() => {
     return billOfMaterials && billOfMaterials.count !== null

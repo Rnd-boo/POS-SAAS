@@ -23,14 +23,8 @@ export default function BrandManagement() {
 
   const currentId = useAuthStore((state) => state.profile?.clients);
 
-  const {
-    currentPage,
-    handleChangePage,
-    currentSearch,
-    setTotalData,
-    totalData,
-    handleChangeSearch,
-  } = useDataTable();
+  const { currentPage, handleChangePage, currentSearch, handleChangeSearch } =
+    useDataTable();
 
   const {
     data: brands,
@@ -53,7 +47,6 @@ export default function BrandManagement() {
         .order("name")
         .ilike("name", `%${currentSearch}%`);
 
-      setTotalData(result.count || 0);
       if (result.error)
         toast.error("Get Brand Data Failed", {
           description: result.error.message,
@@ -155,6 +148,8 @@ export default function BrandManagement() {
       },
     },
   ];
+
+  const totalData = brands?.count ?? 0;
 
   const totalPages = useMemo(() => {
     return brands && brands.count !== null ? Math.ceil(brands.count / 10) : 0;

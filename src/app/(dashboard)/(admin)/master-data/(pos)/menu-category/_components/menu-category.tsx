@@ -24,14 +24,8 @@ export default function MenuCategory() {
   const currentId = useAuthStore((state) => state.profile?.clients);
   const [sorting, setSorting] = useState<SortingState>([]);
 
-  const {
-    currentPage,
-    handleChangePage,
-    currentSearch,
-    handleChangeSearch,
-    totalData,
-    setTotalData,
-  } = useDataTable();
+  const { currentPage, handleChangePage, currentSearch, handleChangeSearch } =
+    useDataTable();
 
   const {
     data: menuCategories,
@@ -65,7 +59,6 @@ export default function MenuCategory() {
       }
 
       const result = await query;
-      setTotalData(result.count || 0);
       if (result.error) {
         toast.error("Get Menu Category data Failed");
       }
@@ -165,6 +158,9 @@ export default function MenuCategory() {
       },
     },
   ];
+
+  const totalData = menuCategories?.count ?? 0;
+
   const totalPages = useMemo(() => {
     return menuCategories && menuCategories.count !== null
       ? Math.ceil(menuCategories.count / 10)

@@ -24,14 +24,8 @@ export default function OrderContext() {
   const currentBrandId = useBrandStore((s) => s.currentBrandId);
   const currentId = useAuthStore((state) => state.profile?.clients);
 
-  const {
-    currentPage,
-    handleChangePage,
-    currentSearch,
-    handleChangeSearch,
-    totalData,
-    setTotalData,
-  } = useDataTable();
+  const { currentPage, handleChangePage, currentSearch, handleChangeSearch } =
+    useDataTable();
 
   const {
     data: orderContexts,
@@ -59,7 +53,6 @@ export default function OrderContext() {
         .order("name")
         .ilike("name", `%${currentSearch}%`);
 
-      setTotalData(result.count || 0);
       if (result.error) {
         toast.error("Get Order Context data Failed");
       }
@@ -153,6 +146,8 @@ export default function OrderContext() {
       },
     },
   ];
+
+  const totalData = orderContexts?.count ?? 0;
 
   const totalPages = useMemo(() => {
     return orderContexts && orderContexts.count !== null

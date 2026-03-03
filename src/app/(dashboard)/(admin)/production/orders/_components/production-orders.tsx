@@ -56,14 +56,8 @@ export default function ProductionOrder() {
 
   const router = useRouter();
   const pathname = usePathname();
-  const {
-    currentPage,
-    handleChangePage,
-    currentSearch,
-    handleChangeSearch,
-    setTotalData,
-    totalData,
-  } = useDataTable();
+  const { currentPage, handleChangePage, currentSearch, handleChangeSearch } =
+    useDataTable();
 
   const { data: branches } = useBranchQuery();
 
@@ -104,8 +98,6 @@ export default function ProductionOrder() {
       query = applyFilterQuery(query, filters);
 
       const result = await query;
-
-      setTotalData(result.count ?? 0);
 
       if (result.error)
         toast.error("Get Production Orders Data Failed", {
@@ -288,6 +280,8 @@ export default function ProductionOrder() {
       },
     },
   ];
+
+  const totalData = productionOrders?.count ?? 0;
 
   const totalPages = useMemo(() => {
     return productionOrders && productionOrders.count !== null

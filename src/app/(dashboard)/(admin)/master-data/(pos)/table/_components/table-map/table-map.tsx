@@ -25,14 +25,8 @@ export default function TableMapManagement() {
   const currentBrandId = useBrandStore((s) => s.currentBrandId);
   const currentId = useAuthStore((state) => state.profile?.clients);
 
-  const {
-    currentPage,
-    handleChangePage,
-    currentSearch,
-    handleChangeSearch,
-    totalData,
-    setTotalData,
-  } = useDataTable();
+  const { currentPage, handleChangePage, currentSearch, handleChangeSearch } =
+    useDataTable();
 
   const {
     data: tableMap,
@@ -62,7 +56,6 @@ export default function TableMapManagement() {
         .order("name")
         .ilike("name", `%${currentSearch}%`);
 
-      setTotalData(result.count || 0);
       if (result.error)
         toast.error("Get Table Map Data Failed", {
           description: result.error.message,
@@ -182,6 +175,8 @@ export default function TableMapManagement() {
       },
     },
   ];
+
+  const totalData = tableMap?.count ?? 0;
 
   const totalPages = useMemo(() => {
     return tableMap && tableMap.count !== null

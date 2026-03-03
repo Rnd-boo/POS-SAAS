@@ -28,14 +28,8 @@ import PageHeader from "@/components/common/page-header";
 export default function UnitManagement() {
   const supabase = createClient();
   const currentId = useAuthStore((state) => state.profile?.clients);
-  const {
-    currentPage,
-    handleChangePage,
-    currentSearch,
-    handleChangeSearch,
-    totalData,
-    setTotalData,
-  } = useDataTable();
+  const { currentPage, handleChangePage, currentSearch, handleChangeSearch } =
+    useDataTable();
 
   const {
     data: units,
@@ -52,7 +46,6 @@ export default function UnitManagement() {
         .order("created_at")
         .ilike("name", `%${currentSearch}%`);
 
-      setTotalData(result.count || 0);
       if (result.error)
         toast.error("Get Unit Data Failed", {
           description: result.error.message,
@@ -156,6 +149,8 @@ export default function UnitManagement() {
       },
     },
   ];
+
+  const totalData = units?.count ?? 0;
 
   const totalPages = useMemo(() => {
     return units && units.count !== null ? Math.ceil(units.count / 10) : 0;

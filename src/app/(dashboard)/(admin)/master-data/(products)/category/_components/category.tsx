@@ -28,14 +28,8 @@ export default function CategoryManagement() {
   const [openDialogFilters, setOpenDialogFilters] = useState<boolean>(false);
   const [filters, setFilters] = useState<Record<string, string>>({});
 
-  const {
-    currentPage,
-    handleChangePage,
-    currentSearch,
-    handleChangeSearch,
-    setTotalData,
-    totalData,
-  } = useDataTable();
+  const { currentPage, handleChangePage, currentSearch, handleChangeSearch } =
+    useDataTable();
 
   const {
     data: categories,
@@ -69,8 +63,6 @@ export default function CategoryManagement() {
 
       const result = await query;
 
-      setTotalData(result.count ?? 0);
-
       if (result.error)
         toast.error("Get Category Data Failed", {
           description: result.error.message,
@@ -88,6 +80,8 @@ export default function CategoryManagement() {
   const handleChangeAction = (open: boolean) => {
     if (!open) setSelectedAction(null);
   };
+
+  const totalData = categories?.count ?? 0;
 
   const totalPages = useMemo(() => {
     return categories && categories.count !== null

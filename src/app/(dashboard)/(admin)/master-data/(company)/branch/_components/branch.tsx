@@ -23,14 +23,8 @@ export default function BranchManagement() {
   const currentId = useAuthStore((state) => state.profile?.clients);
   const router = useRouter();
   const pathname = usePathname();
-  const {
-    currentPage,
-    handleChangePage,
-    currentSearch,
-    handleChangeSearch,
-    totalData,
-    setTotalData,
-  } = useDataTable();
+  const { currentPage, handleChangePage, currentSearch, handleChangeSearch } =
+    useDataTable();
 
   const {
     data: branches,
@@ -50,7 +44,6 @@ export default function BranchManagement() {
         .order("name")
         .ilike("name", `%${currentSearch}%`);
 
-      setTotalData(result.count || 0);
       if (result.error)
         toast.error("Get Branch Data Failed", {
           description: result.error.message,
@@ -164,6 +157,8 @@ export default function BranchManagement() {
       },
     },
   ];
+
+  const totalData = branches?.count ?? 0;
 
   const totalPages = useMemo(() => {
     return branches && branches.count !== null

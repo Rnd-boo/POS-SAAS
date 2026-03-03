@@ -38,14 +38,8 @@ export default function DialogBillOfMaterials({
   const supabase = createClient();
   const currentId = useAuthStore((state) => state.profile?.clients);
   const currentBrandId = useBrandStore((s) => s.currentBrandId);
-  const {
-    currentPage,
-    handleChangePage,
-    currentSearch,
-    handleChangeSearch,
-    setTotalData,
-    totalData,
-  } = useDataTable();
+  const { currentPage, handleChangePage, currentSearch, handleChangeSearch } =
+    useDataTable();
 
   const {
     data: billOfMaterials,
@@ -78,7 +72,6 @@ export default function DialogBillOfMaterials({
         .range((currentPage - 1) * 10, currentPage * 10 - 1)
         .order("name");
 
-      setTotalData(result.count || 0);
       if (result.error)
         toast.error("Get BOM Data Failed", {
           description: result.error.message,
@@ -161,6 +154,8 @@ export default function DialogBillOfMaterials({
       ),
     },
   ];
+
+  const totalData = billOfMaterials?.count ?? 0;
 
   const totalPages = useMemo(() => {
     return billOfMaterials && billOfMaterials.count !== null

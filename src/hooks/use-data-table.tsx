@@ -4,7 +4,6 @@ import useDebounce from "./use-debounce";
 export default function useDataTable() {
   const [currentPage, setCurrentPage] = useState(1);
   const [currentSearch, setCurrentSearch] = useState("");
-  const [totalData, setTotalData] = useState(0);
   const debounce = useDebounce();
 
   const handleChangePage = (page: number) => {
@@ -23,7 +22,5 @@ export default function useDataTable() {
     handleChangePage,
     currentSearch,
     handleChangeSearch,
-    totalData,
-    setTotalData,
   };
 }
