@@ -41,7 +41,6 @@ export default function FormProductionOrderBOM({
 
   const branchId = form.watch("branch_id");
   const productionOrderId = form.watch("production_orders_id");
-
   const { data: branchLocations, isLoading: isLoadingBranchLocation } =
     useQuery({
       queryKey: ["branch_location", branchId],
@@ -59,7 +58,7 @@ export default function FormProductionOrderBOM({
 
         return result.data;
       },
-      enabled: !!currentId && !!branchId,
+      enabled: !!currentId && !!branchId && branchId !== "undefined",
     });
 
   const { data: productionOrders, isLoading: isLoadingProductionOrders } =
@@ -79,6 +78,7 @@ export default function FormProductionOrderBOM({
           .eq("clients_id", currentId)
           .eq("branch_id", branchId)
           .eq("status", "authorized");
+
         if (result.error)
           toast.error("Get Production Orders Data Failed", {
             description: result.error.message,
@@ -86,7 +86,7 @@ export default function FormProductionOrderBOM({
 
         return result.data;
       },
-      enabled: !!currentId && !!branchId,
+      enabled: !!currentId && !!branchId && branchId !== "undefined",
     });
 
   const { data: productionProcess } = useQuery({
@@ -163,6 +163,7 @@ export default function FormProductionOrderBOM({
         data={branchLocations || []}
         label="Location"
         required
+        disabled={type === "Authorize" || type === "Detail"}
       />
       <FormSelectData
         isLoading={isLoadingProductionOrders}
@@ -172,6 +173,7 @@ export default function FormProductionOrderBOM({
         labelKey="id"
         label="Production Order"
         required
+        disabled={type === "Authorize" || type === "Detail"}
       />
       <div>
         <Label className="mb-2">Bill Of Material Name</Label>
@@ -197,14 +199,16 @@ export default function FormProductionOrderBOM({
       <div className="col-span-full">
         <div className="flex justify-between">
           <h2 className="font-semibold">Production Result Detail</h2>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={handleGetOutstanding}
-            type="button"
-          >
-            Get Outstanding Qty
-          </Button>
+          {type !== "Detail" && type !== "Authorize" && (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleGetOutstanding}
+              type="button"
+            >
+              Get Outstanding Qty
+            </Button>
+          )}
         </div>
         {isLoadingProductionOrders || isLoading ? (
           <div className="grid grid-cols-[1fr_1fr_1fr_1fr_1fr] mt-4 gap-2">

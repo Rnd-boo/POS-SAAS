@@ -62,7 +62,7 @@ export default function CardFormProductionProcess({
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <FormProductionOrderBOM form={form} type="Create" />
+              <FormProductionOrderBOM form={form} type={type} />
             </CardContent>
           </Card>
           {type === "Detail" && (
@@ -96,7 +96,7 @@ export default function CardFormProductionProcess({
             <CardTitle>Production Result Materials</CardTitle>
           </CardHeader>
           <CardContent className="w-full">
-            <FormProductionMaterial form={form} type="Create" />
+            <FormProductionMaterial form={form} type={type} />
           </CardContent>
         </Card>
         <Card>
