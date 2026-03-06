@@ -95,3 +95,27 @@ export async function createProductionProcess(
     status: "success",
   };
 }
+
+export async function deleteProductionProcess(
+  prevState: ProductionProcessFormState,
+  formData: FormData,
+) {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("production_process")
+    .delete()
+    .eq("id", formData.get("id"));
+
+  if (error) {
+    return {
+      status: "error",
+      errors: {
+        ...prevState.errors,
+        _form: [error.message],
+      },
+    };
+  }
+
+  return { status: "success" };
+}
