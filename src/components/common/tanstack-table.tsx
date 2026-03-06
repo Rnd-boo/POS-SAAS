@@ -33,6 +33,7 @@ import {
 import PaginationDataTable from "./pagination-data-table";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export function DataTable<TData extends { id: string | number }>({
   columns,
@@ -100,7 +101,14 @@ export function DataTable<TData extends { id: string | number }>({
       },
     },
   });
-
+  const copyValue = React.useCallback(async (value: string) => {
+    try {
+      await navigator.clipboard.writeText(String(value));
+      toast.success(`Copied: "${value}"`);
+    } catch {
+      toast.error("Copy failed");
+    }
+  }, []);
   return (
     <div className="w-full">
       <div className="overflow-hidden rounded-md border">
@@ -220,6 +228,21 @@ export function DataTable<TData extends { id: string | number }>({
                         cell.column.getIsPinned() === "right"
                           ? cell.column.getAfter("right")
                           : undefined,
+                    }}
+                    onContextMenu={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      const rawValue = cell.getValue();
+                      const value =
+                        rawValue !== null &&
+                        rawValue !== undefined &&
+                        typeof rawValue === "object"
+                          ? String(
+                              (rawValue as Record<string, unknown>).name ??
+                                JSON.stringify(rawValue),
+                            )
+                          : String(rawValue ?? "");
+                      copyValue(value);
                     }}
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
