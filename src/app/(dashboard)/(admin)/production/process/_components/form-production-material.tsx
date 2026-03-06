@@ -42,8 +42,8 @@ export default function FormProductionMaterial({
     enabled: !!currentId && !!productionOrderId,
   });
 
-  const billOfMaterialId = productionOrders?.[0].bill_of_materials_id;
-  const productionOrderQty = productionOrders?.[0].qty;
+  const billOfMaterialId = productionOrders?.[0]?.bill_of_materials_id;
+  const productionOrderQty = productionOrders?.[0]?.qty;
   const qty = form.watch("qty");
   const branchLocationId = form.watch("branch_location_id");
 

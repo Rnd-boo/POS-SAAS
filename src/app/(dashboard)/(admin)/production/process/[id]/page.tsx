@@ -1,4 +1,4 @@
-import DetailProductionProcess from "./_components/detail-production-order";
+import DetailProductionProcess from "./_components/detail-production-process";
 
 export const metadata = {
   title: "LEV | Detail Production Process",
