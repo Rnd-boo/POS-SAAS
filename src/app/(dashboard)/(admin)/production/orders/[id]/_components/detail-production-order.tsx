@@ -30,7 +30,7 @@ export default function DetailProductionOrder() {
 
   const { data: productionOrders, isLoading: isLoadingproductionOrders } =
     useQuery({
-      queryKey: ["production_orders", productionOrderId],
+      queryKey: ["production_order_detail", productionOrderId],
 
       queryFn: async () => {
         const result = await supabase
@@ -72,6 +72,7 @@ export default function DetailProductionOrder() {
     form.setValue("status", productionOrders?.status);
   }, [productionOrders, form]);
 
+  console.log(productionOrders);
   return (
     <div className="w-full">
       <CardFormProductionOrder

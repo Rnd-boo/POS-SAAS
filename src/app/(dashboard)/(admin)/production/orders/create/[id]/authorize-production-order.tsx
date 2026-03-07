@@ -59,34 +59,31 @@ export default function AuthorizeProductionOrder() {
       rejectAction(formData);
     });
   };
-  const {
-    data: productionOrders,
-    isLoading: isLoadingproductionOrders,
-    refetch,
-  } = useQuery({
-    queryKey: ["production_orders", productionOrderId],
+  const { data: productionOrders, isLoading: isLoadingproductionOrders } =
+    useQuery({
+      queryKey: ["production_orders", productionOrderId],
 
-    queryFn: async () => {
-      const result = await supabase
-        .from("production_orders")
-        .select(
-          `id, production_order_date,branch_id, branch(id,name), notes,status,type, qty, bill_of_materials_id,brand_id`,
-          { count: "exact" },
-        )
-        .eq("clients_id", currentId)
-        .eq("brand_id", currentBrandId)
-        .eq("id", productionOrderId)
-        .single();
+      queryFn: async () => {
+        const result = await supabase
+          .from("production_orders")
+          .select(
+            `id, production_order_date,branch_id, branch(id,name), notes,status,type, qty, bill_of_materials_id,brand_id`,
+            { count: "exact" },
+          )
+          .eq("clients_id", currentId)
+          .eq("brand_id", currentBrandId)
+          .eq("id", productionOrderId)
+          .single();
 
-      if (result.error)
-        toast.error("Get Production Orders Data Failed", {
-          description: result.error.message,
-        });
+        if (result.error)
+          toast.error("Get Production Orders Data Failed", {
+            description: result.error.message,
+          });
 
-      return result.data;
-    },
-    enabled: !!currentId && !!productionOrderId,
-  });
+        return result.data;
+      },
+      enabled: !!currentId && !!productionOrderId,
+    });
 
   useEffect(() => {
     form.setValue("branch_id", String(productionOrders?.branch_id));

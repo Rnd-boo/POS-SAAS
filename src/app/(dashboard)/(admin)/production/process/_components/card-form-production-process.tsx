@@ -1,7 +1,4 @@
-import FormDatePicker from "@/components/common/form-date-picker";
 import FormInput from "@/components/common/form-input";
-import FormSelectData from "@/components/common/form-select-data";
-import { Combobox } from "@/components/common/manual-combobox";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,18 +7,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Form } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useBranchQuery } from "@/hooks/queries/use-branches";
 import { cn } from "@/lib/utils";
 import { ProductionProcessForm } from "@/validations/production/production-process.validation";
 import { Loader2 } from "lucide-react";
@@ -37,12 +25,14 @@ export default function CardFormProductionProcess({
   onSubmit,
   isPending,
   isLoading,
+  handleReject,
 }: {
   form: UseFormReturn<ProductionProcessForm>;
   type: "Create" | "Update" | "Detail" | "Authorize";
   onSubmit?: (event: FormEvent<HTMLFormElement>) => void;
   isPending?: boolean;
   isLoading?: boolean;
+  handleReject?: () => void;
 }) {
   const router = useRouter();
 
@@ -116,7 +106,7 @@ export default function CardFormProductionProcess({
             {type === "Detail" ? "Back" : "Cancel"}
           </Button>
           {type === "Authorize" && (
-            <Button type="button" variant="destructive">
+            <Button type="button" variant="destructive" onClick={handleReject}>
               {isPending ? <Loader2 className="animate-spin" /> : "Reject"}
             </Button>
           )}

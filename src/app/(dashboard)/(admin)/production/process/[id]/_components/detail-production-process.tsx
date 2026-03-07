@@ -30,7 +30,7 @@ export default function DetailProductionProcess() {
 
   const { data: productionProcesses, isLoading: isLoadingProductionProcesses } =
     useQuery({
-      queryKey: ["production_process", productionProcessId],
+      queryKey: ["production_process_detail", productionProcessId],
 
       queryFn: async () => {
         const result = await supabase

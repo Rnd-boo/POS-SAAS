@@ -14,7 +14,7 @@ export async function createProductionProcess(
 
   const validatedProductionProcessFields = productionProcessSchema.safeParse({
     production_process_date: formData.get("production_process_date"),
-    production_orders_id: formData.get("production_orders_id"),
+    production_process_id: formData.get("production_orders_id"),
     branch_id: Number(formData.get("branch_id")),
     brand_id: Number(formData.get("brand_id")),
     branch_location_id: Number(formData.get("branch_location_id")),
@@ -95,7 +95,59 @@ export async function createProductionProcess(
     status: "success",
   };
 }
+export async function authorizeProductionProcess(
+  prevState: ProductionProcessFormState,
+  formData: FormData,
+) {
+  const supabase = await createClient();
 
+  const { error } = await supabase
+    .from("production_process")
+    .update({
+      status: "authorized",
+    })
+    .eq("id", formData.get("id"));
+
+  if (error) {
+    return {
+      status: "error",
+      errors: {
+        ...prevState.errors,
+        _form: [error.message],
+      },
+    };
+  }
+
+  return {
+    status: "success",
+  };
+}
+
+export async function rejectProductionProcess(
+  prevState: any,
+  formData: FormData,
+) {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("production_process")
+    .update({
+      status: "rejected",
+    })
+    .eq("id", formData.get("id"));
+
+  if (error) {
+    return {
+      status: "error",
+      errors: {
+        ...prevState.errors,
+        _form: [error.message],
+      },
+    };
+  }
+
+  return { status: "success" };
+}
 export async function deleteProductionProcess(
   prevState: ProductionProcessFormState,
   formData: FormData,
