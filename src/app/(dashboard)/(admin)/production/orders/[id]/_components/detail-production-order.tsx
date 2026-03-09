@@ -72,7 +72,6 @@ export default function DetailProductionOrder() {
     form.setValue("status", productionOrders?.status);
   }, [productionOrders, form]);
 
-  console.log(productionOrders);
   return (
     <div className="w-full">
       <CardFormProductionOrder

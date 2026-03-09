@@ -32,28 +32,22 @@ export default function CreateProduct() {
   const [createProductState, createProductAction, isPendingcreateProduct] =
     useActionState(createProduct, INITIAL_STATE_PRODUCT);
 
-  const onSubmit = form.handleSubmit(
-    async (data) => {
-      // Debug: Log the form data
-      const formData = new FormData();
-      Object.entries(data).forEach(([key, value]) => {
-        if (key === "units") {
-          formData.append("units", JSON.stringify(value));
-        } else {
-          formData.append(key, String(value ?? ""));
-        }
-        formData.append("brand_id", String(currentBrandId));
-      });
+  const onSubmit = form.handleSubmit(async (data) => {
+    // Debug: Log the form data
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, value]) => {
+      if (key === "units") {
+        formData.append("units", JSON.stringify(value));
+      } else {
+        formData.append(key, String(value ?? ""));
+      }
+      formData.append("brand_id", String(currentBrandId));
+    });
 
-      startTransition(() => {
-        createProductAction(formData);
-      });
-      console.log(formData);
-    },
-    (errors) => {
-      console.log(errors);
-    },
-  );
+    startTransition(() => {
+      createProductAction(formData);
+    });
+  });
 
   useEffect(() => {
     if (createProductState?.status === "error") {

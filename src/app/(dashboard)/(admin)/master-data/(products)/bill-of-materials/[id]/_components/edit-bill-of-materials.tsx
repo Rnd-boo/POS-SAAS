@@ -152,27 +152,22 @@ export default function EditBillOfMaterials() {
     updateBillOfMaterials,
     INITIAL_STATE_BOM,
   );
-  const onSubmit = form.handleSubmit(
-    async (data) => {
-      // Debug: Log the form data
-      const formData = new FormData();
-      Object.entries(data).forEach(([key, value]) => {
-        if (key === "product_bom") {
-          formData.append("product_bom", JSON.stringify(value));
-        } else {
-          formData.append(key, String(value ?? ""));
-        }
-      });
-      formData.append("brand_id", String(currentBrandId));
-      formData.append("id", String(billOfMaterialsId));
-      startTransition(() => {
-        updateBOMAction(formData);
-      });
-    },
-    (errors) => {
-      console.log(errors);
-    },
-  );
+  const onSubmit = form.handleSubmit(async (data) => {
+    // Debug: Log the form data
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, value]) => {
+      if (key === "product_bom") {
+        formData.append("product_bom", JSON.stringify(value));
+      } else {
+        formData.append(key, String(value ?? ""));
+      }
+    });
+    formData.append("brand_id", String(currentBrandId));
+    formData.append("id", String(billOfMaterialsId));
+    startTransition(() => {
+      updateBOMAction(formData);
+    });
+  });
   useEffect(() => {
     if (updateBOMState?.status === "error") {
       toast.error("Update Bill Of Material Failed", {
