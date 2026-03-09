@@ -14,7 +14,7 @@ export async function createProductionProcess(
 
   const validatedProductionProcessFields = productionProcessSchema.safeParse({
     production_process_date: formData.get("production_process_date"),
-    production_process_id: formData.get("production_orders_id"),
+    production_orders_id: formData.get("production_orders_id"),
     branch_id: Number(formData.get("branch_id")),
     brand_id: Number(formData.get("brand_id")),
     branch_location_id: Number(formData.get("branch_location_id")),
@@ -124,7 +124,7 @@ export async function authorizeProductionProcess(
 }
 
 export async function rejectProductionProcess(
-  prevState: any,
+  prevState: ProductionProcessFormState,
   formData: FormData,
 ) {
   const supabase = await createClient();
@@ -148,6 +148,60 @@ export async function rejectProductionProcess(
 
   return { status: "success" };
 }
+
+export async function updateProductionProcess(
+  prevState: ProductionProcessFormState,
+  formData: FormData,
+) {
+  const supabase = await createClient();
+
+  const validatedProductionProcessFields = productionProcessSchema.safeParse({
+    production_process_date: formData.get("production_process_date"),
+    production_orders_id: formData.get("production_orders_id"),
+    branch_id: Number(formData.get("branch_id")),
+    brand_id: Number(formData.get("brand_id")),
+    branch_location_id: Number(formData.get("branch_location_id")),
+    qty: Number(formData.get("qty")),
+    notes: formData.get("notes"),
+  });
+
+  if (!validatedProductionProcessFields.success) {
+    return {
+      status: "error",
+      errors: {
+        ...validatedProductionProcessFields.error.flatten().fieldErrors,
+        _form: [],
+      },
+    };
+  }
+
+  const { error } = await supabase
+    .from("production_process")
+    .update({
+      branch_id: validatedProductionProcessFields.data?.branch_id,
+      production_process_date:
+        validatedProductionProcessFields.data?.production_process_date,
+      production_orders_id:
+        validatedProductionProcessFields.data?.production_orders_id,
+      branch_location_id:
+        validatedProductionProcessFields.data?.branch_location_id,
+      qty: validatedProductionProcessFields.data?.qty,
+      notes: validatedProductionProcessFields.data?.notes,
+    })
+    .eq("id", formData.get("id"));
+
+  if (error) {
+    return {
+      status: "error",
+      errors: {
+        ...prevState.errors,
+        _form: [error.message],
+      },
+    };
+  }
+  return { status: "success" };
+}
+
 export async function deleteProductionProcess(
   prevState: ProductionProcessFormState,
   formData: FormData,
