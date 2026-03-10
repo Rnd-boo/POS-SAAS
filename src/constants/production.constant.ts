@@ -2,6 +2,7 @@ import {
   ClipboardCheck,
   ClipboardCopy,
   ClipboardPlus,
+  ClipboardType,
   ClipboardX,
 } from "lucide-react";
 
@@ -29,6 +30,13 @@ export const PRODUCTION_CARD = [
     title: "Production Close",
     url: "/production/close",
     icon: ClipboardX,
+    description:
+      "Finalize the production order by closing all remaining qty and locking further changes.",
+  },
+  {
+    title: "Open Manufacturing",
+    url: "/production/open-manufacturing",
+    icon: ClipboardType,
     description:
       "Finalize the production order by closing all remaining qty and locking further changes.",
   },
