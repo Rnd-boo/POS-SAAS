@@ -68,9 +68,9 @@ export function AppSidebar() {
             >
               <Link href="/" className="font-semibold">
                 <div className=" flex p-2 items-center justify-center rounded-md">
-                  <Coffee className="size-5 text-white" />
+                  {/* <Coffee className="size-5 text-white" /> */}
                 </div>
-                POS
+                {/* POS */}
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

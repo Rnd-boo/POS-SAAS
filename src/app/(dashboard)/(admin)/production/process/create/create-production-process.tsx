@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { useBrandStore } from "@/stores/brand-store";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { startTransition, useActionState, useEffect } from "react";
 import { toast } from "sonner";
 import {
@@ -22,7 +22,6 @@ export default function CreateProductionProcess() {
   const queryClient = useQueryClient();
   const currentBrandId = useBrandStore((s) => s.currentBrandId);
   const router = useRouter();
-  const searchParams = useSearchParams();
   const form = useForm<ProductionProcessForm>({
     resolver: zodResolver(productionProcessFormSchema),
     defaultValues: INITIAL_PRODUCTION_PROCESS,

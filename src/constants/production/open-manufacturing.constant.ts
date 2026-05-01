@@ -29,18 +29,34 @@ export const INITIAL_OPEN_MANUFACTURING = {
   open_manufacturing_date: formatDateLocal(new Date()),
   branch_id: "",
   notes: "",
-  qty: "",
+  origin_branch_location_id: "",
+  destination_branch_location_id: "",
+  product_units_id: "",
+  bill_of_materials_id: "",
   type: "",
+  qty: "",
+  products_detail: [
+    {
+      product_units_id: "",
+      qty: "",
+    },
+  ],
 };
 
 export const INITIAL_STATE_OPEN_MANUFACTURING = {
   status: "idle",
   errors: {
     open_manufacturing_date: [],
-    notes: [],
     branch_id: [],
-    qty: [],
+    notes: [],
+    origin_branch_location_id: [],
+    destination_branch_location_id: [],
+    product_units_id: [],
+    bill_of_materials_id: [],
+    product_name: [],
     type: [],
+    qty: [],
+    products_detail: [],
     _form: [],
   },
 };
