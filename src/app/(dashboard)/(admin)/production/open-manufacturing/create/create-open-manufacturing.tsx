@@ -12,9 +12,12 @@ import {
   OpenManufacturingForm,
   openManufacturingFormSchema,
 } from "@/validations/production/open-manufacturing.validation";
-import { INITIAL_OPEN_MANUFACTURING } from "@/constants/production/open-manufacturing.constant";
+import {
+  INITIAL_OPEN_MANUFACTURING,
+  INITIAL_STATE_OPEN_MANUFACTURING,
+} from "@/constants/production/open-manufacturing.constant";
 import CardOpenManufacturing from "../_components/card-open-manufacturing";
-import { NextResponse } from "next/server";
+import { createOpenManufacturing } from "../action";
 
 export default function CreateOpenManufacturing() {
   const router = useRouter();
@@ -27,37 +30,40 @@ export default function CreateOpenManufacturing() {
     defaultValues: INITIAL_OPEN_MANUFACTURING,
   });
 
-  // const [createProductState, createProductAction, isPendingcreateProduct] =
-  //   useActionState(createProduct, INITIAL_STATE_PRODUCT);
+  const [
+    createOpenManufacturingState,
+    createOpenManufacturingAction,
+    isPendingcreateOpenManufacturing,
+  ] = useActionState(createOpenManufacturing, INITIAL_STATE_OPEN_MANUFACTURING);
 
   const onSubmit = form.handleSubmit(async (data) => {
-    // const formData = new FormData();
-    // Object.entries(data).forEach(([key, value]) => {
-    //   if (key === "units") {
-    //     formData.append("units", JSON.stringify(value));
-    //   } else {
-    //     formData.append(key, String(value ?? ""));
-    //   }
-    //   formData.append("brand_id", String(currentBrandId));
-    // });
-    // startTransition(() => {
-    //   createProductAction(formData);
-    // });
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, value]) => {
+      if (key === "products_detail") {
+        formData.append("products_detail", JSON.stringify(value));
+      } else {
+        formData.append(key, String(value ?? ""));
+      }
+      formData.append("brand_id", String(currentBrandId));
+    });
+    startTransition(() => {
+      createOpenManufacturingAction(formData);
+    });
   });
 
-  //   useEffect(() => {
-  //     if (createProductState?.status === "error") {
-  //       toast.error("Create Product Failed", {
-  //         description: createProductState.errors?._form?.[0],
-  //       });
-  //     }
-  //     if (createProductState?.status === "success") {
-  //       toast.success("Create Product Success");
-  //       form.reset();
-  //       queryClient.refetchQueries({ queryKey: ["products"] });
-  //       router.push("/master-data/product");
-  //     }
-  //   }, [createProductState]);
+  useEffect(() => {
+    if (createOpenManufacturingState?.status === "error") {
+      toast.error("Create Open Manufacturing Failed", {
+        description: createOpenManufacturingState.errors?._form?.[0],
+      });
+    }
+    if (createOpenManufacturingState?.status === "success") {
+      toast.success("Create Open Manufacturing Success");
+      form.reset();
+      queryClient.refetchQueries({ queryKey: ["open_manufacturing"] });
+      router.push("/production/open-manufacturing");
+    }
+  }, [createOpenManufacturingState]);
 
   useEffect(() => {
     form.setValue("type", type ?? "");

@@ -23,6 +23,7 @@ export const productDetailSchema = z.object({
 export const openManufacturingFormSchema = z.object({
   open_manufacturing_date: z.string().min(1, "Date is required"),
   branch_id: z.string().min(1, "Branch is required"),
+  brand_id: z.string().optional(),
   notes: z.string().optional(),
   origin_branch_location_id: z.string().min(1, "Origin branch is required"),
   destination_branch_location_id: z

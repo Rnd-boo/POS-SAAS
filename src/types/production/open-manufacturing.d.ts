@@ -1,4 +1,4 @@
-export type OpenManufacturinFormState = {
+export type OpenManufacturingFormState = {
   status?: string;
   errors?: {
     id?: string[];
