@@ -67,6 +67,7 @@ export default function DialogBillOfMaterials({
         )
         .eq("clients_id", currentId)
         .eq("brand_id", currentBrandId)
+        .eq("status", true)
         .eq("type", type)
         .or(`name.ilike.%${currentSearch}%,code.ilike.%${currentSearch}%`)
         .range((currentPage - 1) * 10, currentPage * 10 - 1)

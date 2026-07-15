@@ -24,6 +24,7 @@ export default function DialogProducts({
   mapping,
   onOpenChange,
   setSelectedProduct,
+  stock,
 }: {
   form: UseFormReturn<any>;
   open: boolean;
@@ -32,6 +33,7 @@ export default function DialogProducts({
   setSelectedProduct: React.Dispatch<
     React.SetStateAction<Record<string, UnitProduct | null>>
   >;
+  stock?: boolean;
 }) {
   const supabase = createClient();
   const currentId = useAuthStore((state) => state.profile?.clients);
@@ -58,6 +60,7 @@ export default function DialogProducts({
         )
         .eq("clients_id", currentId)
         .eq("brand_id", currentBrandId)
+        .eq("products.status", true)
         .order("products(name)")
         .ilike("products.name", `%${currentSearch}%`)
         .range((currentPage - 1) * 10, currentPage * 10 - 1);
