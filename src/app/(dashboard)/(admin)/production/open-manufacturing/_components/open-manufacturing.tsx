@@ -37,6 +37,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import DialogDeleteOpenManufacturing from "./dialog-delete-open-manfacturing";
 
 const STATUS_LIST = [
   { value: "new", label: "New" },
@@ -357,6 +358,12 @@ export default function OpenManufacturing() {
         onOpenChange={setOpenDialogFilters}
         open={openDialogFilters}
         onChange={setFilters}
+      />
+      <DialogDeleteOpenManufacturing
+        open={selectedAction !== null && selectedAction.type === "delete"}
+        refetch={refetch}
+        currentData={selectedAction?.data}
+        handleChangeAction={handleChangeAction}
       />
     </div>
   );

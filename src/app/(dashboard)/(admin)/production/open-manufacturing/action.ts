@@ -126,3 +126,27 @@ export async function createOpenManufacturing(
     status: "success",
   };
 }
+
+export async function deleteOpenManufacturing(
+  prevState: OpenManufacturingFormState,
+  formData: FormData,
+) {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("open_manufacturing")
+    .delete()
+    .eq("id", formData.get("id"));
+
+  if (error) {
+    return {
+      status: "error",
+      errors: {
+        ...prevState.errors,
+        _form: [error.message],
+      },
+    };
+  }
+
+  return { status: "success" };
+}
