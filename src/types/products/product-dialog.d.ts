@@ -12,4 +12,5 @@ export type UnitProduct = {
   units: {
     name: string;
   };
+  on_hand?: number;
 };

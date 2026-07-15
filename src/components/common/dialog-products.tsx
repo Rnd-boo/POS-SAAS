@@ -17,6 +17,11 @@ import { DataTable } from "./tanstack-table";
 import { ColumnDef } from "@tanstack/react-table";
 import { UnitProduct } from "@/types/products/product-dialog";
 import { useBrandStore } from "@/stores/brand-store";
+import { useProductStockQuery } from "@/hooks/queries/use-product-stocks";
+
+type UnitProductWithStock = UnitProduct & {
+  on_hand?: number;
+};
 
 export default function DialogProducts({
   form,
@@ -24,7 +29,7 @@ export default function DialogProducts({
   mapping,
   onOpenChange,
   setSelectedProduct,
-  stock,
+  branch_location_id,
 }: {
   form: UseFormReturn<any>;
   open: boolean;
@@ -33,7 +38,7 @@ export default function DialogProducts({
   setSelectedProduct: React.Dispatch<
     React.SetStateAction<Record<string, UnitProduct | null>>
   >;
-  stock?: boolean;
+  branch_location_id?: string | null;
 }) {
   const supabase = createClient();
   const currentId = useAuthStore((state) => state.profile?.clients);
@@ -45,7 +50,7 @@ export default function DialogProducts({
   const {
     data: productUnit,
     isLoading: isLoadingProductUnit,
-    refetch,
+    refetch: refetchProductUnit,
   } = useQuery({
     queryKey: ["product_units", currentPage, currentSearch],
 
@@ -53,7 +58,7 @@ export default function DialogProducts({
       const result = await supabase
         .from("product_units")
         .select(
-          `id, products_id, units_id, 
+          `id, products_id, units_id, conversion_factor,
             products!inner(name, upc, categories!inner(name)), 
             units!inner(name)`,
           { count: "exact" },
@@ -74,13 +79,33 @@ export default function DialogProducts({
     enabled: !!currentId && open,
   });
 
-  const data: UnitProduct[] =
-    productUnit?.data?.map((row) => ({
-      ...row,
-      products: Array.isArray(row.products) ? row.products[0] : row.products,
-      units: Array.isArray(row.units) ? row.units[0] : row.units,
-    })) || [];
-  const columns: ColumnDef<UnitProduct>[] = [
+  const { productStock, refetchProductStock } = useProductStockQuery({
+    branch_location_id: branch_location_id ?? "",
+    productIds: productUnit?.data?.map((r: any) => r.products_id) ?? [],
+  });
+
+  const data: UnitProductWithStock[] =
+    productUnit?.data?.map((row) => {
+      const unitProduct = {
+        ...row,
+        products: Array.isArray(row.products) ? row.products[0] : row.products,
+        units: Array.isArray(row.units) ? row.units[0] : row.units,
+      };
+
+      const stockItem = productStock?.data?.find(
+        (stockRow) => stockRow.products_id === unitProduct.products_id,
+      );
+
+      return {
+        ...unitProduct,
+        on_hand: Number(
+          (
+            (stockItem?.on_hand ?? 0) / (unitProduct.conversion_factor ?? 1)
+          ).toFixed(4),
+        ),
+      };
+    }) || [];
+  const columns: ColumnDef<UnitProductWithStock>[] = [
     {
       accessorKey: "products",
       enableHiding: false,
@@ -154,6 +179,12 @@ export default function DialogProducts({
         <div>{(row.getValue("units") as { name: string }).name}</div>
       ),
     },
+    {
+      accessorKey: "on_hand",
+      enableHiding: false,
+      header: () => <div>Stock</div>,
+      cell: ({ row }) => <div>{row.getValue("on_hand") ?? 0}</div>,
+    },
   ];
 
   const totalData = productUnit?.count ?? 0;
@@ -189,6 +220,11 @@ export default function DialogProducts({
     onOpenChange(false);
   };
 
+  const handleRefetchProducts = () => {
+    refetchProductStock?.();
+    refetchProductUnit?.();
+  };
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent
@@ -220,7 +256,7 @@ export default function DialogProducts({
           totalData={totalData}
           onRowClick={handleRowClick}
           columns={columns}
-          refetch={refetch}
+          refetch={handleRefetchProducts}
           data={data}
           totalPages={totalPages}
           currentPage={currentPage}

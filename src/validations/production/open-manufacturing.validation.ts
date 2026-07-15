@@ -13,7 +13,7 @@ export const openManufacturingSchema = z.object({
 export const productDetailSchema = z.object({
   product_units_id: z.string(),
   qty: z.string(),
-  stock: z.string().optional(),
+  on_hand: z.number().optional(),
   product_name: z.string().optional(),
   product_upc: z.string().optional(),
   unit_name: z.string().optional(),
