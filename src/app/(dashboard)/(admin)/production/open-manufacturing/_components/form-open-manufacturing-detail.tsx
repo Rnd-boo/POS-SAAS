@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DisplayName } from "@/constants/products/bill-of-materials.constant";
+import { useProductStockQuery } from "@/hooks/queries/use-product-stocks";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/auth-store";
@@ -116,7 +117,6 @@ export default function FormOpenManufacturinDetail({
   const canAddMaterial =
     !productsDetail?.length ||
     Boolean(productsDetail[productsDetail.length - 1]?.product_name);
-
   const handleAddMaterial = () => {
     if (!canAddMaterial) {
       toast.error(
@@ -127,8 +127,9 @@ export default function FormOpenManufacturinDetail({
 
     append({
       product_units_id: "",
+      products_id: "",
       qty: "",
-      stock: "",
+      on_hand: 0,
       product_name: "",
       product_upc: "",
       unit_name: "",
@@ -153,9 +154,13 @@ export default function FormOpenManufacturinDetail({
     const productName = (selected as { product_units?: UnitProduct })
       ?.product_units?.products?.name;
 
-    const productId = selected?.product_units_id;
+    const productId = (selected as { product_units?: UnitProduct })
+      ?.product_units?.products_id;
+
+    const productUnitsId = selected?.product_units_id;
     form.setValue("product_name", productName ?? "");
-    form.setValue("product_units_id", String(productId) ?? "");
+    form.setValue("products_id", String(productId) ?? "");
+    form.setValue("product_units_id", String(productUnitsId) ?? "");
     if (productName) {
       setDisplayProductName(productName);
       setDisplayUnitName(
@@ -173,6 +178,7 @@ export default function FormOpenManufacturinDetail({
     if (!selected) return;
 
     form.setValue("product_units_id", String(selected.id ?? ""));
+    form.setValue("products_id", String(selected.products_id ?? ""));
     form.setValue("product_name", selected.products?.name ?? "");
 
     if (selected.products?.name) {
@@ -181,14 +187,35 @@ export default function FormOpenManufacturinDetail({
     }
   }, [selectedProduct["products"], form]);
 
+  const productStockIds = productBillOfMaterials
+    ?.map(
+      (productBOM) =>
+        (productBOM.product_units as { products_id?: string })?.products_id,
+    )
+    .filter(Boolean) as string[];
+
+  const { productStock } = useProductStockQuery({
+    branch_location_id: form.watch("origin_branch_location_id") ?? "",
+    productIds: productStockIds,
+  });
+
   useEffect(() => {
     if (!productBillOfMaterials || productBillOfMaterials.length === 0) return;
 
     replace(
       productBillOfMaterials.map((productBOM) => ({
         product_units_id: String(productBOM.product_units_id ?? ""),
+        products_id: String(
+          (productBOM.product_units as { products_id?: string })?.products_id,
+        ),
         qty: String(productBOM.qty),
-        stock: "",
+        on_hand:
+          productStock?.data?.find(
+            (stockRow) =>
+              stockRow.products_id ===
+              (productBOM.product_units as { products_id?: string })
+                ?.products_id,
+          )?.on_hand ?? 0,
         product_name:
           (productBOM.product_units as { products?: { name: string } })
             ?.products?.name ?? "",
@@ -201,7 +228,7 @@ export default function FormOpenManufacturinDetail({
         bill_of_material_qty: String(productBOM.qty),
       })),
     );
-  }, [productBillOfMaterials]);
+  }, [productBillOfMaterials, productStock?.data]);
 
   useEffect(() => {
     if (selectedIndex === null) return;
@@ -211,10 +238,12 @@ export default function FormOpenManufacturinDetail({
 
     update(selectedIndex, {
       ...fields[selectedIndex],
+      products_id: String(selected.products_id ?? ""),
       product_units_id: String(selected.id ?? ""),
       product_name: selected.products?.name ?? "",
       product_upc: selected.products?.upc ?? "",
       unit_name: selected.units?.name ?? "",
+      on_hand: selected?.on_hand ?? 0,
       bill_of_material_qty: "",
     });
 
@@ -230,7 +259,6 @@ export default function FormOpenManufacturinDetail({
   const BOMQTY = Number(form.watch("qty"));
   useEffect(() => {
     fields.forEach((field, index) => {
-      const current = form.getValues(`products_detail.${index}.qty`);
       const base = Number(field.bill_of_material_qty);
 
       const totalQTY = Number(BOMQTY) * base;
@@ -238,6 +266,8 @@ export default function FormOpenManufacturinDetail({
       form.setValue(`products_detail.${index}.qty`, String(totalQTY));
     });
   }, [BOMQTY]);
+
+  const branchLocationId = form.watch("origin_branch_location_id");
   return (
     <div className="grid grid-cols-[2fr_2fr_1fr_1fr] gap-4">
       <FormField
@@ -251,7 +281,7 @@ export default function FormOpenManufacturinDetail({
                 <Skeleton className="h-10 w-full" />
               ) : (
                 <Input
-                  disabled={type === "Detail"}
+                  disabled={type === "Detail" || !branchLocationId}
                   placeholder="Click for searching BOM"
                   value={
                     selectedBOM?.bill_of_materials?.name ??
@@ -285,7 +315,7 @@ export default function FormOpenManufacturinDetail({
                 value={displayProductName ?? ""}
                 placeholder="Click for searching products"
                 readOnly
-                disabled={type === "Detail"}
+                disabled={type === "Detail" || !branchLocationId}
                 onClick={() => {
                   setActiveMapping({
                     key: "products",
@@ -310,7 +340,7 @@ export default function FormOpenManufacturinDetail({
       </div>
       <FormInput
         isLoading={isLoading}
-        disabled={type === "Detail"}
+        disabled={type === "Detail" || !branchLocationId}
         form={form}
         name="qty"
         label="QTY"
@@ -351,7 +381,6 @@ export default function FormOpenManufacturinDetail({
         ) : (
           fields.map((field, index) => {
             const selectedProducts = selectedProduct[index];
-
             return (
               <Fragment key={field.id}>
                 <FormField
@@ -369,7 +398,7 @@ export default function FormOpenManufacturinDetail({
                           }
                           placeholder="Click for searching products"
                           readOnly
-                          disabled={type === "Detail"}
+                          disabled={type === "Detail" || !branchLocationId}
                           onClick={() => {
                             setSelectedIndex(index);
                             setActiveMapping({
@@ -387,7 +416,7 @@ export default function FormOpenManufacturinDetail({
                 />
                 <Input value={field.product_upc} disabled />
                 <Input value={field.unit_name} disabled />
-                <Input value={""} disabled />
+                <Input value={field.on_hand} disabled />
                 <Input value={field.bill_of_material_qty} disabled />
                 <FormField
                   control={form.control}
@@ -397,6 +426,7 @@ export default function FormOpenManufacturinDetail({
                       <FormItem>
                         <FormControl>
                           <Input
+                            type="number"
                             {...field}
                             onChange={(e) => {
                               field.onChange(e.target.value);
@@ -446,6 +476,7 @@ export default function FormOpenManufacturinDetail({
         onOpenChange={setOpenDialog}
         form={form}
         mapping={activeMapping}
+        branch_location_id={branchLocationId}
       />
     </div>
   );
