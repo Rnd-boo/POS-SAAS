@@ -37,8 +37,10 @@ export const INITIAL_OPEN_MANUFACTURING = {
   qty: "",
   products_detail: [
     {
+      products_id: "",
       product_units_id: "",
       qty: "",
+      on_hand: 0,
     },
   ],
 };

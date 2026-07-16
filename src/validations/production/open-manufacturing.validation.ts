@@ -11,6 +11,7 @@ export const openManufacturingSchema = z.object({
   qty: z.string().optional(),
 });
 export const productDetailSchema = z.object({
+  products_id: z.string(),
   product_units_id: z.string(),
   qty: z.string(),
   on_hand: z.number().optional(),
@@ -30,6 +31,7 @@ export const openManufacturingFormSchema = z.object({
     .string()
     .min(1, "Destination branch is required"),
   product_units_id: z.string().min(1, "Product is required"),
+  products_id: z.string().min(1, "Product is required"),
   bill_of_materials_id: z.string().optional(),
   product_name: z.string().optional(),
   type: z.string(),

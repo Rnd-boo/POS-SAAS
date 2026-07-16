@@ -60,7 +60,7 @@ export default function DialogBillOfMaterials({
           `id, name, code, type, product_units_id, status, description,  
               product_units!inner (
                 id,products_id,units_id,
-                products!inner (name),
+                products!inner (id, name),
                 units!inner (name)
                 )`,
           { count: "exact" },

@@ -117,7 +117,6 @@ export default function FormOpenManufacturinDetail({
   const canAddMaterial =
     !productsDetail?.length ||
     Boolean(productsDetail[productsDetail.length - 1]?.product_name);
-
   const handleAddMaterial = () => {
     if (!canAddMaterial) {
       toast.error(
@@ -128,6 +127,7 @@ export default function FormOpenManufacturinDetail({
 
     append({
       product_units_id: "",
+      products_id: "",
       qty: "",
       on_hand: 0,
       product_name: "",
@@ -154,9 +154,13 @@ export default function FormOpenManufacturinDetail({
     const productName = (selected as { product_units?: UnitProduct })
       ?.product_units?.products?.name;
 
-    const productId = selected?.product_units_id;
+    const productId = (selected as { product_units?: UnitProduct })
+      ?.product_units?.products_id;
+
+    const productUnitsId = selected?.product_units_id;
     form.setValue("product_name", productName ?? "");
-    form.setValue("product_units_id", String(productId) ?? "");
+    form.setValue("products_id", String(productId) ?? "");
+    form.setValue("product_units_id", String(productUnitsId) ?? "");
     if (productName) {
       setDisplayProductName(productName);
       setDisplayUnitName(
@@ -174,6 +178,7 @@ export default function FormOpenManufacturinDetail({
     if (!selected) return;
 
     form.setValue("product_units_id", String(selected.id ?? ""));
+    form.setValue("products_id", String(selected.products_id ?? ""));
     form.setValue("product_name", selected.products?.name ?? "");
 
     if (selected.products?.name) {
@@ -200,6 +205,9 @@ export default function FormOpenManufacturinDetail({
     replace(
       productBillOfMaterials.map((productBOM) => ({
         product_units_id: String(productBOM.product_units_id ?? ""),
+        products_id: String(
+          (productBOM.product_units as { products_id?: string })?.products_id,
+        ),
         qty: String(productBOM.qty),
         on_hand:
           productStock?.data?.find(
@@ -230,6 +238,7 @@ export default function FormOpenManufacturinDetail({
 
     update(selectedIndex, {
       ...fields[selectedIndex],
+      products_id: String(selected.products_id ?? ""),
       product_units_id: String(selected.id ?? ""),
       product_name: selected.products?.name ?? "",
       product_upc: selected.products?.upc ?? "",

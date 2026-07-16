@@ -22,6 +22,7 @@ export async function createOpenManufacturing(
       "destination_branch_location_id",
     ),
     product_units_id: formData.get("product_units_id"),
+    products_id: formData.get("products_id"),
     bill_of_materials_id: formData.get("bill_of_materials_id"),
     product_name: formData.get("product_name"),
     type: formData.get("type"),
@@ -122,6 +123,55 @@ export async function createOpenManufacturing(
       },
     };
   }
+
+  // Apply Stock Movement and Adjust Stock On Hand
+
+  const direction = validatedFields.data.type === "assembly" ? "IN" : "OUT";
+  const detailDirection =
+    validatedFields.data.type === "disassembly" ? "IN" : "OUT";
+
+  await supabase.rpc("apply_stock_movement", {
+    p_products_id: validatedFields.data.products_id,
+    p_branch_location_id: validatedFields.data.destination_branch_location_id,
+    p_product_units_id: validatedFields.data.product_units_id,
+
+    p_movement_type: "OPEN MANUFACTURING",
+    p_direction: direction,
+
+    p_qty: validatedFields.data.qty,
+
+    p_reference_type: "OPEN MANUFACTURING",
+    p_reference_id: openManufacturingData.id,
+
+    p_movement_date: validatedFields.data.open_manufacturing_date,
+
+    p_client_profiles_id: currentUserId,
+    p_clients_id: currentClientId,
+  });
+
+  const productsDetailMovement = validatedFields.data.products_detail.map(
+    (om) => ({
+      p_products_id: om.products_id,
+      p_branch_location_id: validatedFields.data.origin_branch_location_id,
+      p_product_units_id: om.product_units_id,
+
+      p_movement_type: "OPEN MANUFACTURING",
+      p_direction: detailDirection,
+
+      p_qty: om.qty,
+
+      p_reference_type: "OPEN MANUFACTURING",
+      p_reference_id: openManufacturingData.id,
+
+      p_movement_date: validatedFields.data.open_manufacturing_date,
+
+      p_client_profiles_id: currentUserId,
+      p_clients_id: currentClientId,
+    }),
+  );
+
+  await supabase.rpc("apply_stock_movement", productsDetailMovement);
+
   return {
     status: "success",
   };
