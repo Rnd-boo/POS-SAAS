@@ -49,6 +49,7 @@ export default function CreateOpenManufacturing() {
     startTransition(() => {
       createOpenManufacturingAction(formData);
     });
+    console.log(data);
   });
 
   useEffect(() => {

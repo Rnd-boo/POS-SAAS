@@ -126,17 +126,13 @@ export async function createOpenManufacturing(
 
   // Apply Stock Movement and Adjust Stock On Hand
 
-  const direction = validatedFields.data.type === "assembly" ? "IN" : "OUT";
-  const detailDirection =
-    validatedFields.data.type === "disassembly" ? "IN" : "OUT";
-
   await supabase.rpc("apply_stock_movement", {
     p_products_id: validatedFields.data.products_id,
     p_branch_location_id: validatedFields.data.destination_branch_location_id,
     p_product_units_id: validatedFields.data.product_units_id,
 
     p_movement_type: "OPEN MANUFACTURING",
-    p_direction: direction,
+    p_direction: "IN",
 
     p_qty: validatedFields.data.qty,
 
@@ -156,7 +152,7 @@ export async function createOpenManufacturing(
       p_product_units_id: om.product_units_id,
 
       p_movement_type: "OPEN MANUFACTURING",
-      p_direction: detailDirection,
+      p_direction: "OUT",
 
       p_qty: om.qty,
 
