@@ -53,6 +53,24 @@ export default function FormOpenManufacturingInformation({
       enabled: !!currentId && !!branchId && branchId !== "undefined",
     });
 
+  const { data: movements } = useQuery({
+    queryKey: ["stock_movements"],
+    queryFn: async () => {
+      const movements = await supabase
+        .from("stock_movements")
+        .select("*")
+        .eq("reference_id", "OM202607170004");
+
+      if (movements.error)
+        toast.error("Get Location Data Failed", {
+          description: movements.error.message,
+        });
+
+      return movements.data;
+    },
+  });
+
+  console.log("movements", movements);
   return (
     <div className="grid grid-cols-[2fr_2fr_2fr_2fr] gap-4">
       <FormField

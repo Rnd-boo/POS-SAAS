@@ -49,7 +49,6 @@ export default function CreateOpenManufacturing() {
     startTransition(() => {
       createOpenManufacturingAction(formData);
     });
-    console.log(data);
   });
 
   useEffect(() => {
@@ -76,6 +75,11 @@ export default function CreateOpenManufacturing() {
   }
 
   return (
-    <CardOpenManufacturing form={form} type="Create" onSubmit={onSubmit} />
+    <CardOpenManufacturing
+      form={form}
+      type="Create"
+      onSubmit={onSubmit}
+      isPending={isPendingcreateOpenManufacturing}
+    />
   );
 }

@@ -68,7 +68,7 @@ export default function CardOpenManufacturing({
             {type === "Detail" ? "Back" : "Cancel"}
           </Button>
           {type !== "Detail" && (
-            <Button type="submit">
+            <Button type="submit" disabled={isPending}>
               {isPending ? <Loader2 className="animate-spin" /> : type}
             </Button>
           )}

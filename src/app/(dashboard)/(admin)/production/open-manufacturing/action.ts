@@ -166,7 +166,9 @@ export async function createOpenManufacturing(
     }),
   );
 
-  await supabase.rpc("apply_stock_movement", productsDetailMovement);
+  await supabase.rpc("apply_stock_movements", {
+    p_movements: productsDetailMovement,
+  });
 
   return {
     status: "success",
@@ -183,7 +185,6 @@ export async function deleteOpenManufacturing(
     .from("open_manufacturing")
     .delete()
     .eq("id", formData.get("id"));
-
   if (error) {
     return {
       status: "error",
@@ -193,6 +194,54 @@ export async function deleteOpenManufacturing(
       },
     };
   }
+  const movements = await supabase
+    .from("stock_movements")
+    .select(
+      "id,reference_id,reference_type,qty_base,products_id,branch_location_id,direction",
+    )
+    .eq("reference_id", formData.get("id"));
 
+  for (const movement of movements.data || []) {
+    const { data: productStock } = await supabase
+      .from("product_stocks")
+      .select("id,on_hand")
+      .eq("products_id", movement.products_id)
+      .eq("branch_location_id", movement.branch_location_id)
+      .single();
+
+    const stockChange =
+      movement.direction === "IN" ? -movement.qty_base : movement.qty_base;
+
+    const { error } = await supabase
+      .from("product_stocks")
+      .update({
+        on_hand: Number(productStock?.on_hand) + Number(stockChange),
+      })
+      .eq("id", productStock?.id);
+    if (error) {
+      return {
+        status: "error",
+        errors: {
+          ...prevState.errors,
+          _form: [error.message],
+        },
+      };
+    }
+  }
+
+  const { error: deleteMovementError } = await supabase
+    .from("stock_movements")
+    .delete()
+    .eq("reference_id", formData.get("id"));
+
+  if (deleteMovementError) {
+    return {
+      status: "error",
+      errors: {
+        ...prevState.errors,
+        _form: [deleteMovementError.message],
+      },
+    };
+  }
   return { status: "success" };
 }
