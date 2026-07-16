@@ -36,7 +36,7 @@ export async function createOpenManufacturing(
       errors: { ...validatedFields.error.flatten().fieldErrors, _form: [] },
     };
   }
-
+  console.log(validatedFields.data);
   const dateStr = validatedFields.data.open_manufacturing_date; // "YYYY-MM-DD"
   const [year, month, day] = dateStr.split("-");
 
@@ -81,7 +81,10 @@ export async function createOpenManufacturing(
         destination_branch_location_id:
           validatedFields.data.destination_branch_location_id,
         product_units_id: validatedFields.data.product_units_id,
-        bill_of_materials_id: validatedFields.data.bill_of_materials_id,
+        bill_of_materials_id:
+          validatedFields.data.bill_of_materials_id === ""
+            ? undefined
+            : validatedFields.data.bill_of_materials_id,
         product_name: validatedFields.data.product_name,
         type: validatedFields.data.type,
         qty: validatedFields.data.qty,
