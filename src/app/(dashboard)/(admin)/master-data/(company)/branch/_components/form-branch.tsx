@@ -1,5 +1,5 @@
-import FormInput from "@/components/common/form-input";
-import FormSelect from "@/components/common/form-select";
+import FormInput from "@/components/common/form/form-input";
+import FormSelect from "@/components/common/form/form-select";
 import { Button } from "@/components/ui/button";
 
 import { Label } from "@/components/ui/label";
@@ -60,7 +60,9 @@ export default function FormBranch({
       <div
         className={cn(
           "grid gap-x-2 ",
-          type === "Detail" ? "grid-cols-[1fr_2fr]" : "grid-cols-[1fr_2fr_auto]"
+          type === "Detail"
+            ? "grid-cols-[1fr_2fr]"
+            : "grid-cols-[1fr_2fr_auto]",
         )}
       >
         <Label>Type</Label>

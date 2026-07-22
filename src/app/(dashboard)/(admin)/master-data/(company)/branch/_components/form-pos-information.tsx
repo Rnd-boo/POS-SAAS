@@ -1,4 +1,4 @@
-import FormSelectData from "@/components/common/form-select-data";
+import FormSelectData from "@/components/common/form/form-select-data";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -61,7 +61,7 @@ export default function FormPOSInformation({
           "grid gap-x-2 ",
           type === "Detail"
             ? "grid-cols-[2fr_1fr_1fr_1fr_1fr]"
-            : "grid-cols-[2fr_1fr_1fr_1fr_1fr_auto]"
+            : "grid-cols-[2fr_1fr_1fr_1fr_1fr_auto]",
         )}
       >
         <Label>Order Context</Label>
@@ -72,10 +72,10 @@ export default function FormPOSInformation({
         {type !== "Detail" && <div></div>}
         {fields.map((field: BranchOrderContext, index: number) => {
           const selectedId = form.watch(
-            `branch_order_context.${index}.order_context`
+            `branch_order_context.${index}.order_context`,
           );
           const selectedOrderContext = orderContexts?.find(
-            (c) => c.id.toString() === selectedId
+            (c) => c.id.toString() === selectedId,
           );
 
           const filteredOrderContext = orderContexts?.filter((context) => {

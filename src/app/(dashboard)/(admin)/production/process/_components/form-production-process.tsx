@@ -1,9 +1,9 @@
 "use client";
 
-import FormDatePicker from "@/components/common/form-date-picker";
-import FormInput from "@/components/common/form-input";
-import FormSelectData from "@/components/common/form-select-data";
-import { Combobox } from "@/components/common/manual-combobox";
+import FormDatePicker from "@/components/common/form/form-date-picker";
+import FormInput from "@/components/common/form/form-input";
+import FormSelectData from "@/components/common/form/form-select-data";
+import { Combobox } from "@/components/common/form/manual-combobox";
 import { Button } from "@/components/ui/button";
 import {
   FormControl,

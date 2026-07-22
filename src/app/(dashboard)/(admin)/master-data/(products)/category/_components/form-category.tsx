@@ -1,5 +1,5 @@
-import FormInput from "@/components/common/form-input";
-import FormSelect from "@/components/common/form-select";
+import FormInput from "@/components/common/form/form-input";
+import FormSelect from "@/components/common/form/form-select";
 import { Button } from "@/components/ui/button";
 import {
   DialogClose,

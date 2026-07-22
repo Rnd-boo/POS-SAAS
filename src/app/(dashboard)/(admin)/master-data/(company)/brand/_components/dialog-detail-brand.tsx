@@ -1,6 +1,6 @@
 import { FieldValues } from "react-hook-form";
 
-import DialogInformation from "@/components/common/dialog-information";
+import DialogInformation from "@/components/common/dialog/dialog-information";
 
 export default function DialogDetailBrand<T extends FieldValues>({
   informationData,

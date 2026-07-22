@@ -1,6 +1,6 @@
 import { startTransition, useActionState, useEffect } from "react";
 import { toast } from "sonner";
-import DialogDelete from "@/components/common/dialog-delete";
+import DialogDelete from "@/components/common/dialog/dialog-delete";
 import { INITIAL_STATE_BRANCH } from "@/constants/branch.constant";
 import { Branch } from "@/validations/branch.validation";
 import { deleteBranch } from "../action";

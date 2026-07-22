@@ -1,7 +1,7 @@
 "use client";
 
 import { toast } from "sonner";
-import DialogDelete from "@/components/common/dialog-delete";
+import DialogDelete from "@/components/common/dialog/dialog-delete";
 import { OrderContext } from "@/validations/pos/order-context.validation";
 import { deleteOrderContext } from "../action";
 import { INITIAL_STATE_ORDER_CONTEXT } from "@/constants/pos/order-context";

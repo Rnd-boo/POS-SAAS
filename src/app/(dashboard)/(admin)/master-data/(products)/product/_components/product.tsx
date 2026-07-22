@@ -21,7 +21,7 @@ import { useAuthStore } from "@/stores/auth-store";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import DialogDeleteProduct from "./dialog-delete-product";
-import DialogFilters from "@/components/common/dialog-filters";
+import DialogFilters from "@/components/common/dialog/dialog-filters";
 import { STATUS_LIST } from "@/constants/general.constant";
 import { applyFilterQuery } from "@/hooks/use-filter-query";
 import { ColumnDef, SortingState } from "@tanstack/react-table";

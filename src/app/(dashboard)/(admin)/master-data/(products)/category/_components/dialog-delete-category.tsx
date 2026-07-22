@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import { deleteCategory } from "../action";
 import { Category } from "@/validations/products/category-validation";
 import { INITIAL_STATE_CATEGORY } from "@/constants/products/category.constant";
-import DialogDelete from "@/components/common/dialog-delete";
+import DialogDelete from "@/components/common/dialog/dialog-delete";
 
 export default function DialogDeleteCategory({
   open,

@@ -1,18 +1,23 @@
 'use client";';
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
-import { Input } from "../ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "../../ui/dialog";
+import { Input } from "../../ui/input";
 import { useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useAuthStore } from "@/stores/auth-store";
 import useDataTable from "@/hooks/use-data-table";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 import { ArrowDown, ArrowUp, Funnel, RefreshCcw } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
-import DialogFilters from "./dialog-filters";
-import { DataTable } from "./tanstack-table";
+import DialogFilters from "../dialog-filters";
+import { DataTable } from "../tanstack-table";
 import { ColumnDef } from "@tanstack/react-table";
 import { useBrandStore } from "@/stores/brand-store";
 import { BillOfMaterials } from "@/validations/products/bill-of-materials-validation";

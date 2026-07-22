@@ -1,6 +1,6 @@
-import FormInput from "@/components/common/form-input";
-import FormSelect from "@/components/common/form-select";
-import FormSelectData from "@/components/common/form-select-data";
+import FormInput from "@/components/common/form/form-input";
+import FormSelect from "@/components/common/form/form-select";
+import FormSelectData from "@/components/common/form/form-select-data";
 import { Button } from "@/components/ui/button";
 import {
   DialogClose,

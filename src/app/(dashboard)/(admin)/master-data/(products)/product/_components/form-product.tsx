@@ -1,7 +1,7 @@
 "use client";
 
-import FormInput from "@/components/common/form-input";
-import FormSelect from "@/components/common/form-select";
+import FormInput from "@/components/common/form/form-input";
+import FormSelect from "@/components/common/form/form-select";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -22,7 +22,7 @@ import { useRouter } from "next/navigation";
 import { FormEvent } from "react";
 import { FieldValues, Path, UseFormReturn } from "react-hook-form";
 import FormProductUnit from "./form-product-unit";
-import FormSelectData from "@/components/common/form-select-data";
+import FormSelectData from "@/components/common/form/form-select-data";
 
 export default function FormProduct<T extends FieldValues>({
   form,

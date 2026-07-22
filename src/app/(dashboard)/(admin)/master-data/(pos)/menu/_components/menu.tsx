@@ -1,6 +1,6 @@
 "use client";
 
-import DialogFilters from "@/components/common/dialog-filters";
+import DialogFilters from "@/components/common/dialog/dialog-filters";
 import DropdownAction from "@/components/common/dropdown-action";
 import PageHeader from "@/components/common/page-header";
 import { DataTable } from "@/components/common/tanstack-table";

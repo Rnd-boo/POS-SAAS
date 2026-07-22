@@ -1,6 +1,6 @@
 import { startTransition, useActionState, useEffect } from "react";
 import { toast } from "sonner";
-import DialogDelete from "@/components/common/dialog-delete";
+import DialogDelete from "@/components/common/dialog/dialog-delete";
 import { deleteBrand } from "../action";
 import { INITIAL_STATE_BRAND } from "@/constants/brand.constant";
 import { Brand } from "@/validations/brand-validation";

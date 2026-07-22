@@ -8,8 +8,8 @@ import {
 import { SHAPE_LIST } from "@/constants/pos/table.constant";
 import { Button } from "@/components/ui/button";
 import { CirclePlus } from "lucide-react";
-import FormInput from "@/components/common/form-input";
-import FormSelect from "@/components/common/form-select";
+import FormInput from "@/components/common/form/form-input";
+import FormSelect from "@/components/common/form/form-select";
 import { FieldValues, UseFormReturn } from "react-hook-form";
 import { useEffect } from "react";
 import { TableLayoutForm } from "@/validations/pos/table.validation";

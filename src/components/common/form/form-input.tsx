@@ -5,10 +5,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../ui/form";
-import { Input } from "../ui/input";
-import { Textarea } from "../ui/textarea";
-import { Skeleton } from "../ui/skeleton";
+} from "../../ui/form";
+import { Input } from "../../ui/input";
+import { Textarea } from "../../ui/textarea";
+import { Skeleton } from "../../ui/skeleton";
 
 export default function FormInput<T extends FieldValues>({
   form,

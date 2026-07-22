@@ -1,7 +1,7 @@
 "use client";
 
-import DialogBillOfMaterials from "@/components/common/dialog-bill-of-materials";
-import FormInput from "@/components/common/form-input";
+import DialogBillOfMaterials from "@/components/common/dialog/dialog-bill-of-materials";
+import FormInput from "@/components/common/form/form-input";
 import {
   FormControl,
   FormField,

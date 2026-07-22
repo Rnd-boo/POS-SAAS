@@ -1,7 +1,7 @@
 "use client";
 
 import DateRangeInput from "@/components/common/date-range-picker";
-import { Combobox } from "@/components/common/manual-combobox";
+import { Combobox } from "@/components/common/form/manual-combobox";
 import {
   Card,
   CardContent,
@@ -12,7 +12,7 @@ import {
 import { useBranchQuery } from "@/hooks/queries/use-branches";
 import { UseFormReturn } from "react-hook-form";
 import { ProductionOrderForm } from "@/validations/production/production-order.validation";
-import FormSelect from "@/components/common/form-select";
+import FormSelect from "@/components/common/form/form-select";
 import {
   Form,
   FormControl,
@@ -25,8 +25,8 @@ import FormProductionOrderBOM from "./form-production-order-bom";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import FormInput from "@/components/common/form-input";
-import FormDatePicker from "@/components/common/form-date-picker";
+import FormInput from "@/components/common/form/form-input";
+import FormDatePicker from "@/components/common/form/form-date-picker";
 import { FormEvent } from "react";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";

@@ -18,7 +18,7 @@ import { ColumnDef, SortingState } from "@tanstack/react-table";
 import { applyFilterQuery } from "@/hooks/use-filter-query";
 import { CATEGORY_TABLE_PRODUCT } from "@/constants/products/category.constant";
 import { STATUS_LIST } from "@/constants/general.constant";
-import DialogFilters from "@/components/common/dialog-filters";
+import DialogFilters from "@/components/common/dialog/dialog-filters";
 import PageHeader from "@/components/common/page-header";
 
 export default function CategoryManagement() {

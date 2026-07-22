@@ -1,8 +1,8 @@
 "use client";
 
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { Input } from "../ui/input";
-import { Calendar } from "../ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
+import { Input } from "../../ui/input";
+import { Calendar } from "../../ui/calendar";
 import { formatDateLocal } from "@/lib/format-date";
 import {
   FormControl,
@@ -10,8 +10,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../ui/form";
-import { Skeleton } from "../ui/skeleton";
+} from "../../ui/form";
+import { Skeleton } from "../../ui/skeleton";
 import { FieldValues, Path, UseFormReturn } from "react-hook-form";
 
 export default function FormDatePicker<T extends FieldValues>({

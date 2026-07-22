@@ -1,4 +1,4 @@
-import FormInput from "@/components/common/form-input";
+import FormInput from "@/components/common/form/form-input";
 import { Button } from "@/components/ui/button";
 import {
   FormControl,

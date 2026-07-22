@@ -11,7 +11,7 @@ import FormBillOfMaterial from "./form-bill-of-materials";
 import { FormEvent, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { BillOfMaterialsForm } from "@/validations/products/bill-of-materials-validation";
-import DialogProducts from "@/components/common/dialog-products";
+import DialogProducts from "@/components/common/dialog/dialog-products";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";

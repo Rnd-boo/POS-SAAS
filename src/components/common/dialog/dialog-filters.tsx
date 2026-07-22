@@ -5,8 +5,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "../ui/dialog";
-import { Input } from "../ui/input";
+} from "../../ui/dialog";
+import { Input } from "../../ui/input";
 import {
   Select,
   SelectContent,
@@ -14,12 +14,12 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/select";
-import { Button } from "../ui/button";
-import { Combobox } from "./manual-combobox";
+} from "../../ui/select";
+import { Button } from "../../ui/button";
+import { Combobox } from "../form/manual-combobox";
 import { FilterConfig } from "@/types/general";
-import { Calendar } from "../ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Calendar } from "../../ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
 import {
   formatDateLocal,
   formatDisplayRange,

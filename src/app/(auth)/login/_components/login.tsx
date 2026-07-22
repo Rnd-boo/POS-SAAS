@@ -11,7 +11,7 @@ import {
   INITIAL_LOGIN_FORM,
   INITIAL_STATE_LOGIN_FORM,
 } from "@/constants/auth.constant";
-import FormInput from "@/components/common/form-input";
+import FormInput from "@/components/common/form/form-input";
 import { startTransition, useActionState, useEffect } from "react";
 import { login } from "../actions";
 import { Loader2 } from "lucide-react";
@@ -25,7 +25,7 @@ export function Login() {
 
   const [loginState, loginAction, isPendingLogin] = useActionState(
     login,
-    INITIAL_STATE_LOGIN_FORM
+    INITIAL_STATE_LOGIN_FORM,
   );
 
   const onSubmit = form.handleSubmit(async (data) => {

@@ -5,8 +5,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../ui/form";
-import { Switch } from "../ui/switch";
+} from "../../ui/form";
+import { Switch } from "../../ui/switch";
 import { CircleQuestionMark } from "lucide-react";
 
 export default function FormSwitch<T extends FieldValues>({

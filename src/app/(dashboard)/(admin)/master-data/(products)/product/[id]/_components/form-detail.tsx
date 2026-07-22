@@ -1,7 +1,7 @@
 "use client";
 
-import DialogInformation from "@/components/common/dialog-information";
-import FormInput from "@/components/common/form-input";
+import DialogInformation from "@/components/common/dialog/dialog-information";
+import FormInput from "@/components/common/form/form-input";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -27,7 +27,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Checkbox } from "@/components/ui/checkbox";
 import { fi } from "zod/v4/locales";
 import { Label } from "@/components/ui/label";
-import FormSelectData from "@/components/common/form-select-data";
+import FormSelectData from "@/components/common/form/form-select-data";
 import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 
@@ -200,7 +200,7 @@ export default function FormDetail<T extends FieldValues>({
                         <Checkbox
                           className="mt-4 size-6 "
                           checked={form.getValues(
-                            `units.${index}.is_sales_unit` as Path<T>
+                            `units.${index}.is_sales_unit` as Path<T>,
                           )}
                           disabled
                         />

@@ -1,5 +1,10 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
-import { Input } from "../ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "../../ui/dialog";
+import { Input } from "../../ui/input";
 import { format } from "date-fns";
 
 export default function DialogInformation({

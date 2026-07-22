@@ -1,7 +1,7 @@
 "use client";
 
-import FormInput from "@/components/common/form-input";
-import FormSelectData from "@/components/common/form-select-data";
+import FormInput from "@/components/common/form/form-input";
+import FormSelectData from "@/components/common/form/form-select-data";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";

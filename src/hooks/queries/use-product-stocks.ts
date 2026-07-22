@@ -1,4 +1,3 @@
-// hooks/use-branches.ts
 import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
@@ -8,7 +7,7 @@ export function useProductStockQuery({
   branch_location_id,
   productIds,
 }: {
-  branch_location_id: string;
+  branch_location_id?: string;
   productIds?: string[];
 }) {
   const supabase = createClient();

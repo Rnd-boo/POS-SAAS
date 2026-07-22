@@ -1,7 +1,7 @@
 "use client";
 
 import { toast } from "sonner";
-import DialogDelete from "@/components/common/dialog-delete";
+import DialogDelete from "@/components/common/dialog/dialog-delete";
 import { INITIAL_STATE_ORDER_CONTEXT } from "@/constants/pos/order-context";
 import { startTransition, useActionState, useEffect } from "react";
 import { MenuCategory } from "@/validations/pos/menu-category.validation";

@@ -14,7 +14,7 @@ import { Unit } from "@/validations/products/unit-validation";
 import { ColumnDef, SortingState } from "@tanstack/react-table";
 import DropdownAction from "@/components/common/dropdown-action";
 import { DataTable } from "@/components/common/tanstack-table";
-import DialogFilters from "@/components/common/dialog-filters";
+import DialogFilters from "@/components/common/dialog/dialog-filters";
 import { FILTER_TABLE_BOM } from "@/constants/products/bill-of-materials.constant";
 import { STATUS_LIST } from "@/constants/general.constant";
 import PageHeader from "@/components/common/page-header";

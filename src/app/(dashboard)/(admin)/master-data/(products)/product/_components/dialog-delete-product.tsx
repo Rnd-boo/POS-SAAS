@@ -1,6 +1,6 @@
 import { startTransition, useActionState, useEffect } from "react";
 import { toast } from "sonner";
-import DialogDelete from "@/components/common/dialog-delete";
+import DialogDelete from "@/components/common/dialog/dialog-delete";
 import { Product } from "@/validations/products/product-validation";
 import { INITIAL_STATE_PRODUCT } from "@/constants/products/product.constant";
 import { deleteProduct } from "../action";

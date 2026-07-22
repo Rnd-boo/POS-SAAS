@@ -13,10 +13,10 @@ import { useRouter } from "next/navigation";
 import { CircleQuestionMark, Loader2 } from "lucide-react";
 import { FormEvent, Fragment, useEffect, useState } from "react";
 import { MenuForm } from "@/validations/pos/menu.validation";
-import FormInput from "@/components/common/form-input";
-import FormSelect from "@/components/common/form-select";
+import FormInput from "@/components/common/form/form-input";
+import FormSelect from "@/components/common/form/form-select";
 import { STATUS_LIST } from "@/constants/general.constant";
-import FormSelectData from "@/components/common/form-select-data";
+import FormSelectData from "@/components/common/form/form-select-data";
 import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import { useAuthStore } from "@/stores/auth-store";
@@ -28,7 +28,7 @@ import MultipleCombobox, {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import FormSwitch from "@/components/common/form-switch";
+import FormSwitch from "@/components/common/form/form-switch";
 import { cn } from "@/lib/utils";
 import {
   Tooltip,

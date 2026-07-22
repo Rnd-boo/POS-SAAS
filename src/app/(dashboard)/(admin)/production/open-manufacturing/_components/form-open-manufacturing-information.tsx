@@ -1,8 +1,8 @@
 "use client";
 
-import FormDatePicker from "@/components/common/form-date-picker";
-import FormSelectData from "@/components/common/form-select-data";
-import { Combobox } from "@/components/common/manual-combobox";
+import FormDatePicker from "@/components/common/form/form-date-picker";
+import FormSelectData from "@/components/common/form/form-select-data";
+import { Combobox } from "@/components/common/form/manual-combobox";
 import {
   FormControl,
   FormField,
@@ -53,24 +53,6 @@ export default function FormOpenManufacturingInformation({
       enabled: !!currentId && !!branchId && branchId !== "undefined",
     });
 
-  const { data: movements } = useQuery({
-    queryKey: ["stock_movements"],
-    queryFn: async () => {
-      const movements = await supabase
-        .from("stock_movements")
-        .select("*")
-        .eq("reference_id", "OM202607170004");
-
-      if (movements.error)
-        toast.error("Get Location Data Failed", {
-          description: movements.error.message,
-        });
-
-      return movements.data;
-    },
-  });
-
-  console.log("movements", movements);
   return (
     <div className="grid grid-cols-[2fr_2fr_2fr_2fr] gap-4">
       <FormField

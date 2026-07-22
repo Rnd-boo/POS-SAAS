@@ -1,6 +1,6 @@
 import { startTransition, useActionState, useEffect } from "react";
 import { toast } from "sonner";
-import DialogDelete from "@/components/common/dialog-delete";
+import DialogDelete from "@/components/common/dialog/dialog-delete";
 import { INITIAL_STATE_PRODUCTION_ORDER } from "@/constants/production/production-order.constant";
 import { ProductionOrder } from "@/validations/production/production-order.validation";
 import { deleteProductionOrder } from "../action";
