@@ -96,7 +96,7 @@ export function DataTable<TData extends { id: string | number }>({
       columnVisibility,
       rowSelection,
       columnPinning: {
-        left: ["name"],
+        left: ["name", "id"],
         right: ["actions"],
       },
     },
@@ -214,7 +214,7 @@ export function DataTable<TData extends { id: string | number }>({
                   <TableCell
                     key={cell.id}
                     className={cn(
-                      cell.column.getIsPinned() && "sticky z-20 ",
+                      cell.column.getIsPinned() && "bg-background sticky z-20 ",
                       cell.column.getIsPinned() === "right" &&
                         cell.column.id === "actions" &&
                         "text-center",
