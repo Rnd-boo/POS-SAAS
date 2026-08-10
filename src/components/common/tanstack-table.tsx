@@ -96,7 +96,6 @@ export function DataTable<TData extends { id: string | number }>({
       columnVisibility,
       rowSelection,
       columnPinning: {
-        left: ["name", "id"],
         right: ["actions"],
       },
     },
@@ -162,19 +161,22 @@ export function DataTable<TData extends { id: string | number }>({
                       key={header.id}
                       className={cn(
                         "bg-muted hover:!bg-muted/50 cursor-pointer transition-all",
-                        header.column.getIsPinned() && "sticky z-20",
                         header.column.id === "actions" &&
                           "hover:!bg-muted cursor-default",
                       )}
                       style={{
-                        left:
-                          header.column.getIsPinned() === "left"
-                            ? header.column.getStart("left")
+                        boxShadow:
+                          header.column.getIsPinned() === "right"
+                            ? "4px 0 4px -4px gray inset"
                             : undefined,
                         right:
                           header.column.getIsPinned() === "right"
                             ? header.column.getAfter("right")
                             : undefined,
+                        position: header.column.getIsPinned()
+                          ? "sticky"
+                          : undefined,
+                        zIndex: header.column.getIsPinned() ? 1 : undefined,
                       }}
                     >
                       {header.isPlaceholder
@@ -207,6 +209,7 @@ export function DataTable<TData extends { id: string | number }>({
                   }
                 }}
                 className={cn(
+                  "group hover:bg-muted/50 transition-colors",
                   (pathname || setSelectedAction) && "cursor-pointer",
                 )}
               >
@@ -214,20 +217,25 @@ export function DataTable<TData extends { id: string | number }>({
                   <TableCell
                     key={cell.id}
                     className={cn(
-                      cell.column.getIsPinned() && "bg-background sticky z-20 ",
+                      cell.column.getIsPinned() &&
+                        "bg-background group-hover:bg-[#f0f0f0] dark:group-hover:bg-[#1c1c1c] transition-colors",
                       cell.column.getIsPinned() === "right" &&
                         cell.column.id === "actions" &&
                         "text-center",
                     )}
                     style={{
-                      left:
-                        cell.column.getIsPinned() === "left"
-                          ? cell.column.getStart("left")
+                      boxShadow:
+                        cell.column.getIsPinned() === "right"
+                          ? "4px 0 4px -4px gray inset"
                           : undefined,
                       right:
                         cell.column.getIsPinned() === "right"
                           ? cell.column.getAfter("right")
                           : undefined,
+                      position: cell.column.getIsPinned()
+                        ? "sticky"
+                        : undefined,
+                      zIndex: cell.column.getIsPinned() ? 1 : 0,
                     }}
                     onContextMenu={(e) => {
                       e.preventDefault();
