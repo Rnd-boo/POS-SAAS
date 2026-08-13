@@ -108,6 +108,12 @@ export function DataTable<TData extends { id: string | number }>({
       toast.error("Copy failed");
     }
   }, []);
+  React.useEffect(() => {
+    if (totalPages > 0 && currentPage > totalPages) {
+      onChangePage(totalPages);
+    }
+  }, [totalPages, currentPage, onChangePage]);
+
   return (
     <div className="w-full">
       <div className="overflow-hidden rounded-md border">
