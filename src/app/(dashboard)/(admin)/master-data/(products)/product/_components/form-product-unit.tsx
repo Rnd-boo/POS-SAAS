@@ -55,7 +55,7 @@ export default function FormProductUnit<T extends FieldValues>({
       units_id: "",
       conversion_factor: "",
       base_unit: "",
-      is_sales_unit: "false",
+      is_sales_unit: false,
     } as any);
   };
   useEffect(() => {
@@ -119,6 +119,7 @@ export default function FormProductUnit<T extends FieldValues>({
                 form={form}
                 name={`units.${index}.conversion_factor` as Path<T>}
                 label=""
+                type="number"
                 placeholder="Conversion"
                 className=""
                 disabled={index === 0}

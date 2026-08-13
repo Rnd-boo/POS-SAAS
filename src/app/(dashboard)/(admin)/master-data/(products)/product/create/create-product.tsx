@@ -8,7 +8,6 @@ import { createProduct } from "../action";
 import {
   ProductForm,
   productFormSchema,
-  ProductUnit,
 } from "@/validations/products/product-validation";
 import {
   INITIAL_PRODUCT,

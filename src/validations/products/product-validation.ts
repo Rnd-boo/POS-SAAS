@@ -2,7 +2,7 @@ import z from "zod";
 
 export const productUnitSchema = z.object({
   units_id: z.string().min(1, "Unit is required"),
-  conversion_factor: z.string(),
+  conversion_factor: z.string().min(1, "Conversion Factor is required"),
   base_unit: z.string(),
   is_sales_unit: z.boolean(),
   brand_id: z.number().optional(),

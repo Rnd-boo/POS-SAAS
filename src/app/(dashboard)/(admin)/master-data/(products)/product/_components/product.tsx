@@ -1,24 +1,15 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import useDataTable from "@/hooks/use-data-table";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import {
-  ArrowDown,
-  ArrowUp,
-  Funnel,
-  Pencil,
-  SearchIcon,
-  Trash2,
-} from "lucide-react";
+import { ArrowDown, ArrowUp, Pencil, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Product } from "@/validations/products/product-validation";
 import { FILTER_TABLE_PRODUCT } from "@/constants/products/product.constant";
 import { useAuthStore } from "@/stores/auth-store";
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import DialogDeleteProduct from "./dialog-delete-product";
 import DialogFilters from "@/components/common/dialog/dialog-filters";
@@ -27,11 +18,6 @@ import { applyFilterQuery } from "@/hooks/use-filter-query";
 import { ColumnDef, SortingState } from "@tanstack/react-table";
 import DropdownAction from "@/components/common/dropdown-action";
 import { DataTable } from "@/components/common/tanstack-table";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "@/components/ui/input-group";
 import { useBrandStore } from "@/stores/brand-store";
 import PageHeader from "@/components/common/page-header";
 
