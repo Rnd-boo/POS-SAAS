@@ -11,8 +11,8 @@ export async function createUnit(prevState: UnitFormState, formData: FormData) {
     name: formData.get("name"),
     notes: formData.get("notes"),
     status: formData.get("status") === "true" ? true : false,
+    brand_id: Number(formData.get("brand_id")),
   });
-
   if (!validatedFields.success) {
     return {
       status: "error",
@@ -43,6 +43,7 @@ export async function createUnit(prevState: UnitFormState, formData: FormData) {
     clients_id: currentClientId,
     name: validatedFields.data.name,
     notes: validatedFields.data.notes,
+    brand_id: validatedFields.data.brand_id,
   });
 
   if (error) {

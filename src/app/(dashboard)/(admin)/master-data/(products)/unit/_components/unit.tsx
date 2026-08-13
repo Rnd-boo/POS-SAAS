@@ -1,9 +1,6 @@
 "use client";
 
 import DropdownAction from "@/components/common/dropdown-action";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogTrigger } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import useDataTable from "@/hooks/use-data-table";
 import { createClient } from "@/lib/supabase/client";
 import { useQuery } from "@tanstack/react-query";
@@ -18,30 +15,28 @@ import { useAuthStore } from "@/stores/auth-store";
 import { cn } from "@/lib/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/common/tanstack-table";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "@/components/ui/input-group";
 import PageHeader from "@/components/common/page-header";
+import { useBrandStore } from "@/stores/brand-store";
 
 export default function UnitManagement() {
   const supabase = createClient();
   const currentId = useAuthStore((state) => state.profile?.clients);
   const { currentPage, handleChangePage, currentSearch, handleChangeSearch } =
     useDataTable();
+  const currentBrandId = useBrandStore((state) => state.currentBrandId);
 
   const {
     data: units,
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ["units", currentPage, currentSearch, currentId],
+    queryKey: ["units", currentPage, currentSearch, currentId, currentBrandId],
     queryFn: async () => {
       const result = await supabase
         .from("units")
         .select("id, name, notes, status", { count: "exact" })
         .eq("clients_id", currentId)
+        .eq("brand_id", currentBrandId)
         .range((currentPage - 1) * 10, currentPage * 10 - 1)
         .order("created_at")
         .ilike("name", `%${currentSearch}%`);
@@ -53,7 +48,7 @@ export default function UnitManagement() {
 
       return result;
     },
-    enabled: !!currentId,
+    enabled: !!currentId && !!currentBrandId,
   });
 
   const [selectedAction, setSelectedAction] = useState<{

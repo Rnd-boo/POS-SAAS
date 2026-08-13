@@ -12,8 +12,11 @@ import {
   INITIAL_UNIT,
 } from "@/constants/products/unit.constant";
 import FormUnit from "./form-unit";
+import { useBrandStore } from "@/stores/brand-store";
 
 export default function DialogCreateUnit({ refetch }: { refetch: () => void }) {
+  const currentBrandId = useBrandStore((state) => state.currentBrandId);
+
   const form = useForm<UnitForm>({
     resolver: zodResolver(unitFormSchema),
     defaultValues: INITIAL_UNIT,
@@ -23,12 +26,13 @@ export default function DialogCreateUnit({ refetch }: { refetch: () => void }) {
     useActionState(createUnit, INITIAL_STATE_UNIT);
 
   const onSubmit = form.handleSubmit(async (data) => {
-    // Debug: Log the form data
-
     const formData = new FormData();
     Object.entries(data).forEach(([key, value]) => {
       formData.append(key, value);
     });
+    if (currentBrandId) {
+      formData.append("brand_id", currentBrandId);
+    }
 
     startTransition(() => {
       createUnitAction(formData);
