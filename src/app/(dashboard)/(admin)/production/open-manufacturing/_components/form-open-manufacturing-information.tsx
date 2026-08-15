@@ -100,7 +100,7 @@ export default function FormOpenManufacturingInformation({
         name="open_manufacturing_date"
       />
       <FormSelectData
-        isLoading={isLoadingBranchLocation}
+        isLoading={isLoadingBranchLocation || isLoading}
         form={form}
         name="origin_branch_location_id"
         data={branchLocations || []}
@@ -109,7 +109,7 @@ export default function FormOpenManufacturingInformation({
         disabled={type === "Detail"}
       />
       <FormSelectData
-        isLoading={isLoadingBranchLocation}
+        isLoading={isLoadingBranchLocation || isLoading}
         form={form}
         name="destination_branch_location_id"
         data={branchLocations || []}

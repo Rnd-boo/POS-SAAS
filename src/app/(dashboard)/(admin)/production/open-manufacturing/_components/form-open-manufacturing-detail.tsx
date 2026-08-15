@@ -1,8 +1,8 @@
 "use client";
 
-import DialogBillOfMaterials from "@/components/common/dialog-bill-of-materials";
-import DialogProducts from "@/components/common/dialog-products";
-import FormInput from "@/components/common/form-input";
+import DialogBillOfMaterials from "@/components/common/dialog/dialog-bill-of-materials";
+import DialogProducts from "@/components/common/dialog/dialog-products";
+import FormInput from "@/components/common/form/form-input";
 import { Button } from "@/components/ui/button";
 import {
   FormControl,
@@ -57,8 +57,11 @@ export default function FormOpenManufacturinDetail({
   >({});
 
   const billOfMaterialsId = selectedBOM?.bill_of_materials?.id;
+
+  const viewBomId = form.watch("bill_of_materials_id");
+
   const { data: billOfMaterials } = useQuery({
-    queryKey: ["bill_of_materials"],
+    queryKey: ["bill_of_materials", viewBomId],
     queryFn: async () => {
       const result = await supabase
         .from("bill_of_materials")
@@ -68,7 +71,9 @@ export default function FormOpenManufacturinDetail({
                 units!inner (name)
                 )`,
         )
-        .eq("clients_id", currentId);
+        .eq("clients_id", currentId)
+        .eq("id", viewBomId)
+        .single();
       if (result.error)
         toast.error("Get Product Bill Of Materials Data Failed", {
           description: result.error.message,
@@ -76,7 +81,7 @@ export default function FormOpenManufacturinDetail({
 
       return result.data;
     },
-    enabled: !!currentId,
+    enabled: !!currentId && !!viewBomId,
   });
 
   const {
@@ -117,6 +122,7 @@ export default function FormOpenManufacturinDetail({
   const canAddMaterial =
     !productsDetail?.length ||
     Boolean(productsDetail[productsDetail.length - 1]?.product_name);
+
   const handleAddMaterial = () => {
     if (!canAddMaterial) {
       toast.error(
@@ -137,22 +143,15 @@ export default function FormOpenManufacturinDetail({
     });
   };
 
-  const [displayProductName, setDisplayProductName] = useState<
-    string | undefined
-  >(
-    (displayNames?.bill_of_materials as { productName?: string } | undefined)
-      ?.productName,
-  );
+  const [displayProductName, setDisplayProductName] = useState("");
 
-  const [displayUnitName, setDisplayUnitName] = useState<string | undefined>(
-    (displayNames?.bill_of_materials as { unitName?: string } | undefined)
-      ?.unitName,
-  );
-
+  const [displayUnitName, setDisplayUnitName] = useState("");
   useEffect(() => {
     const selected = selectedBOM["bill_of_materials"];
     const productName = (selected as { product_units?: UnitProduct })
       ?.product_units?.products?.name;
+    const unitName = (selected as { product_units?: UnitProduct })
+      ?.product_units?.units?.name;
 
     const productId = (selected as { product_units?: UnitProduct })
       ?.product_units?.products_id;
@@ -163,16 +162,9 @@ export default function FormOpenManufacturinDetail({
     form.setValue("product_units_id", String(productUnitsId) ?? "");
     if (productName) {
       setDisplayProductName(productName);
-      setDisplayUnitName(
-        (
-          selectedBOM?.bill_of_materials as {
-            product_units?: UnitProduct;
-          }
-        )?.product_units?.units?.name,
-      );
+      setDisplayUnitName(unitName ?? "");
     }
-  }, [selectedBOM, displayNames]);
-
+  }, [selectedBOM]);
   useEffect(() => {
     const selected = selectedProduct["products"];
     if (!selected) return;
@@ -185,18 +177,13 @@ export default function FormOpenManufacturinDetail({
       setDisplayProductName(selected.products.name);
       setDisplayUnitName(selected.units.name);
     }
-  }, [selectedProduct["products"], form]);
-
-  const productStockIds = productBillOfMaterials
-    ?.map(
-      (productBOM) =>
-        (productBOM.product_units as { products_id?: string })?.products_id,
-    )
-    .filter(Boolean) as string[];
+  }, [selectedProduct["products"]]);
 
   const { productStock } = useProductStockQuery({
     branch_location_id: form.watch("origin_branch_location_id") ?? "",
-    productIds: productStockIds,
+    productIds: fields
+      .map((field) => field.products_id)
+      .filter(Boolean) as string[],
   });
 
   useEffect(() => {
@@ -258,6 +245,7 @@ export default function FormOpenManufacturinDetail({
 
   const BOMQTY = Number(form.watch("qty"));
   useEffect(() => {
+    if (type === "Detail") return;
     fields.forEach((field, index) => {
       const base = Number(field.bill_of_material_qty);
 
@@ -268,6 +256,37 @@ export default function FormOpenManufacturinDetail({
   }, [BOMQTY]);
 
   const branchLocationId = form.watch("origin_branch_location_id");
+
+  useEffect(() => {
+    const productUnit = displayNames?.products_units_id as
+      | {
+          productName?: string;
+          unitName?: string;
+        }
+      | undefined;
+
+    setDisplayProductName(productUnit?.productName ?? "");
+    setDisplayUnitName(productUnit?.unitName ?? "");
+  }, [displayNames]);
+
+  useEffect(() => {
+    if (type !== "Detail") return;
+
+    const updatedFields = fields.map((field) => {
+      const onHandValue =
+        productStock?.data?.find(
+          (stockRow) => stockRow.products_id === field.products_id,
+        )?.on_hand ?? 0;
+
+      return {
+        ...field,
+        on_hand: onHandValue,
+      };
+    });
+
+    replace(updatedFields);
+  }, [productStock?.data]);
+
   return (
     <div className="grid grid-cols-[2fr_2fr_1fr_1fr] gap-4">
       <FormField
@@ -311,20 +330,24 @@ export default function FormOpenManufacturinDetail({
               Product <span className="text-destructive">*</span>
             </FormLabel>
             <FormControl>
-              <Input
-                value={displayProductName ?? ""}
-                placeholder="Click for searching products"
-                readOnly
-                disabled={type === "Detail" || !branchLocationId}
-                onClick={() => {
-                  setActiveMapping({
-                    key: "products",
-                    products_id: "products_id",
-                    units_id: "product_units_id",
-                  });
-                  setOpenDialog(true);
-                }}
-              />
+              {isLoading ? (
+                <Skeleton className="h-10 w-full" />
+              ) : (
+                <Input
+                  value={displayProductName ?? ""}
+                  placeholder="Click for searching products"
+                  readOnly
+                  disabled={type === "Detail" || !branchLocationId}
+                  onClick={() => {
+                    setActiveMapping({
+                      key: "products",
+                      products_id: "products_id",
+                      units_id: "product_units_id",
+                    });
+                    setOpenDialog(true);
+                  }}
+                />
+              )}
             </FormControl>
             <FormMessage className="text-xs" />
           </FormItem>
@@ -359,7 +382,7 @@ export default function FormOpenManufacturinDetail({
         className={cn(
           "grid col-span-full gap-2 ",
           type === "Detail"
-            ? "grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr]"
+            ? "grid-cols-[2fr_1fr_1fr_1fr_1fr]"
             : "grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_auto]",
         )}
       >
@@ -367,9 +390,9 @@ export default function FormOpenManufacturinDetail({
         <Label>UPC</Label>
         <Label>Unit</Label>
         <Label>Stock</Label>
-        <Label>Required QTY</Label>
+        {type !== "Detail" && <Label>Formula QTY</Label>}
         <Label>Total QTY</Label>
-        <Label></Label>
+        {type !== "Detail" && <Label></Label>}
         {isLoadingProductBillOfMaterials || isLoading ? (
           <>
             <Skeleton className="h-9" />
@@ -417,7 +440,9 @@ export default function FormOpenManufacturinDetail({
                 <Input value={field.product_upc} disabled />
                 <Input value={field.unit_name} disabled />
                 <Input value={field.on_hand} disabled />
-                <Input value={field.bill_of_material_qty} disabled />
+                {type !== "Detail" && (
+                  <Input value={field.bill_of_material_qty} disabled />
+                )}
                 <FormField
                   control={form.control}
                   name={`products_detail.${index}.qty`}

@@ -34,6 +34,7 @@ export const INITIAL_OPEN_MANUFACTURING = {
   product_units_id: "",
   bill_of_materials_id: "",
   type: "",
+  product_name: "",
   qty: "",
   products_detail: [
     {
