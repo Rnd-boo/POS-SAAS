@@ -56,6 +56,9 @@ export default function FormOpenManufacturinDetail({
     Record<string, BillOfMaterials | null>
   >({});
 
+  const [displayProductName, setDisplayProductName] = useState("");
+  const [displayUnitName, setDisplayUnitName] = useState("");
+
   const billOfMaterialsId = selectedBOM?.bill_of_materials?.id;
 
   const viewBomId = form.watch("bill_of_materials_id");
@@ -143,9 +146,6 @@ export default function FormOpenManufacturinDetail({
     });
   };
 
-  const [displayProductName, setDisplayProductName] = useState("");
-
-  const [displayUnitName, setDisplayUnitName] = useState("");
   useEffect(() => {
     const selected = selectedBOM["bill_of_materials"];
     const productName = (selected as { product_units?: UnitProduct })
@@ -248,10 +248,10 @@ export default function FormOpenManufacturinDetail({
     if (type === "Detail") return;
     fields.forEach((field, index) => {
       const base = Number(field.bill_of_material_qty);
-
-      const totalQTY = Number(BOMQTY) * base;
-
-      form.setValue(`products_detail.${index}.qty`, String(totalQTY));
+      if (base) {
+        const totalQTY = Number(BOMQTY) * base;
+        form.setValue(`products_detail.${index}.qty`, String(totalQTY));
+      }
     });
   }, [BOMQTY]);
 
@@ -270,8 +270,7 @@ export default function FormOpenManufacturinDetail({
   }, [displayNames]);
 
   useEffect(() => {
-    if (type !== "Detail") return;
-
+    if (type === "Create") return;
     const updatedFields = fields.map((field) => {
       const onHandValue =
         productStock?.data?.find(
@@ -286,7 +285,6 @@ export default function FormOpenManufacturinDetail({
 
     replace(updatedFields);
   }, [productStock?.data]);
-
   return (
     <div className="grid grid-cols-[2fr_2fr_1fr_1fr] gap-4">
       <FormField
@@ -416,7 +414,6 @@ export default function FormOpenManufacturinDetail({
                           value={
                             field.product_name ??
                             selectedProducts?.products.name ??
-                            displayProductName ??
                             ""
                           }
                           placeholder="Click for searching products"

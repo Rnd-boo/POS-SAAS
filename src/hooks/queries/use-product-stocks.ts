@@ -41,6 +41,7 @@ export function useProductStockQuery({
     enabled:
       !!currentId &&
       !!branch_location_id &&
+      !!productIds &&
       Array.isArray(productIds) &&
       productIds.length > 0,
   });
