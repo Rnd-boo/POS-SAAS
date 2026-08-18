@@ -16,6 +16,7 @@ export default function PageHeader({
   setFilters,
   setOpenDialogFilters,
   title,
+  placeholder,
   DialogCreateComponent,
 }: {
   pathname?: string;
@@ -24,6 +25,7 @@ export default function PageHeader({
   setFilters?: (filters: Record<string, string>) => void;
   setOpenDialogFilters?: (open: boolean) => void;
   title: string;
+  placeholder?: string;
   DialogCreateComponent?: ReactNode;
 }) {
   return (
@@ -37,7 +39,7 @@ export default function PageHeader({
         <div className="flex gap-2 w-full max-w-md">
           <InputGroup className="max-w-sm">
             <InputGroupInput
-              placeholder={`Search by ${title} name`}
+              placeholder={`Search by ${placeholder}`}
               onChange={(e) => handleChangeSearch(e.target.value)}
             />
             <InputGroupAddon>
