@@ -10,7 +10,6 @@ export function DarkModeToggle({ className = "" }) {
   return (
     <Button
       variant="outline"
-      size="icon"
       className={className}
       onClick={() => setTheme((prev) => (prev === "dark" ? "light" : "dark"))}
     >
