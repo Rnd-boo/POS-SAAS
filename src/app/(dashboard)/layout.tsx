@@ -1,38 +1,19 @@
 "use client";
 
-import { signOut } from "@/actions/auth-action";
 import { AppSidebar } from "@/components/common/app-sidebar";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { useAuthStore } from "@/stores/auth-store";
-import { ArrowLeftRight, LogOut } from "lucide-react";
+import { ArrowLeftRight } from "lucide-react";
 import DashboardBreadCrumb from "./_components/dashboard-breadcrumb";
 import { useBrandStore } from "@/stores/brand-store";
 import {
   Drawer,
-  DrawerClose,
   DrawerContent,
   DrawerDescription,
-  DrawerFooter,
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
@@ -45,12 +26,10 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const profile = useAuthStore((state) => state.profile);
   const brands = useBrandStore((s) => s.brands);
   const currentBrandId = useBrandStore((s) => s.currentBrandId);
-  const setCurrentBrand = useBrandStore((s) => s.setCurrentBrand);
   const currentBrandName = brands.find(
-    (brand) => String(brand.id) === currentBrandId
+    (brand) => String(brand.id) === currentBrandId,
   )?.name;
   const { data: branches, isLoading } = useBranchQuery();
 
@@ -90,57 +69,6 @@ export default function DashboardLayout({
                 </div>
               </DrawerContent>
             </Drawer>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Avatar className="h-10 w-10 rounded-lg hover:bg-muted">
-                  <AvatarImage
-                    src="https://tgspmwvxvpbzhcvcltta.supabase.co/storage/v1/object/public/images/avatar.png"
-                    alt={profile?.name}
-                  />
-                  <AvatarFallback className="rounded-lg">
-                    {profile?.name}
-                  </AvatarFallback>
-                </Avatar>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end">
-                <DropdownMenuLabel className="capitalize">
-                  {profile?.name}
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>Profile</DropdownMenuItem>
-                <DropdownMenuGroup>
-                  <DropdownMenuSub>
-                    <DropdownMenuSubTrigger>
-                      {currentBrandName}
-                    </DropdownMenuSubTrigger>
-                    <DropdownMenuSubContent>
-                      {Array.isArray(brands) && brands.length > 0 && (
-                        <DropdownMenuRadioGroup
-                          value={currentBrandId ?? ""}
-                          onValueChange={(value) => setCurrentBrand(value)}
-                        >
-                          {brands.map((b) => (
-                            <DropdownMenuRadioItem key={b.id} value={`${b.id}`}>
-                              {b.name}
-                            </DropdownMenuRadioItem>
-                          ))}
-                        </DropdownMenuRadioGroup>
-                      )}
-                    </DropdownMenuSubContent>
-                  </DropdownMenuSub>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                  <DropdownMenuItem
-                    onClick={() => {
-                      signOut();
-                    }}
-                  >
-                    <LogOut /> Logout
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
           </div>
         </header>
         <main className="flex flex-1 flex-col items-start gap-4 p-4 pt-0">

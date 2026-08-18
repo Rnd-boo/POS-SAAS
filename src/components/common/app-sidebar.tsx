@@ -12,20 +12,41 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { DarkModeToggle } from "./darkmode-toggle";
 import { usePathname } from "next/navigation";
 import { SIDEBAR_MENULIST, SidebarMenuKey } from "@/constants/sidebar.constant";
 import { cn } from "@/lib/utils";
-import { Coffee } from "lucide-react";
+import { EllipsisVertical, LogOut } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useAuthStore } from "@/stores/auth-store";
+import { useBrandStore } from "@/stores/brand-store";
+import { signOut } from "@/actions/auth-action";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { DarkModeToggle } from "./darkmode-toggle";
 
 export function AppSidebar() {
   const { open, setOpen } = useSidebar();
 
   const pathname = usePathname();
   const profile = useAuthStore((state) => state.profile);
+  const brands = useBrandStore((state) => state.brands);
+  const currentBrandId = useBrandStore((state) => state.currentBrandId);
+  const setCurrentBrand = useBrandStore((state) => state.setCurrentBrand);
+  const currentBrandName = brands.find(
+    (brand) => String(brand.id) === currentBrandId,
+  )?.name;
   const [openItem, setOpenItem] = useState<string | null>(null);
 
   useEffect(() => {
@@ -106,9 +127,77 @@ export function AppSidebar() {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <DarkModeToggle className="data-[collapsed=true]:w-8 data-[collapsed=true]:h-8" />
-            </SidebarMenuButton>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton
+                  size="lg"
+                  tooltip={profile?.name ?? "Account"}
+                  className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                >
+                  <Avatar className="size-8 rounded-lg">
+                    <AvatarImage
+                      src="https://tgspmwvxvpbzhcvcltta.supabase.co/storage/v1/object/public/images/avatar.png"
+                      alt={profile?.name ?? "Account avatar"}
+                    />
+                    <AvatarFallback className="rounded-lg">
+                      {profile?.name?.slice(0, 2).toUpperCase() ?? "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="flex min-w-0 flex-1 flex-col items-start text-left text-sm">
+                    <span className="w-full truncate font-xl ">
+                      {profile?.name ?? "Account"}
+                    </span>
+                  </span>
+                  <EllipsisVertical className="ml-auto size-4" />
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+                side={open ? "top" : "right"}
+                align="end"
+                sideOffset={8}
+              >
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col gap-1">
+                    <span className="font-medium ">
+                      {profile?.name ?? "Account"}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      {profile?.role ?? "User"}
+                    </span>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>Profile</DropdownMenuItem>
+                <DropdownMenuGroup>
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>
+                      {currentBrandName ?? "Select brand"}
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent>
+                      {brands.map((brand) => (
+                        <DropdownMenuItem
+                          key={brand.id}
+                          onClick={() => setCurrentBrand(String(brand.id))}
+                        >
+                          {brand.name}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuSubContent>
+                  </DropdownMenuSub>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DarkModeToggle className="w-full" />
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => signOut()}
+                  variant="destructive"
+                >
+                  <LogOut />
+                  Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
