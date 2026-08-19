@@ -9,6 +9,16 @@ export const stockAdjustmentSchema = z.object({
   notes: z.string(),
 });
 
+export const stockAdjustmentItemsSchema = z.object({
+  products_id: z.string(),
+  product_units_id: z.string(),
+  current_qty: z.number(),
+  on_hand: z.number().optional(),
+  product_name: z.string().optional(),
+  product_upc: z.string().optional(),
+  unit_name: z.string().optional(),
+});
+
 export const stockAdjustmentFormSchema = z.object({
   stock_adjustment_date: z.string().min(1, "Date is required"),
   branch_location_id: z.string().min(1, "Location is required"),
@@ -16,6 +26,8 @@ export const stockAdjustmentFormSchema = z.object({
   brand_id: z.string(),
   reason: z.string().min(1, "Reason is required"),
   notes: z.string().optional(),
+  status: z.enum(["new", "approved", "rejected"]).optional(),
+  stock_adjustment_items: z.array(stockAdjustmentItemsSchema),
 });
 
 export type StockAdjustmentForm = z.infer<typeof stockAdjustmentFormSchema>;

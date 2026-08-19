@@ -5,7 +5,13 @@ import useDataTable from "@/hooks/use-data-table";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowDown, ArrowUp, Pencil, Trash2 } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUp,
+  Pencil,
+  SquareCheckBig,
+  Trash2,
+} from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useAuthStore } from "@/stores/auth-store";
@@ -161,38 +167,57 @@ export default function StockAdjusmentManagement() {
       enableHiding: false,
       header: () => <div className="flex justify-center">Actions</div>,
       cell: ({ row }) => {
-        return (
-          <DropdownAction
-            menu={[
-              {
-                label: (
-                  <span className="flex items-center gap-2">
-                    <Pencil />
-                    Edit
-                  </span>
-                ),
-                action: () => {
-                  router.push(`${pathname}/${row?.original.id}/edit`);
-                },
+        const menu: {
+          label?: React.ReactNode;
+          variant?: "destructive" | "default";
+          action?: () => void;
+          separator?: boolean;
+        }[] = [
+          {
+            label: (
+              <span className="flex items-center gap-2">
+                <Trash2 className="text-red-400" />
+                Delete
+              </span>
+            ),
+            variant: "destructive",
+            action: () => {
+              setSelectedAction({
+                data: row.original,
+                type: "delete",
+              });
+            },
+          },
+        ];
+        const status = row.getValue("status");
+        if (status !== "authorized" && status !== "rejected") {
+          menu.unshift(
+            {
+              label: (
+                <span className="flex items-center gap-2">
+                  <SquareCheckBig />
+                  Create SA
+                </span>
+              ),
+              action: () => {
+                router.push(`${pathname}/create/${row?.original.id}`);
               },
-              {
-                label: (
-                  <span className="flex items-center gap-2">
-                    <Trash2 className="text-red-400" />
-                    Delete
-                  </span>
-                ),
-                variant: "destructive",
-                action: () => {
-                  setSelectedAction({
-                    data: row.original,
-                    type: "delete",
-                  });
-                },
+            },
+            { separator: true },
+            {
+              label: (
+                <span className="flex items-center gap-2">
+                  <Pencil />
+                  Edit
+                </span>
+              ),
+              action: () => {
+                router.push(`${pathname}/${row?.original.id}/edit`);
               },
-            ]}
-          />
-        );
+            },
+          );
+        }
+        return <DropdownAction menu={menu} />;
       },
     },
   ];
@@ -206,6 +231,7 @@ export default function StockAdjusmentManagement() {
         filters={filters}
         setFilters={setFilters}
         setOpenDialogFilters={setOpenDialogFilters}
+        pathname={pathname}
       />
       <DataTable
         data={data}
