@@ -1,7 +1,6 @@
 "use client";
 
 import FormDatePicker from "@/components/common/form/form-date-picker";
-import FormInput from "@/components/common/form/form-input";
 import FormSelectData from "@/components/common/form/form-select-data";
 import { Combobox } from "@/components/common/form/manual-combobox";
 import { Button } from "@/components/ui/button";
@@ -16,13 +15,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useBranchLocationQuery } from "@/hooks/queries/use-branch-locations";
 import { useBranchQuery } from "@/hooks/queries/use-branches";
 import { createClient } from "@/lib/supabase/client";
 import { useAuthStore } from "@/stores/auth-store";
 import { UnitProduct } from "@/types/products/product-dialog";
 import { ProductionProcessForm } from "@/validations/production/production-process.validation";
 import { useQuery } from "@tanstack/react-query";
-import { Fragment } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -41,25 +40,10 @@ export default function FormProductionOrderBOM({
 
   const branchId = form.watch("branch_id");
   const productionOrderId = form.watch("production_orders_id");
-  const { data: branchLocations, isLoading: isLoadingBranchLocation } =
-    useQuery({
-      queryKey: ["branch_location", branchId],
-      queryFn: async () => {
-        const result = await supabase
-          .from("branch_location")
-          .select(`id,name`)
-          .eq("clients_id", currentId)
-          .eq("branch_id", branchId);
 
-        if (result.error)
-          toast.error("Get Location Data Failed", {
-            description: result.error.message,
-          });
-
-        return result.data;
-      },
-      enabled: !!currentId && !!branchId && branchId !== "undefined",
-    });
+  const { branchLocations, isLoadingBranchLocation } = useBranchLocationQuery({
+    branch_id: branchId,
+  });
 
   const { data: productionOrders, isLoading: isLoadingProductionOrders } =
     useQuery({

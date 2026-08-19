@@ -11,13 +11,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useBranchLocationQuery } from "@/hooks/queries/use-branch-locations";
 import { useBranchQuery } from "@/hooks/queries/use-branches";
 import { createClient } from "@/lib/supabase/client";
 import { useAuthStore } from "@/stores/auth-store";
 import { OpenManufacturingForm } from "@/validations/production/open-manufacturing.validation";
-import { useQuery } from "@tanstack/react-query";
 import { UseFormReturn } from "react-hook-form";
-import { toast } from "sonner";
 
 export default function FormOpenManufacturingInformation({
   form,
@@ -33,25 +32,10 @@ export default function FormOpenManufacturingInformation({
   const { data: branches } = useBranchQuery();
 
   const branchId = form.watch("branch_id");
-  const { data: branchLocations, isLoading: isLoadingBranchLocation } =
-    useQuery({
-      queryKey: ["branch_location", branchId],
-      queryFn: async () => {
-        const result = await supabase
-          .from("branch_location")
-          .select(`id,name`)
-          .eq("clients_id", currentId)
-          .eq("branch_id", branchId);
 
-        if (result.error)
-          toast.error("Get Location Data Failed", {
-            description: result.error.message,
-          });
-
-        return result.data;
-      },
-      enabled: !!currentId && !!branchId && branchId !== "undefined",
-    });
+  const { branchLocations, isLoadingBranchLocation } = useBranchLocationQuery({
+    branch_id: branchId,
+  });
 
   return (
     <div className="grid grid-cols-[2fr_2fr_2fr_2fr] gap-4">
