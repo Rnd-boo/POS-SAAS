@@ -6,19 +6,19 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { useQueryClient } from "@tanstack/react-query";
 import { useBrandStore } from "@/stores/brand-store";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { startTransition, useActionState, useEffect } from "react";
 import { toast } from "sonner";
 import {
   StockAdjustmentForm,
   stockAdjustmentFormSchema,
 } from "@/validations/inventory/stock-adjustment.validation";
-import CardFormStockAdjusment from "../../_components/card-form-stock-adjustment";
+import CardFormStockAdjusment from "../_components/card-form-stock-adjustment";
 import {
   INITIAL_STATE_STOCK_ADJUSTMENT,
   INITIAL_STOCK_ADJUSTMENT,
 } from "@/constants/inventory/stock-adjustment.constant";
-import { createStockAdjustment } from "../../action";
+import { createStockAdjustment } from "../action";
 
 export default function CreateStockAdjusment() {
   const queryClient = useQueryClient();

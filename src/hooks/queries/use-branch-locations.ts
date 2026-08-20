@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { useBrandStore } from "@/stores/brand-store";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 import { useAuthStore } from "@/stores/auth-store";
@@ -29,7 +28,7 @@ export function useBranchLocationQuery({ branch_id }: { branch_id?: string }) {
       }
       return data;
     },
-    enabled: !!currentId && !!branch_id,
+    enabled: !!currentId && !!branch_id && branch_id !== "undefined",
   });
   return { branchLocations, isLoadingBranchLocation, refetchBranchLocation };
 }
