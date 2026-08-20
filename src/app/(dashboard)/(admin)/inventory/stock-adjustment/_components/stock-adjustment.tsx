@@ -1,24 +1,15 @@
 "use client";
 
-import DropdownAction from "@/components/common/dropdown-action";
+import { getStockAdjustmentColumns } from "@/components/columns.tsx/stock-adjustment-columns";
 import useDataTable from "@/hooks/use-data-table";
 import { createClient } from "@/lib/supabase/client";
-import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import {
-  ArrowDown,
-  ArrowUp,
-  Pencil,
-  SquareCheckBig,
-  Trash2,
-} from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useAuthStore } from "@/stores/auth-store";
 import { DataTable } from "@/components/common/tanstack-table";
 import { ColumnDef, SortingState } from "@tanstack/react-table";
 import { applyFilterQuery } from "@/hooks/use-filter-query";
-import DialogFilters from "@/components/common/dialog/dialog-filters";
 import PageHeader from "@/components/common/page-header";
 import { StockAdjustment } from "@/validations/inventory/stock-adjustment.validation";
 import { useBrandStore } from "@/stores/brand-store";
@@ -101,126 +92,15 @@ export default function StockAdjusmentManagement() {
   }, [stockAdjustmentData]);
 
   const data: StockAdjustment[] = stockAdjustmentData?.data || [];
-  const columns: ColumnDef<StockAdjustment>[] = [
-    {
-      accessorKey: "id",
-      enableHiding: false,
-      header: ({ column }) => {
-        const sorted = column.getIsSorted();
-        return (
-          <div
-            className="flex gap-2 font-medium items-center"
-            onClick={() => column.toggleSorting(undefined, true)}
-          >
-            Adjustment ID
-            {sorted === "asc" && <ArrowUp className="size-3" />}
-            {sorted === "desc" && <ArrowDown className="size-3" />}
-          </div>
-        );
-      },
-      cell: ({ row }) => <div>{row.getValue("id")}</div>,
-    },
-    {
-      accessorKey: "stock_adjustment_date",
-      enableHiding: false,
-      header: () => <div>Adjustment Date</div>,
-      cell: ({ row }) => (
-        <div className="truncate max-w-xs">
-          {row.getValue("stock_adjustment_date")}
-        </div>
-      ),
-    },
-    {
-      accessorKey: "branch",
-      enableHiding: false,
-      header: () => <div>Branch</div>,
-      cell: ({ row }) => (
-        <div className="truncate max-w-xs">
-          {(row.getValue("branch") as { name: string }).name}
-        </div>
-      ),
-    },
-    {
-      accessorKey: "branch_location",
-      enableHiding: false,
-      header: () => <div>Location</div>,
-      cell: ({ row }) => (
-        <div className="truncate max-w-xs">
-          {(row.getValue("branch_location") as { name: string }).name}
-        </div>
-      ),
-    },
-    {
-      accessorKey: "status",
-      enableHiding: false,
-      header: () => <div className="!cursor-default">Status</div>,
-      cell: ({ row }) => {
-        return (
-          <div className="truncate max-w-xs capitalize">
-            {row.getValue("status")}
-          </div>
-        );
-      },
-    },
-    {
-      id: "actions",
-      enableHiding: false,
-      header: () => <div className="flex justify-center">Actions</div>,
-      cell: ({ row }) => {
-        const menu: {
-          label?: React.ReactNode;
-          variant?: "destructive" | "default";
-          action?: () => void;
-          separator?: boolean;
-        }[] = [
-          {
-            label: (
-              <span className="flex items-center gap-2">
-                <Trash2 className="text-red-400" />
-                Delete
-              </span>
-            ),
-            variant: "destructive",
-            action: () => {
-              setSelectedAction({
-                data: row.original,
-                type: "delete",
-              });
-            },
-          },
-        ];
-        const status = row.getValue("status");
-        if (status !== "authorized" && status !== "rejected") {
-          menu.unshift(
-            {
-              label: (
-                <span className="flex items-center gap-2">
-                  <SquareCheckBig />
-                  Create SA
-                </span>
-              ),
-              action: () => {
-                router.push(`${pathname}/create/${row?.original.id}`);
-              },
-            },
-            { separator: true },
-            {
-              label: (
-                <span className="flex items-center gap-2">
-                  <Pencil />
-                  Edit
-                </span>
-              ),
-              action: () => {
-                router.push(`${pathname}/${row?.original.id}/edit`);
-              },
-            },
-          );
-        }
-        return <DropdownAction menu={menu} />;
-      },
-    },
-  ];
+  const columns: ColumnDef<StockAdjustment>[] = useMemo(
+    () =>
+      getStockAdjustmentColumns({
+        router,
+        pathname,
+        setSelectedAction,
+      }),
+    [pathname, router, setSelectedAction],
+  );
 
   return (
     <div className="w-full">

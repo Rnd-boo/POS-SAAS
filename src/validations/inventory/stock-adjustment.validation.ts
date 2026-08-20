@@ -23,7 +23,7 @@ export const stockAdjustmentFormSchema = z.object({
   stock_adjustment_date: z.string().min(1, "Date is required"),
   branch_location_id: z.string().min(1, "Location is required"),
   branch_id: z.string().min(1, "Branch is required"),
-  brand_id: z.string(),
+  brand_id: z.string().optional(),
   reason: z.string().min(1, "Reason is required"),
   notes: z.string().optional(),
   status: z.enum(["new", "approved", "rejected"]).optional(),

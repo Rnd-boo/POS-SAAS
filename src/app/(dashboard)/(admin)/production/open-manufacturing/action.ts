@@ -36,7 +36,6 @@ export async function createOpenManufacturing(
       errors: { ...validatedFields.error.flatten().fieldErrors, _form: [] },
     };
   }
-  console.log(validatedFields.data);
   const dateStr = validatedFields.data.open_manufacturing_date; // "YYYY-MM-DD"
   const [year, month, day] = dateStr.split("-");
 

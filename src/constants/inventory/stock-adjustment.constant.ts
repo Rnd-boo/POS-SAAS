@@ -33,7 +33,7 @@ export const INITIAL_STOCK_ADJUSTMENT = {
     {
       products_id: "",
       product_units_id: "",
-      qty: "",
+      current_qty: 0,
       on_hand: 0,
     },
   ],
