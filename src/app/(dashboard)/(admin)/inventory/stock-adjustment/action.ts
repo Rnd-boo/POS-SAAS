@@ -112,3 +112,54 @@ export async function createStockAdjustment(
     status: "success",
   };
 }
+
+export async function rejectStockAdjustment(
+  prevState: StockAdjustmentFormState,
+  formData: FormData,
+) {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("stock_adjustments")
+    .update({
+      status: "rejected",
+    })
+    .eq("id", formData.get("id"));
+
+  if (error) {
+    return {
+      status: "error",
+      errors: {
+        ...prevState.errors,
+        _form: [error.message],
+      },
+    };
+  }
+
+  return { status: "success" };
+}
+
+export async function approveStockAdjustment(
+  prevState: StockAdjustmentFormState,
+  formData: FormData,
+) {
+  const supabase = await createClient();
+
+  const { error } = await supabase.rpc("approve_stock_adjustment", {
+    p_stock_adjustments_id: formData.get("id"),
+  });
+
+  if (error) {
+    return {
+      status: "error",
+      errors: {
+        ...prevState.errors,
+        _form: [error.message],
+      },
+    };
+  }
+
+  return {
+    status: "success",
+  };
+}

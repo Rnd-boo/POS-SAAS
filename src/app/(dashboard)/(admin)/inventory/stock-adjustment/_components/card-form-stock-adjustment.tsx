@@ -106,7 +106,7 @@ export default function CardFormStockAdjusment({
                 isLoading={isLoading}
                 label="Reason"
                 required
-                disabled={type === "Detail"}
+                disabled={type === "Approve" || type === "Detail"}
               />
               <FormField
                 control={form.control}
@@ -146,7 +146,7 @@ export default function CardFormStockAdjusment({
                 name="branch_location_id"
                 label="Location"
                 data={branchLocations}
-                disabled={!branch_id || type === "Detail"}
+                disabled={!branch_id || type === "Detail" || type === "Approve"}
               />
             </CardContent>
           </Card>

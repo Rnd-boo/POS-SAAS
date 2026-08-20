@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DisplayName } from "@/constants/products/bill-of-materials.constant";
+import { useProductStockQuery } from "@/hooks/queries/use-product-stocks";
 import { cn } from "@/lib/utils";
 import { UnitProduct } from "@/types/products/product-dialog";
 import { StockAdjustmentForm } from "@/validations/inventory/stock-adjustment.validation";
@@ -90,6 +91,31 @@ export default function FormStockAdjustmentItems({
     setSelectedIndex(null);
   }, [selectedIndex, selectedProduct, fields, update]);
 
+  const { productStock } = useProductStockQuery({
+    branch_location_id: form.watch("branch_location_id"),
+    productIds: fields
+      .map((field) => field.products_id)
+      .filter(Boolean) as string[],
+  });
+
+  console.log(productStock);
+  useEffect(() => {
+    if (type === "Create") return;
+    const updatedFields = fields.map((field) => {
+      const onHandValue =
+        productStock?.data?.find(
+          (stockRow) => stockRow.products_id === field.products_id,
+        )?.on_hand ?? 0;
+
+      return {
+        ...field,
+        on_hand: onHandValue,
+      };
+    });
+
+    replace(updatedFields);
+  }, [productStock?.data]);
+
   return (
     <div
       className={cn(
@@ -132,7 +158,11 @@ export default function FormStockAdjustmentItems({
                         }
                         placeholder="Click for searching products"
                         readOnly
-                        disabled={type === "Detail" || !branchLocationId}
+                        disabled={
+                          type === "Approve" ||
+                          type === "Detail" ||
+                          !branchLocationId
+                        }
                         onClick={() => {
                           setSelectedIndex(index);
                           setActiveMapping({
@@ -165,7 +195,7 @@ export default function FormStockAdjustmentItems({
                             field.onChange(e.target.value);
                           }}
                           value={field.value}
-                          disabled={type === "Detail"}
+                          disabled={type === "Detail" || type === "Approve"}
                         />
                       </FormControl>
                       <FormMessage className="text-xs" />
@@ -191,7 +221,7 @@ export default function FormStockAdjustmentItems({
           );
         })
       )}
-      {type !== "Detail" && (
+      {type !== "Detail" && type !== "Approve" && (
         <Button
           type="button"
           onClick={handleAddItem}
@@ -202,7 +232,6 @@ export default function FormStockAdjustmentItems({
           Add Material
         </Button>
       )}
-
       <DialogProducts
         setSelectedProduct={setSelectedProduct}
         open={openDialog}
