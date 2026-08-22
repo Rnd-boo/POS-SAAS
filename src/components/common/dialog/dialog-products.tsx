@@ -31,6 +31,7 @@ export default function DialogProducts({
   onOpenChange,
   setSelectedProduct,
   branch_location_id,
+  canSelectProduct, //Checking there not duplicate the product_id
 }: {
   form: UseFormReturn<any>;
   open: boolean;
@@ -40,6 +41,7 @@ export default function DialogProducts({
     React.SetStateAction<Record<string, UnitProduct | null>>
   >;
   branch_location_id?: string;
+  canSelectProduct?: (product: UnitProduct) => boolean;
 }) {
   const supabase = createClient();
   const currentId = useAuthStore((state) => state.profile?.clients);
@@ -138,6 +140,8 @@ export default function DialogProducts({
   };
 
   const handleRowClick = (row: UnitProduct) => {
+    if (canSelectProduct && !canSelectProduct(row)) return;
+
     form.setValue(mapping.products_id, row.products_id, {
       shouldValidate: true,
     });

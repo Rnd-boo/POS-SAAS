@@ -46,6 +46,21 @@ export default function FormStockAdjustmentItems({
     !adjustmentItems?.length ||
     Boolean(adjustmentItems[adjustmentItems.length - 1]?.product_name);
 
+  const canSelectProduct = (selected: UnitProduct) => {
+    const selectedProductId = String(selected.products_id ?? "");
+    const duplicate = adjustmentItems?.some((item, index) => {
+      if (index === selectedIndex) return false;
+      return selectedProductId && item.products_id === selectedProductId;
+    });
+
+    if (duplicate) {
+      toast.error("This product has already been selected.");
+      return false;
+    }
+
+    return true;
+  };
+
   const handleAddItem = () => {
     if (!canAddItem) {
       toast.error(
@@ -235,6 +250,7 @@ export default function FormStockAdjustmentItems({
         form={form}
         mapping={activeMapping}
         branch_location_id={branchLocationId}
+        canSelectProduct={canSelectProduct}
       />
     </div>
   );
