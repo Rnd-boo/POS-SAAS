@@ -14,6 +14,7 @@ import PageHeader from "@/components/common/page-header";
 import { StockAdjustment } from "@/validations/inventory/stock-adjustment.validation";
 import { useBrandStore } from "@/stores/brand-store";
 import { usePathname, useRouter } from "next/navigation";
+import DialogDeleteStockAdjustment from "./dialog-delete-stock-adjustment";
 
 export default function StockAdjusmentManagement() {
   const supabase = createClient();
@@ -138,6 +139,12 @@ export default function StockAdjusmentManagement() {
         open={openDialogFilters}
         onChange={setFilters}
       /> */}
+      <DialogDeleteStockAdjustment
+        open={selectedAction !== null && selectedAction.type === "delete"}
+        refetch={refetch}
+        currentData={selectedAction?.data}
+        handleChangeAction={handleChangeAction}
+      />
     </div>
   );
 }

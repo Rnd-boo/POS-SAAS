@@ -97,25 +97,9 @@ export function getStockAdjustmentColumns({
           variant?: "destructive" | "default";
           action?: () => void;
           separator?: boolean;
-        }[] = [
-          {
-            label: (
-              <span className="flex items-center gap-2">
-                <Trash2 className="text-red-400" />
-                Delete
-              </span>
-            ),
-            variant: "destructive",
-            action: () => {
-              setSelectedAction({
-                data: row.original,
-                type: "delete",
-              });
-            },
-          },
-        ];
+        }[] = [];
         const status = row.getValue("status");
-        if (status !== "authorized" && status !== "rejected") {
+        if (status !== "approved" && status !== "rejected") {
           menu.unshift(
             {
               label: (
@@ -142,7 +126,24 @@ export function getStockAdjustmentColumns({
             },
           );
         }
-        return <DropdownAction menu={menu} />;
+        if (status !== "approved") {
+          menu.push({
+            label: (
+              <span className="flex items-center gap-2">
+                <Trash2 className="text-red-400" />
+                Delete
+              </span>
+            ),
+            variant: "destructive",
+            action: () => {
+              setSelectedAction({
+                data: row.original,
+                type: "delete",
+              });
+            },
+          });
+        }
+        return <DropdownAction menu={menu} disabled={status === "approved"} />;
       },
     },
   ];

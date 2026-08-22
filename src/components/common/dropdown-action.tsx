@@ -11,6 +11,7 @@ import { EllipsisVertical } from "lucide-react";
 
 export default function DropdownAction({
   menu,
+  disabled,
 }: {
   menu: {
     label?: string | ReactNode;
@@ -19,6 +20,7 @@ export default function DropdownAction({
     type?: "button" | "link";
     separator?: boolean;
   }[];
+  disabled?: boolean;
 }) {
   return (
     <DropdownMenu>
@@ -28,6 +30,7 @@ export default function DropdownAction({
           className="text-muted-foreground size-8"
           size="icon"
           onClick={(e) => e.stopPropagation()}
+          disabled={disabled}
         >
           <EllipsisVertical />
         </Button>
