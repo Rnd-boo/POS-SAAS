@@ -9,7 +9,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import { DisplayName } from "@/constants/products/bill-of-materials.constant";
 import { useProductStockQuery } from "@/hooks/queries/use-product-stocks";
 import { cn } from "@/lib/utils";
 import { UnitProduct } from "@/types/products/product-dialog";
@@ -99,11 +98,11 @@ export default function FormStockAdjustmentItems({
   useEffect(() => {
     if (type === "Create") return;
     const updatedFields = fields.map((field) => {
-      const onHandValue =
+      let onHandValue =
         productStock?.data?.find(
           (stockRow) => stockRow.products_id === field.products_id,
         )?.on_hand ?? 0;
-
+      onHandValue = onHandValue / (field.conversion_factor ?? 1);
       return {
         ...field,
         on_hand: onHandValue,

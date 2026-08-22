@@ -84,6 +84,7 @@ export default function DetailStockAdjustment() {
         .select(
           `product_units_id, current_qty, product_name,
             product_units (
+            conversion_factor,
             products(id,name,upc),
             units(name)
           )`,
@@ -112,6 +113,8 @@ export default function DetailStockAdjustment() {
         ?.products?.id,
       product_units_id: String(item.product_units_id),
       unit_name: (item.product_units as { units?: Unit })?.units?.name,
+      conversion_factor: (item.product_units as { conversion_factor?: number })
+        .conversion_factor,
     }));
 
     form.setValue("stock_adjustment_items", items);

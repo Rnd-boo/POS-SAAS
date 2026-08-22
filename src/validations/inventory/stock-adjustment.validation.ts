@@ -13,6 +13,7 @@ export const stockAdjustmentItemsSchema = z.object({
   products_id: z.string(),
   product_units_id: z.string(),
   current_qty: z.number(),
+  conversion_factor: z.number().optional(),
   on_hand: z.number().optional(),
   product_name: z.string().optional(),
   product_upc: z.string().optional(),
