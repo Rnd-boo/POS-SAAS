@@ -124,6 +124,7 @@ export default function StockAdjusmentManagement() {
         sorting={sorting}
         onSortingChange={setSorting}
         refetch={refetch}
+        pathname={pathname}
       />
       {/* <DialogFilters
         configs={StockAdjustment_TABLE_PRODUCT.map((config) => {

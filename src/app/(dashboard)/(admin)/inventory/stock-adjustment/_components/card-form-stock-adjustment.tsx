@@ -51,7 +51,7 @@ export default function CardFormStockAdjusment({
 
   const router = useRouter();
 
-  const status = form.watch("status");
+  const status = form.getValues("status");
 
   const REASON_LIST = [
     {

@@ -23,12 +23,10 @@ export default function FormStockAdjustmentItems({
   form,
   type,
   isLoading,
-  displayNames,
 }: {
   form: UseFormReturn<StockAdjustmentForm>;
   type: "Detail" | "Create" | "Update" | "Approve";
   isLoading?: boolean;
-  displayNames?: Record<string, DisplayName | DisplayName[]>;
 }) {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [activeMapping, setActiveMapping] = useState<Record<string, string>>(
@@ -98,7 +96,6 @@ export default function FormStockAdjustmentItems({
       .filter(Boolean) as string[],
   });
 
-  console.log(productStock);
   useEffect(() => {
     if (type === "Create") return;
     const updatedFields = fields.map((field) => {
@@ -121,7 +118,7 @@ export default function FormStockAdjustmentItems({
       className={cn(
         "grid col-span-full gap-2 ",
         type === "Detail"
-          ? "grid-cols-[2fr_1fr_1fr_1fr]"
+          ? "grid-cols-[2fr_1fr_1fr_1fr_1fr]"
           : "grid-cols-[2fr_1fr_1fr_1fr_1fr_auto]",
       )}
     >
