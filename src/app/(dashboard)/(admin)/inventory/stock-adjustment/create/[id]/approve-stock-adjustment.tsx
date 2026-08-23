@@ -173,6 +173,7 @@ export default function ApproveStockAdjustment() {
     if (rejectState?.status === "success") {
       toast.success("Reject Stock Adjustment Success");
       queryClient.refetchQueries({ queryKey: ["stock_adjustments"] });
+      queryClient.refetchQueries({ queryKey: ["stock_adjustment_items"] });
       router.push("/inventory/stock-adjustment");
     }
   }, [rejectState]);

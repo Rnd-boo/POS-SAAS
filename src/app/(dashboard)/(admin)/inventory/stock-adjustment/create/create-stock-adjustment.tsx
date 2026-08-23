@@ -34,25 +34,20 @@ export default function CreateStockAdjusment() {
     isPendingcreateStockAdjustment,
   ] = useActionState(createStockAdjustment, INITIAL_STATE_STOCK_ADJUSTMENT);
 
-  const onSubmit = form.handleSubmit(
-    async (data) => {
-      const formData = new FormData();
-      Object.entries(data).forEach(([key, value]) => {
-        if (key === "stock_adjustment_items") {
-          formData.append("stock_adjustment_items", JSON.stringify(value));
-        } else {
-          formData.append(key, String(value ?? ""));
-        }
-        formData.append("brand_id", String(currentBrandId));
-      });
-      startTransition(() => {
-        createStockAdjustmentAction(formData);
-      });
-    },
-    (errors) => {
-      console.log(errors);
-    },
-  );
+  const onSubmit = form.handleSubmit(async (data) => {
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, value]) => {
+      if (key === "stock_adjustment_items") {
+        formData.append("stock_adjustment_items", JSON.stringify(value));
+      } else {
+        formData.append(key, String(value ?? ""));
+      }
+      formData.append("brand_id", String(currentBrandId));
+    });
+    startTransition(() => {
+      createStockAdjustmentAction(formData);
+    });
+  });
   useEffect(() => {
     if (createStockAdjustmentState?.status === "error") {
       toast.error("Create Stock Adjustment Failed", {

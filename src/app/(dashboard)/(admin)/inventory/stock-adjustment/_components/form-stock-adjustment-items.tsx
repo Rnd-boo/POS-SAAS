@@ -131,7 +131,7 @@ export default function FormStockAdjustmentItems({
     <div
       className={cn(
         "grid col-span-full gap-2 ",
-        type === "Detail"
+        type === "Detail" || type === "Approve"
           ? "grid-cols-[2fr_1fr_1fr_1fr_1fr]"
           : "grid-cols-[2fr_1fr_1fr_1fr_1fr_auto]",
       )}
@@ -141,7 +141,7 @@ export default function FormStockAdjustmentItems({
       <Label>Unit</Label>
       <Label>Stock</Label>
       <Label>Current QTY</Label>
-      {type !== "Detail" && <Label></Label>}
+      {type !== "Detail" && type !== "Approve" && <Label></Label>}
       {isLoading ? (
         <>
           <Skeleton className="h-9" />
@@ -203,9 +203,13 @@ export default function FormStockAdjustmentItems({
                           type="number"
                           {...field}
                           onChange={(e) => {
-                            field.onChange(e.target.value);
+                            field.onChange(
+                              e.target.value === ""
+                                ? ""
+                                : e.target.valueAsNumber,
+                            );
                           }}
-                          value={field.value}
+                          value={Number.isNaN(field.value) ? "" : field.value}
                           disabled={type === "Detail" || type === "Approve"}
                         />
                       </FormControl>
@@ -214,7 +218,7 @@ export default function FormStockAdjustmentItems({
                   );
                 }}
               />
-              {fields.length > 1 && type !== "Detail" && (
+              {fields.length > 1 && type !== "Detail" && type !== "Approve" && (
                 <Button
                   type="button"
                   size="icon"

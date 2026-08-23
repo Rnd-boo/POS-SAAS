@@ -1,7 +1,10 @@
 "use client";
 
 import { createClient } from "@/lib/supabase/client";
-import { INITIAL_STOCK_ADJUSTMENT } from "@/constants/inventory/stock-adjustment.constant";
+import {
+  INITIAL_STATE_STOCK_ADJUSTMENT,
+  INITIAL_STOCK_ADJUSTMENT,
+} from "@/constants/inventory/stock-adjustment.constant";
 import {
   StockAdjustmentForm,
   stockAdjustmentFormSchema,
@@ -10,19 +13,22 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useAuthStore } from "@/stores/auth-store";
 import { useBrandStore } from "@/stores/brand-store";
-import { useParams } from "next/navigation";
-import { useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useParams, useRouter } from "next/navigation";
+import { startTransition, useActionState, useEffect } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Product } from "@/validations/products/product-validation";
 import { Unit } from "@/validations/products/unit-validation";
-import CardFormStockAdjusment from "../_components/card-form-stock-adjustment";
+import CardFormStockAdjusment from "../../_components/card-form-stock-adjustment";
+import { updateStockAdjustment } from "../../action";
 
-export default function DetailStockAdjustment() {
+export default function EditStockAdjustment() {
+  const queryClient = useQueryClient();
   const supabase = createClient();
   const currentId = useAuthStore((state) => state.profile?.clients);
   const currentBrandId = useBrandStore((s) => s.currentBrandId);
   const params = useParams();
+  const router = useRouter();
   const stockAdjustmentId = params?.id as string;
   const form = useForm<StockAdjustmentForm>({
     resolver: zodResolver(stockAdjustmentFormSchema),
@@ -118,11 +124,48 @@ export default function DetailStockAdjustment() {
     form.setValue("stock_adjustment_items", items);
   }, [stockAdjustmentItems, form]);
 
+  const [
+    updateStockAdjustmentState,
+    updateStockAdjustmentAction,
+    isPendingUpdateStockAdjustment,
+  ] = useActionState(updateStockAdjustment, INITIAL_STATE_STOCK_ADJUSTMENT);
+
+  const onSubmit = form.handleSubmit(async (data) => {
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, value]) => {
+      if (key === "stock_adjustment_items") {
+        formData.append("stock_adjustment_items", JSON.stringify(value));
+      } else {
+        formData.append(key, String(value ?? ""));
+      }
+      formData.append("id", String(stockAdjustmentId));
+    });
+    startTransition(() => {
+      updateStockAdjustmentAction(formData);
+    });
+  });
+  useEffect(() => {
+    if (updateStockAdjustmentState?.status === "error") {
+      toast.error("Update Stock Adjustment Failed", {
+        description: updateStockAdjustmentState.errors?._form?.[0],
+      });
+    }
+    if (updateStockAdjustmentState?.status === "success") {
+      toast.success("Update Stock Adjustment Success");
+      form.reset();
+      queryClient.refetchQueries({ queryKey: ["stock_adjustments"] });
+      queryClient.refetchQueries({ queryKey: ["stock_adjustment_items"] });
+      router.push("/inventory/stock-adjustment");
+    }
+  }, [updateStockAdjustmentState]);
+
   return (
     <CardFormStockAdjusment
       isLoading={isLoadingStockAdjustment && isLoadingStockAdjustmentItems}
       form={form}
-      type="Detail"
+      type="Update"
+      onSubmit={onSubmit}
+      isPending={isPendingUpdateStockAdjustment}
     />
   );
 }

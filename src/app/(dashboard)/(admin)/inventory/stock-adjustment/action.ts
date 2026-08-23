@@ -113,6 +113,98 @@ export async function createStockAdjustment(
   };
 }
 
+export async function updateStockAdjustment(
+  prevState: StockAdjustmentFormState,
+  formData: FormData,
+) {
+  const supabase = await createClient();
+
+  const { currentUserId, currentClientId } = await getCurrentProfile();
+  const stockAdjustmentId = String(formData.get("id") ?? "");
+  const validatedFields = stockAdjustmentFormSchema.safeParse({
+    stock_adjustment_date: formData.get("stock_adjustment_date"),
+    branch_id: formData.get("branch_id"),
+    notes: formData.get("notes"),
+    branch_location_id: formData.get("branch_location_id"),
+    reason: formData.get("reason"),
+    stock_adjustment_items: JSON.parse(
+      formData.get("stock_adjustment_items") as string,
+    ),
+  });
+  if (!validatedFields.success) {
+    return {
+      status: "error",
+      errors: { ...validatedFields.error.flatten().fieldErrors, _form: [] },
+    };
+  }
+
+  const { error: stockAdjusmentError } = await supabase
+    .from("stock_adjustments")
+    .update({
+      stock_adjustment_date: validatedFields.data.stock_adjustment_date,
+      branch_id: validatedFields.data.branch_id,
+      notes: validatedFields.data.notes,
+      branch_location_id: validatedFields.data.branch_location_id,
+      reason: validatedFields.data.reason,
+    })
+    .eq("id", stockAdjustmentId)
+    .eq("clients_id", currentClientId);
+
+  if (stockAdjusmentError) {
+    return {
+      status: "error",
+      errors: {
+        ...prevState.errors,
+        _form: [stockAdjusmentError.message],
+      },
+    };
+  }
+
+  const { error: deleteItemsError } = await supabase
+    .from("stock_adjustment_items")
+    .delete()
+    .eq("stock_adjustments_id", stockAdjustmentId);
+
+  if (deleteItemsError) {
+    return {
+      status: "error",
+      errors: {
+        ...prevState.errors,
+        _form: [deleteItemsError.message],
+      },
+    };
+  }
+
+  const stockAdjustmentItems = validatedFields.data.stock_adjustment_items.map(
+    (om) => ({
+      stock_adjustments_id: stockAdjustmentId,
+      clients_id: currentClientId,
+      client_profiles_id: currentUserId,
+      product_units_id: om.product_units_id,
+      current_qty: om.current_qty,
+      product_name: om.product_name,
+    }),
+  );
+
+  const { error: stockAdjustmentItemsError } = await supabase
+    .from("stock_adjustment_items")
+    .insert(stockAdjustmentItems);
+
+  if (stockAdjustmentItemsError) {
+    return {
+      status: "error",
+      errors: {
+        ...prevState.errors,
+        _form: [stockAdjustmentItemsError.message],
+      },
+    };
+  }
+
+  return {
+    status: "success",
+  };
+}
+
 export async function rejectStockAdjustment(
   prevState: StockAdjustmentFormState,
   formData: FormData,
