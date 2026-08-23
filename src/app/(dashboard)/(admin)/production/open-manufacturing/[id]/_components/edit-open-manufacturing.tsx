@@ -56,7 +56,6 @@ export default function EditOpenManufacturing() {
     });
     formData.append("id", String(openManufacturingId));
     formData.append("brand_id", String(currentBrandId ?? ""));
-    console.log("formData", data);
 
     startTransition(() => {
       updateOpenManufacturingAction(formData);

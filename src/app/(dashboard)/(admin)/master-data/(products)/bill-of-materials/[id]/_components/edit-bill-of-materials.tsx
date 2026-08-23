@@ -21,11 +21,7 @@ import { toast } from "sonner";
 import { startTransition, useActionState, useEffect, useState } from "react";
 import { Unit } from "@/validations/products/unit-validation";
 import { updateBillOfMaterials } from "../../action";
-import {
-  Product,
-  ProductUnit,
-} from "@/validations/products/product-validation";
-import { error } from "console";
+import { Product } from "@/validations/products/product-validation";
 
 export default function EditBillOfMaterials() {
   const params = useParams();

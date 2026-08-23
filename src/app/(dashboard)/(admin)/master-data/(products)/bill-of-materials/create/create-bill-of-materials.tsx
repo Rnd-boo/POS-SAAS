@@ -17,7 +17,6 @@ import {
 import CardFormBillOfMaterials from "../_components/card-form-bill-of-materials";
 import { createBillOfMaterials } from "../action";
 import { useBrandStore } from "@/stores/brand-store";
-import { error } from "console";
 
 export default function CreateBillOfMaterials() {
   const router = useRouter();
