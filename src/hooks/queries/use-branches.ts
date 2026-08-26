@@ -11,7 +11,7 @@ export function useBranchQuery() {
   const currentId = useAuthStore((state) => state.profile?.clients);
 
   return useQuery({
-    queryKey: ["branches", currentBrandId],
+    queryKey: ["branches", currentBrandId, currentId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("branch")
@@ -29,5 +29,6 @@ export function useBranchQuery() {
       return data;
     },
     enabled: !!currentId && !!currentBrandId,
+    staleTime: 5 * 60 * 1000,
   });
 }

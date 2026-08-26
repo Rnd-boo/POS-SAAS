@@ -1,7 +1,7 @@
 "use client";
 
 import DateRangeInput from "@/components/common/date-range-picker";
-import { Combobox } from "@/components/common/form/manual-combobox";
+import { Combobox } from "@/components/common/manual-combobox";
 import {
   Card,
   CardContent,

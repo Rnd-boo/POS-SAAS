@@ -73,7 +73,6 @@ export default function FormSelectData<T extends FieldValues>({
 
       return () => clearTimeout(timer);
     } else if (!isLoading) {
-      // ✅ Hanya reset kalau memang sudah selesai fetch, bukan saat masih loading
       mountedRef.current = false;
 
       const currentValue = form.getValues(name);

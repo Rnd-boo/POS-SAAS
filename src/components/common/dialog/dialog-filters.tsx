@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from "../../ui/select";
 import { Button } from "../../ui/button";
-import { Combobox } from "../form/manual-combobox";
+import { Combobox } from "../manual-combobox";
 import { FilterConfig } from "@/types/general";
 import { Calendar } from "../../ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";

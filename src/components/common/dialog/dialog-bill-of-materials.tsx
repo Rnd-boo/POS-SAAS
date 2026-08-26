@@ -13,17 +13,15 @@ import { useAuthStore } from "@/stores/auth-store";
 import useDataTable from "@/hooks/use-data-table";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Button } from "../../ui/button";
+
 import { ArrowDown, ArrowUp, Funnel, RefreshCcw } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
-import DialogFilters from "../dialog-filters";
 import { DataTable } from "../tanstack-table";
 import { ColumnDef } from "@tanstack/react-table";
 import { useBrandStore } from "@/stores/brand-store";
 import { BillOfMaterials } from "@/validations/products/bill-of-materials-validation";
 import { Product } from "@/validations/products/product-validation";
 import { Unit } from "@/validations/products/unit-validation";
-import { applyFilterQuery } from "@/hooks/use-filter-query";
 
 export default function DialogBillOfMaterials({
   form,

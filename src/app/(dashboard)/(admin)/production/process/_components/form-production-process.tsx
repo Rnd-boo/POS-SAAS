@@ -2,7 +2,7 @@
 
 import FormDatePicker from "@/components/common/form/form-date-picker";
 import FormSelectData from "@/components/common/form/form-select-data";
-import { Combobox } from "@/components/common/form/manual-combobox";
+import { Combobox } from "@/components/common/manual-combobox";
 import { Button } from "@/components/ui/button";
 import {
   FormControl,
