@@ -62,11 +62,11 @@ export default function DashboardLayout({
                     Overview of all active branches
                   </DrawerDescription>
                 </DrawerHeader>
-                <div className="capitalize grid list-inside mx-4">
+                <ul className="capitalize grid list-inside mx-4">
                   {branches?.map((b) => (
                     <li key={b.id}>{b.name}</li>
                   ))}
-                </div>
+                </ul>
               </DrawerContent>
             </Drawer>
           </div>

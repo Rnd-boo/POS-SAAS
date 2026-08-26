@@ -1,6 +1,6 @@
 "use client";
 
-import { Combobox } from "@/components/common/form/manual-combobox";
+import { Combobox } from "@/components/common/manual-combobox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useBranchQuery } from "@/hooks/queries/use-branches";
 import { UseFormReturn } from "react-hook-form";
@@ -25,7 +25,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useBranchLocationQuery } from "@/hooks/queries/use-branch-locations";
 import { StockAdjustmentForm } from "@/validations/inventory/stock-adjustment.validation";
 import FormSelectData from "@/components/common/form/form-select-data";
-import FormProductionOrderBOM from "../../../production/orders/_components/form-production-order-bom";
 import FormStockAdjustmentItems from "./form-stock-adjustment-items";
 
 export default function CardFormStockAdjusment({

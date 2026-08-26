@@ -49,16 +49,17 @@ export function DataTable<TData extends { id: string | number }>({
   onRowClick,
   setSelectedAction,
   isLoading,
+  tableHeader = true,
 }: {
   columns: ColumnDef<TData>[];
   data: TData[];
   totalPages: number;
   currentPage: number;
   onChangePage: (page: number) => void;
-  totalData: number;
+  totalData?: number;
   onSortingChange?: OnChangeFn<SortingState>;
   sorting?: SortingState;
-  refetch: () => void;
+  refetch?: () => void;
   pathname?: string;
   onRowClick?: (data: TData) => void;
   setSelectedAction?: React.Dispatch<
@@ -68,6 +69,7 @@ export function DataTable<TData extends { id: string | number }>({
     } | null>
   >;
   isLoading?: boolean;
+  tableHeader?: boolean;
 }) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -119,46 +121,49 @@ export function DataTable<TData extends { id: string | number }>({
       <div className="overflow-hidden rounded-md border">
         <Table>
           <TableHeader>
-            <TableRow className="hover:!bg-muted/50 bg-muted/50 ">
-              <TableCell colSpan={columns.length}>
-                <div className="flex justify-end w-full">
-                  {table.getAllColumns().filter((column) => column.getCanHide())
-                    .length > 0 && (
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="mr-auto">
-                          Columns <ChevronDown />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        {table
-                          .getAllColumns()
-                          .filter((column) => column.getCanHide())
-                          .map((column) => (
-                            <DropdownMenuCheckboxItem
-                              key={column.id}
-                              className="capitalize"
-                              checked={column.getIsVisible()}
-                              onCheckedChange={(value) =>
-                                column.toggleVisibility(!!value)
-                              }
-                            >
-                              {column.id}
-                            </DropdownMenuCheckboxItem>
-                          ))}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  )}
-                  <Button
-                    size="icon"
-                    onClick={() => refetch()}
-                    variant="outline"
-                  >
-                    <RefreshCcw />
-                  </Button>
-                </div>
-              </TableCell>
-            </TableRow>
+            {tableHeader && (
+              <TableRow className="hover:!bg-muted/50 bg-muted/50 ">
+                <TableCell colSpan={columns.length}>
+                  <div className="flex justify-end w-full">
+                    {table
+                      .getAllColumns()
+                      .filter((column) => column.getCanHide()).length > 0 && (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="outline" className="mr-auto">
+                            Columns <ChevronDown />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          {table
+                            .getAllColumns()
+                            .filter((column) => column.getCanHide())
+                            .map((column) => (
+                              <DropdownMenuCheckboxItem
+                                key={column.id}
+                                className="capitalize"
+                                checked={column.getIsVisible()}
+                                onCheckedChange={(value) =>
+                                  column.toggleVisibility(!!value)
+                                }
+                              >
+                                {column.id}
+                              </DropdownMenuCheckboxItem>
+                            ))}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    )}
+                    <Button
+                      size="icon"
+                      onClick={() => refetch?.()}
+                      variant="outline"
+                    >
+                      <RefreshCcw />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            )}
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header, index) => {
@@ -216,7 +221,8 @@ export function DataTable<TData extends { id: string | number }>({
                 }}
                 className={cn(
                   "group hover:bg-muted/50 transition-colors",
-                  (pathname || setSelectedAction) && "cursor-pointer",
+                  (pathname || setSelectedAction || onRowClick) &&
+                    "cursor-pointer",
                 )}
               >
                 {row.getVisibleCells().map((cell) => (
