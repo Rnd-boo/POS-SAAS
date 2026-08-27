@@ -250,11 +250,7 @@ export function DataTable<TData extends { id: string | number }>({
                       zIndex: cell.column.getIsPinned() ? 1 : 0,
                     }}
                     onContextMenu={(e) => {
-                      if (
-                        cell.column.id === "actions" ||
-                        cell.column.id === "status"
-                      )
-                        return;
+                      if (cell.column.id === "actions") return;
                       e.preventDefault();
                       e.stopPropagation();
                       const rawValue = cell.getValue();
@@ -267,6 +263,13 @@ export function DataTable<TData extends { id: string | number }>({
                                 JSON.stringify(rawValue),
                             )
                           : String(rawValue ?? "");
+                      if (
+                        cell.column.id === "status" &&
+                        typeof rawValue === "boolean"
+                      ) {
+                        copyValue(rawValue ? "Active" : "Inactive");
+                        return;
+                      }
                       copyValue(value);
                     }}
                   >
