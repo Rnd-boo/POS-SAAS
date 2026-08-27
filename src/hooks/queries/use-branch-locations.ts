@@ -29,6 +29,7 @@ export function useBranchLocationQuery({ branch_id }: { branch_id?: string }) {
       return data;
     },
     enabled: !!currentId && !!branch_id && branch_id !== "undefined",
+    staleTime: 5 * 60 * 1000,
   });
   return { branchLocations, isLoadingBranchLocation, refetchBranchLocation };
 }
