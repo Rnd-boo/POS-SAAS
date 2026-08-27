@@ -3,7 +3,7 @@ import { useBrandStore } from "@/stores/brand-store";
 import { createClient } from "@/lib/supabase/client";
 import { useAuthStore } from "@/stores/auth-store";
 
-export default function useCategoriesQuery() {
+export default function useCategoriesQuery(enabled = true) {
   const supabase = createClient();
   const currentBrandId = useBrandStore((s) => s.currentBrandId);
   const currentId = useAuthStore((state) => state.profile?.clients);
@@ -18,7 +18,7 @@ export default function useCategoriesQuery() {
         .eq("clients_id", currentId);
       return result?.data;
     },
-    enabled: !!currentId,
+    enabled: !!currentId && enabled,
   });
   return { categoriesData, isLoadingCategories };
 }
