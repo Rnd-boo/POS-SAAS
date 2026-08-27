@@ -19,6 +19,7 @@ export default function useCategoriesQuery(enabled = true) {
       return result?.data;
     },
     enabled: !!currentId && enabled,
+    staleTime: 5 * 60 * 1000,
   });
   return { categoriesData, isLoadingCategories };
 }
