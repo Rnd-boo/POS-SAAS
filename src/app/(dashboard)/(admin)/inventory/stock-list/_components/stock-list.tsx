@@ -8,45 +8,22 @@ import { useBrandStore } from "@/stores/brand-store";
 import useDataTable from "@/hooks/use-data-table";
 import { toast } from "sonner";
 import { useState } from "react";
-
-export type ProductFilters = {
-  locationId: string;
-  categoryId: string;
-  upc: string;
-  productName: string;
-};
-const initialFilters: ProductFilters = {
-  locationId: "",
-  categoryId: "",
-  upc: "",
-  productName: "",
-};
-
-export type ProductStock = {
-  id: number;
-  on_hand: number;
-  branch_location: {
-    name: string;
-  };
-  products: {
-    name: string;
-    upc: string;
-    status: boolean;
-    categories: {
-      name: string;
-    };
-  };
-};
+import { ProductStock } from "@/types/inventory/stock-list";
+import {
+  INITIAL_STOCK_LIST_FILTER,
+  STOCK_LIST_FILTERS,
+} from "@/constants/inventory/stock-list.constant";
 
 export default function StockList() {
   const supabase = createClient();
   const currentId = useAuthStore((state) => state.profile?.clients);
   const currentBrandId = useBrandStore((state) => state.currentBrandId);
 
-  const [filterInput, setFilterInput] =
-    useState<ProductFilters>(initialFilters);
+  const [filterInput, setFilterInput] = useState<STOCK_LIST_FILTERS>(
+    INITIAL_STOCK_LIST_FILTER,
+  );
 
-  const [filters, setFilters] = useState<ProductFilters | null>(null);
+  const [filters, setFilters] = useState<STOCK_LIST_FILTERS | null>(null);
   const [locationError, setLocationError] = useState("");
   const handleSearch = () => {
     if (!filterInput.locationId) {
@@ -55,15 +32,19 @@ export default function StockList() {
     }
     setLocationError("");
     setFilters(filterInput);
+    handleChangePage(1);
+    refetch();
   };
-  const { currentPage, handleChangePage, currentSearch, handleChangeSearch } =
-    useDataTable();
+  const { currentPage, handleChangePage } = useDataTable();
 
-  const { data: productStocks, isLoading } = useQuery({
+  const {
+    data: productStocks,
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: [
       "product_stocks",
       currentPage,
-      currentSearch,
       currentId,
       currentBrandId,
       filters,
@@ -76,7 +57,14 @@ export default function StockList() {
           on_hand,
           branch_location(name),
           products!inner(id,name,upc,status,
-            categories(name)  
+            categories(name),
+            product_units!inner (
+            is_base_unit,
+            units (
+              id,
+              name
+              )
+            )  
           )
           `,
           {
@@ -84,6 +72,7 @@ export default function StockList() {
           },
         )
         .eq("clients_id", currentId)
+        .eq("products.product_units.is_base_unit", true)
         .range((currentPage - 1) * 10, currentPage * 10 - 1);
 
       if (filters?.locationId)
@@ -108,6 +97,7 @@ export default function StockList() {
     },
     enabled: !!currentId && !!currentBrandId && !!filters,
   });
+
   return (
     <CardStockList
       totalData={productStocks?.totalData}

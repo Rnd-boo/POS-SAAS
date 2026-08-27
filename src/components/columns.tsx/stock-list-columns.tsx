@@ -1,9 +1,8 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { SortableHeader } from "../common/table-sortable-header";
-import { ProductStock } from "@/app/(dashboard)/(admin)/inventory/stock-list/_components/stock-list";
 import { cn } from "@/lib/utils";
+import { ProductStock } from "@/types/inventory/stock-list";
 
 const STOCK_PAGE_SIZE = 10;
 
@@ -45,13 +44,13 @@ export const stockListColumns = (
     header: () => <div className="cursor-default">Category</div>,
     cell: ({ getValue }) => <div>{getValue<string>()}</div>,
   },
-  //   {
-  //     id: "units(name)",
-  //     accessorFn: (row) => row.units.name,
-  //     enableHiding: false,
-  //     header: ({ column }) => <SortableHeader column={column} label="Unit" />,
-  //     cell: ({ getValue }) => <div>{getValue<string>()}</div>,
-  //   },
+  {
+    id: "units",
+    accessorFn: (row) => row.products.product_units[0].units.name,
+    enableHiding: false,
+    header: () => <div className="cursor-default">Base Unit</div>,
+    cell: ({ getValue }) => <div>{getValue<string>()}</div>,
+  },
   {
     id: "status",
     accessorFn: (row) => row.products.status,

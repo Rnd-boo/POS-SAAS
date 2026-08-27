@@ -14,16 +14,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useBranchLocationQuery } from "@/hooks/queries/use-branch-locations";
 import { useBranchQuery } from "@/hooks/queries/use-branches";
 import useCategoriesQuery from "@/hooks/queries/use-categories";
-
 import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
-import { ProductFilters, ProductStock } from "./stock-list";
 import { stockListColumns } from "@/components/columns.tsx/stock-list-columns";
 import { useQueryState } from "nuqs";
+import { ProductStock } from "@/types/inventory/stock-list";
+import { STOCK_LIST_FILTERS } from "@/constants/inventory/stock-list.constant";
 
 export default function CardStockList({
   isLoading,
@@ -41,8 +40,8 @@ export default function CardStockList({
   isLoading?: boolean;
   handleChangePage: (page: number) => void;
   currentPage: number;
-  filters: ProductFilters;
-  onChange: React.Dispatch<React.SetStateAction<ProductFilters>>;
+  filters: STOCK_LIST_FILTERS;
+  onChange: React.Dispatch<React.SetStateAction<STOCK_LIST_FILTERS>>;
   onSearch: () => void;
   data: ProductStock[];
   totalPages: number;
@@ -51,9 +50,10 @@ export default function CardStockList({
   totalData?: number;
 }) {
   const { data: branches } = useBranchQuery();
-  const { categoriesData, isLoadingCategories } = useCategoriesQuery();
   const [branchId, setBranchId] = useState<string>("");
-  const [params, setParams] = useQueryState("name");
+  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+  const { categoriesData, isLoadingCategories } =
+    useCategoriesQuery(isCategoryOpen);
 
   const { branchLocations } = useBranchLocationQuery({
     branch_id: branchId,
@@ -132,6 +132,9 @@ export default function CardStockList({
             <Label className="">Category</Label>
             <Combobox
               modal
+              placeholder="Select Category"
+              onOpenChange={setIsCategoryOpen}
+              isLoading={isLoadingCategories}
               items={
                 categoriesData?.map((item) => ({
                   label: item.name,
