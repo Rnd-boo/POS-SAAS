@@ -12,7 +12,7 @@ export type ProductStock = {
       name: string;
     };
     product_units: {
-      is_base_unit: boolean;
+      id: number;
       units: {
         id: number;
         name: string;

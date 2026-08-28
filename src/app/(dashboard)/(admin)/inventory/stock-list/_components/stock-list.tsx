@@ -59,7 +59,7 @@ export default function StockList() {
           products!inner(id,name,upc,status,
             categories(name),
             product_units!inner (
-            is_base_unit,
+            id,
             units (
               id,
               name
