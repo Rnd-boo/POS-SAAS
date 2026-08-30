@@ -7,7 +7,7 @@ export type UnitProduct = {
     upc: string;
     categories: {
       name: string;
-    }[];
+    };
   };
   units: {
     name: string;

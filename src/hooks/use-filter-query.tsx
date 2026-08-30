@@ -11,7 +11,7 @@ export const applyFilterQuery = (
       if (from && to) {
         query = query.gte(key, from).lte(key, to);
       }
-    } else if (key === "name") {
+    } else if (key.endsWith("name")) {
       query = query.ilike(key, `%${value}%`);
     } else {
       query = query.eq(key, value);

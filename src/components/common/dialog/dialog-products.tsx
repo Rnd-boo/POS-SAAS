@@ -23,6 +23,33 @@ import { UnitProduct } from "@/types/products/product-dialog";
 import { useBrandStore } from "@/stores/brand-store";
 import { useProductStockQuery } from "@/hooks/queries/use-product-stocks";
 import { productUnitColumns } from "@/components/columns.tsx/product-units-columns";
+import { FilterConfig } from "@/types/general";
+import useCategoriesQuery from "@/hooks/queries/use-categories";
+import useUnitsQuery from "@/hooks/queries/use-units";
+import { applyFilterQuery } from "@/hooks/use-filter-query";
+
+export const FILTER_TABLE_DIALOG_PRODUCTS: Omit<FilterConfig, "options">[] = [
+  {
+    key: "products.name",
+    label: "Product Name",
+    type: "text",
+  },
+  {
+    key: "products.categories_id",
+    label: "Category",
+    type: "combobox",
+  },
+  {
+    key: "products.upc",
+    label: "Product Code",
+    type: "text",
+  },
+  {
+    key: "units_id",
+    label: "Unit",
+    type: "combobox",
+  },
+];
 
 export default function DialogProducts({
   form,
@@ -31,6 +58,7 @@ export default function DialogProducts({
   onOpenChange,
   setSelectedProduct,
   branch_location_id,
+  is_base_unit = false,
   canSelectProduct, //Checking there not duplicate the product_id
 }: {
   form: UseFormReturn<any>;
@@ -41,6 +69,7 @@ export default function DialogProducts({
     React.SetStateAction<Record<string, UnitProduct | null>>
   >;
   branch_location_id?: string;
+  is_base_unit?: boolean;
   canSelectProduct?: (product: UnitProduct) => boolean;
 }) {
   const supabase = createClient();
@@ -50,15 +79,15 @@ export default function DialogProducts({
   const { currentPage, handleChangePage, currentSearch, handleChangeSearch } =
     useDataTable();
   const [sorting, setSorting] = useState<SortingState>([]);
-  const {
-    data: productUnit,
-    isLoading: isLoadingProductUnit,
-    refetch: refetchProductUnit,
-  } = useQuery({
-    queryKey: ["product_units", currentPage, currentSearch, sorting],
+
+  const { categoriesData } = useCategoriesQuery(openDialogFilters);
+  const { unitsData } = useUnitsQuery(openDialogFilters);
+  const [filters, setFilters] = useState<Record<string, string>>({});
+  const { data: productUnit, isLoading: isLoadingProductUnit } = useQuery({
+    queryKey: ["product_units", currentPage, currentSearch, sorting, filters],
 
     queryFn: async () => {
-      const query = supabase
+      let query = supabase
         .from("product_units")
         .select(
           `id, products_id, units_id, conversion_factor,
@@ -74,12 +103,16 @@ export default function DialogProducts({
 
       const sort = sorting[0];
 
+      if (is_base_unit) {
+        query.eq("is_base_unit", is_base_unit);
+      }
       if (sort) {
         query.order(sort.id, { ascending: sort.desc ? false : true });
       } else {
         query.order("products(name)");
       }
-      const result = await query;
+      query = applyFilterQuery(query, filters);
+      const result = await query.overrideTypes<UnitProduct[]>();
 
       if (result.error)
         toast.error("Get Product Data Failed", {
@@ -90,8 +123,7 @@ export default function DialogProducts({
     },
     enabled: !!currentId && open,
   });
-
-  const { productStock, refetchProductStock } = useProductStockQuery({
+  const { productStock } = useProductStockQuery({
     branch_location_id: branch_location_id,
     productIds: productUnit?.data?.map((r: any) => r.products_id) ?? [],
   });
@@ -157,13 +189,6 @@ export default function DialogProducts({
     onOpenChange(false);
   };
 
-  const handleRefetchProducts = () => {
-    if (branch_location_id) {
-      refetchProductStock?.();
-    }
-    refetchProductUnit?.();
-  };
-
   const columns = useMemo(() => {
     const showStockColumn = !!branch_location_id;
     return showStockColumn
@@ -192,6 +217,27 @@ export default function DialogProducts({
           <DialogFilters
             onOpenChange={setOpenDialogFilters}
             open={openDialogFilters}
+            configs={FILTER_TABLE_DIALOG_PRODUCTS.map((config) => {
+              if (config.key === "products.categories_id") {
+                return {
+                  ...config,
+                  options: categoriesData?.map((branch) => ({
+                    value: String(branch.id),
+                    label: branch.name,
+                  })),
+                };
+              } else if (config.key === "units_id") {
+                return {
+                  ...config,
+                  options: unitsData?.map((unit) => ({
+                    value: String(unit.id),
+                    label: unit.name,
+                  })),
+                };
+              }
+              return config;
+            })}
+            onChange={setFilters}
           />
           <Input
             placeholder="Search by Product Name"
@@ -202,13 +248,14 @@ export default function DialogProducts({
           totalData={totalData}
           onRowClick={handleRowClick}
           columns={columns}
-          refetch={handleRefetchProducts}
           data={data}
           totalPages={totalPages}
           currentPage={currentPage}
           onChangePage={handleChangePage}
           sorting={sorting}
           onSortingChange={setSorting}
+          tableHeader={false}
+          isLoading={isLoadingProductUnit}
         />
       </DialogContent>
     </Dialog>

@@ -8,6 +8,7 @@ export const productUnitColumns: ColumnDef<UnitProduct>[] = [
   {
     id: "products(name)",
     accessorFn: (row) => row.products.name,
+    enableHiding: false,
     header: ({ column }) => (
       <SortableHeader column={column} label="Product Name" />
     ),
