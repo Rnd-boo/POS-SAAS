@@ -167,6 +167,7 @@ export default function DialogProducts({
 
     if (!isOpen) {
       handleChangeSearch("");
+      setFilters({});
       handleChangePage(1);
     }
   };
@@ -238,6 +239,7 @@ export default function DialogProducts({
               return config;
             })}
             onChange={setFilters}
+            handleChangePage={handleChangePage}
           />
           <Input
             placeholder="Search by Product Name"

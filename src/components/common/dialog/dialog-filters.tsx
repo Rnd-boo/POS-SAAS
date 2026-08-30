@@ -31,11 +31,13 @@ export default function DialogFilters({
   onOpenChange,
   configs,
   onChange,
+  handleChangePage,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   configs?: FilterConfig[];
   onChange?: (filters: Record<string, string>) => void;
+  handleChangePage?: (currentPage: number) => void;
 }) {
   const [values, setValues] = useState<Record<string, string>>({});
 
@@ -154,6 +156,7 @@ export default function DialogFilters({
             onClick={() => {
               onChange?.(values);
               onOpenChange(false);
+              handleChangePage?.(1);
             }}
           >
             Apply
