@@ -38,6 +38,12 @@ export const MASTER_CARD = [
         description:
           "Configure user and roles to ensure secure access in system.",
       },
+      {
+        title: "User Role",
+        url: "/master-data/user-role",
+        icon: ShieldUser,
+        description: "Configure user roles to ensure secure access in system.",
+      },
     ],
   },
   {
@@ -85,7 +91,8 @@ export const MASTER_CARD = [
         title: "Point of Sale Users",
         url: "/master-data/pos-users",
         icon: UsersRound,
-        description: "Control POS user access, roles, and operational permissions.",
+        description:
+          "Control POS user access, roles, and operational permissions.",
       },
       {
         title: "Order Context",
