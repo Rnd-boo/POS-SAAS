@@ -23,3 +23,7 @@ export const parseRange = (value: string) => {
     to: new Date(to),
   };
 };
+
+export const firstDayofMonth = formatDateLocal(
+  new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+);

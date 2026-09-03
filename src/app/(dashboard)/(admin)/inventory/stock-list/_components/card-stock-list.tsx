@@ -22,7 +22,7 @@ import { useEffect, useState } from "react";
 import { stockListColumns } from "@/components/columns.tsx/stock-list-columns";
 import { ProductStock } from "@/types/inventory/stock-list";
 import { STOCK_LIST_FILTERS } from "@/constants/inventory/stock-list.constant";
-import { formatDateLocal } from "@/lib/format-date";
+import { firstDayofMonth, formatDateLocal } from "@/lib/format-date";
 
 export default function CardStockList({
   isLoading,
@@ -65,7 +65,7 @@ export default function CardStockList({
   }, [filters.branchId]);
   const handleRowClick = (row: ProductStock) => {
     window.open(
-      `/inventory/stock-overview?product_units_id=${row.products.product_units[0].id}&branchId=${filters.branchId}&locationId=${filters.locationId}&date=${formatDateLocal(new Date())}`,
+      `/inventory/stock-overview?product_units_id=${row.products.product_units[0].id}&branchId=${filters.branchId}&locationId=${filters.locationId}&date=${firstDayofMonth}_${formatDateLocal(new Date())}`,
       "_blank",
     );
   };

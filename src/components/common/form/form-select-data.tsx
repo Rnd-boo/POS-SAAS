@@ -56,7 +56,9 @@ export default function FormSelectData<T extends FieldValues>({
   }, [data, valueKey, labelKey, disabledKey]);
 
   useEffect(() => {
-    if (data && data.length > 0) {
+    if (!data) return;
+
+    if (data.length > 0) {
       const timer = setTimeout(() => {
         mountedRef.current = true;
 
@@ -72,15 +74,18 @@ export default function FormSelectData<T extends FieldValues>({
       }, 50);
 
       return () => clearTimeout(timer);
-    } else if (!isLoading) {
-      mountedRef.current = false;
-
-      const currentValue = form.getValues(name);
-      if (currentValue !== "") {
-        form.setValue(name, "" as any);
-      }
     }
-  }, [data, form, name, valueKey]);
+
+    if (isLoading) return;
+
+    const currentValue = form.getValues(name);
+    if (currentValue) {
+      return;
+    }
+
+    mountedRef.current = false;
+    form.setValue(name, "" as any);
+  }, [data, form, name, valueKey, isLoading]);
 
   return (
     <FormField
