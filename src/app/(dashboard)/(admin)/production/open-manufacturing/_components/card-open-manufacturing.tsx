@@ -18,6 +18,7 @@ import FormInput from "@/components/common/form/form-input";
 import FormOpenManufacturingInformation from "./form-open-manufacturing-information";
 import FormOpenManufacturinDetail from "./form-open-manufacturing-detail";
 import { DisplayName } from "@/constants/products/bill-of-materials.constant";
+import CreateButton from "@/components/common/create-button";
 
 export default function CardOpenManufacturing({
   form,
@@ -82,16 +83,7 @@ export default function CardOpenManufacturing({
             />
           </CardContent>
         </Card>
-        <div className="fixed bottom-0 right-0 w-full flex justify-end gap-x-2 p-4 bg-background shadow-[0_-4px_12px_rgba(0,0,0,0.08)] dark:shadow-[0_-4px_12px_rgba(0,0,0,0.6)]">
-          <Button type="button" variant="outline" onClick={() => router.back()}>
-            {type === "Detail" ? "Back" : "Cancel"}
-          </Button>
-          {type !== "Detail" && (
-            <Button type="submit" disabled={isPending}>
-              {isPending ? <Loader2 className="animate-spin" /> : type}
-            </Button>
-          )}
-        </div>
+        <CreateButton type={type} isPending={isPending} />
       </form>
     </Form>
   );

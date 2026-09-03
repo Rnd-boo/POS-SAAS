@@ -13,8 +13,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import FormInput from "@/components/common/form/form-input";
 import FormDatePicker from "@/components/common/form/form-date-picker";
@@ -26,6 +24,7 @@ import { useBranchLocationQuery } from "@/hooks/queries/use-branch-locations";
 import { StockAdjustmentForm } from "@/validations/inventory/stock-adjustment.validation";
 import FormSelectData from "@/components/common/form/form-select-data";
 import FormStockAdjustmentItems from "./form-stock-adjustment-items";
+import CreateButton from "@/components/common/create-button";
 
 export default function CardFormStockAdjusment({
   form,
@@ -199,27 +198,11 @@ export default function CardFormStockAdjusment({
             />
           </CardContent>
         </Card>
-        <div className="fixed bottom-0 right-0 w-full flex justify-end gap-x-2 p-4 bg-background shadow-[0_-4px_12px_rgba(0,0,0,0.08)] dark:shadow-[0_-4px_12px_rgba(0,0,0,0.6)]">
-          <Button type="button" variant="outline" onClick={() => router.back()}>
-            {type === "Detail" ? "Back" : "Cancel"}
-          </Button>
-          {type === "Approve" && (
-            <Button type="button" variant="destructive" onClick={handleReject}>
-              {isPending ? <Loader2 className="animate-spin" /> : "Reject"}
-            </Button>
-          )}
-          {type !== "Detail" && (
-            <Button type="submit">
-              {isPending ? (
-                <Loader2 className="animate-spin" />
-              ) : type === "Approve" ? (
-                "Approve"
-              ) : (
-                type
-              )}
-            </Button>
-          )}
-        </div>
+        <CreateButton
+          type={type}
+          isPending={isPending}
+          handleReject={handleReject}
+        />
       </form>
     </Form>
   );
