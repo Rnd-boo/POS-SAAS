@@ -15,6 +15,7 @@ import DropdownAction from "@/components/common/dropdown-action";
 import { DataTable } from "@/components/common/tanstack-table";
 import PageHeader from "@/components/common/page-header";
 import { Roles } from "@/validations/role.validation";
+import DialogDeleteUserRole from "./dialog-delete-user-role";
 
 export default function UserRoleManagement() {
   const supabase = createClient();
@@ -179,6 +180,12 @@ export default function UserRoleManagement() {
         onSortingChange={setSorting}
         refetch={refetch}
         pathname={pathname}
+      />
+      <DialogDeleteUserRole
+        open={selectedAction !== null && selectedAction.type === "delete"}
+        refetch={refetch}
+        currentData={selectedAction?.data}
+        handleChangeAction={handleChangeAction}
       />
     </div>
   );
