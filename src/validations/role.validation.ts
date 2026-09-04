@@ -13,7 +13,7 @@ export const rolePermissionSchema = z.object({
 
 export const roleFormSchema = z.object({
   name: z.string().min(1, "Branch Name is required"),
-  status: z.string().min(1, "Status is required"),
+  status: z.boolean().optional(),
   brand_id: z.number().optional(),
   role_permissions: z.array(rolePermissionSchema),
 });

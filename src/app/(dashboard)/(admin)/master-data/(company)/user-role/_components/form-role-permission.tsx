@@ -1,3 +1,5 @@
+"use client";
+
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -51,7 +53,6 @@ export default function FormRolePermission({
     return acc;
   }, {});
 
-  console.log(grouped);
   const isChecked = (permissionId: string) =>
     fields.some((f) => f.permission_id === permissionId);
 
@@ -65,7 +66,6 @@ export default function FormRolePermission({
   };
 
   if (isLoading) return <p>Loading...</p>;
-  console.log(fields);
   return (
     <div>
       <div className="grid grid-cols-3 place-items-center border p-2 bg-primary rounded-t-lg">

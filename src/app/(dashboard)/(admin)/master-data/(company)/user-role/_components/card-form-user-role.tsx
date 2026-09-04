@@ -1,3 +1,5 @@
+"use client";
+
 import FormInput from "@/components/common/form/form-input";
 import {
   Card,
@@ -35,7 +37,6 @@ export default function CardFormUserRole({
   onSubmit?: (event: FormEvent<HTMLFormElement>) => void;
 }) {
   const [open, setOpen] = useState<boolean>(false);
-  console.log(open);
   return (
     <Form {...form}>
       <form onSubmit={onSubmit} className="w-full pb-28">
