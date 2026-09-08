@@ -48,7 +48,7 @@ export function AppSidebar() {
     (brand) => String(brand.id) === currentBrandId,
   )?.name;
   const [openItem, setOpenItem] = useState<string | null>(null);
-
+  console.log(profile);
   useEffect(() => {
     // Find which section contains the current pathname
     const currentSection = SIDEBAR_MENULIST[

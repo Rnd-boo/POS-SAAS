@@ -34,6 +34,7 @@ export default function DetailUserRole() {
           `
             id,
             name,
+            status,
             role_permissions (
                 permission_id
             )
@@ -56,6 +57,7 @@ export default function DetailUserRole() {
 
   useEffect(() => {
     form.setValue("name", String(roles?.name));
+    form.setValue("status", String(roles?.status));
 
     const rolePermissions = roles?.role_permissions.map((rolePermission) => ({
       permission_id: rolePermission.permission_id,

@@ -12,6 +12,7 @@ export type UserRoleFormState = {
 export type UserRole = {
   id: number;
   name: string;
+  status?: string;
   role_permissions: {
     permission_id: string;
   }[];

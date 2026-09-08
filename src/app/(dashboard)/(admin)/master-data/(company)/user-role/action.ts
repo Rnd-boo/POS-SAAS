@@ -75,6 +75,89 @@ export async function createUserRole(
   };
 }
 
+export async function updateUserRole(
+  prevState: UserRoleFormState,
+  formData: FormData,
+) {
+  const validatedFields = roleFormSchema.safeParse({
+    name: formData.get("name"),
+    status: formData.get("status"),
+    role_permissions: JSON.parse(formData.get("role_permissions") as string),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      status: "error",
+      errors: { ...validatedFields.error.flatten().fieldErrors, _form: [] },
+    };
+  }
+
+  const supabase = await createClient();
+
+  const { currentUserId, currentClientId } = await getCurrentProfile();
+
+  const { data: roleData, error: roleError } = await supabase
+    .from("roles")
+    .update({
+      name: validatedFields.data.name,
+      status: validatedFields.data.status,
+    })
+    .eq("id", formData.get("id"))
+    .single();
+
+  if (roleError) {
+    return {
+      status: "error",
+      errors: {
+        ...prevState.errors,
+        _form: [roleError.message],
+      },
+    };
+  }
+
+  const { error: deleteRolePermissions } = await supabase
+    .from("role_permissions")
+    .delete()
+    .eq("role_id", formData.get("id"));
+
+  if (deleteRolePermissions) {
+    return {
+      status: "error",
+      errors: {
+        ...prevState.errors,
+        _form: [deleteRolePermissions.message],
+      },
+    };
+  }
+
+  const rolePermissionData = validatedFields.data.role_permissions.map(
+    (permission) => ({
+      clients_id: currentClientId,
+      client_profiles_id: currentUserId,
+      role_id: formData.get("id"),
+      permission_id: permission.permission_id,
+      brand_id: validatedFields.data.brand_id,
+    }),
+  );
+  const { error: rolePermissionError } = await supabase
+    .from("role_permissions")
+    .insert(rolePermissionData);
+
+  if (rolePermissionError) {
+    return {
+      status: "error",
+      errors: {
+        ...prevState.errors,
+        _form: [rolePermissionError.message],
+      },
+    };
+  }
+
+  return {
+    status: "success",
+  };
+}
+
 export async function deleteUserRole(
   prevState: UserRoleFormState,
   formData: FormData,

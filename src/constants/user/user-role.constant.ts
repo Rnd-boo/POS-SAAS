@@ -1,6 +1,6 @@
 export const INITIAL_ROLE = {
   name: "",
-  status: true,
+  status: "",
   role_permission: [
     {
       role_id: "",
