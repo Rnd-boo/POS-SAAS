@@ -53,17 +53,21 @@ export default function CardFormUserRole({
               label="Role Name"
               name="name"
               className="w-full mr-2"
+              isLoading={isLoading}
+              disabled={type === "Detail"}
             />
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button onClick={() => setOpen(true)} type="button">
-                  <ClipboardPaste />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Import from existing Role</p>
-              </TooltipContent>
-            </Tooltip>
+            {type !== "Detail" && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button onClick={() => setOpen(true)} type="button">
+                    <ClipboardPaste />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Import from existing Role</p>
+                </TooltipContent>
+              </Tooltip>
+            )}
           </CardContent>
         </Card>
         <Card>
@@ -71,7 +75,7 @@ export default function CardFormUserRole({
             <FormRolePermission form={form} type={type} />
           </CardContent>
         </Card>
-        <CreateButton type="Create" isPending={isPending} />
+        <CreateButton type={type} isPending={isPending} />
       </form>
       <DialogImportRole open={open} setOpen={setOpen} />
     </Form>

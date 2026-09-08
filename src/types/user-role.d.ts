@@ -8,3 +8,11 @@ export type UserRoleFormState = {
     _form?: string[];
   };
 };
+
+export type UserRole = {
+  id: number;
+  name: string;
+  role_permissions: {
+    permission_id: string;
+  }[];
+};
