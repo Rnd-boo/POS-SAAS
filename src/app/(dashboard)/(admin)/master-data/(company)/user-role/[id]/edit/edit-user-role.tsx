@@ -83,6 +83,7 @@ export default function EditUserRole() {
       }
     });
     formData.append("id", String(RoleId));
+    formData.append("brand_id", String(currentBrandId));
 
     startTransition(() => {
       updateUserRoleAction(formData);
