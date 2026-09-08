@@ -1,9 +1,9 @@
 import { startTransition, useActionState, useEffect } from "react";
 import { toast } from "sonner";
-import DialogDelete from "@/components/common/dialog/dialog-delete";
 import { deleteTableMap } from "../../action";
 import { INITIAL_STATE_TABLE_MAP } from "@/constants/pos/table.constant";
 import { TableMap } from "@/validations/pos/table.validation";
+import { AlertDialogDelete } from "@/components/common/dialog/dialog-delete";
 
 export default function DialogDeleteTableMap({
   open,
@@ -41,12 +41,13 @@ export default function DialogDeleteTableMap({
   }, [deleteTableMapState]);
 
   return (
-    <DialogDelete
+    <AlertDialogDelete
       open={open}
       onOpenChange={handleChangeAction}
       isLoading={isPendingDeleteTableMap}
       onSubmit={onSubmit}
       title="Table Map"
+      name={currentData?.name as string}
     />
   );
 }

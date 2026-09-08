@@ -1,9 +1,9 @@
 import { startTransition, useActionState, useEffect } from "react";
 import { toast } from "sonner";
-import DialogDelete from "@/components/common/dialog/dialog-delete";
 import { OpenManufacturing } from "@/validations/production/open-manufacturing.validation";
 import { deleteOpenManufacturing } from "../action";
 import { INITIAL_STATE_OPEN_MANUFACTURING } from "@/constants/production/open-manufacturing.constant";
+import { AlertDialogDelete } from "@/components/common/dialog/dialog-delete";
 
 export default function DialogDeleteOpenManufacturing({
   open,
@@ -44,12 +44,13 @@ export default function DialogDeleteOpenManufacturing({
   }, [deleteOpenManufacturingState]);
 
   return (
-    <DialogDelete
+    <AlertDialogDelete
       open={open}
       onOpenChange={handleChangeAction}
       isLoading={isPendingDeleteOpenManufacturing}
       onSubmit={onSubmit}
       title="Open Manufacturing"
+      name={currentData?.id as string}
     />
   );
 }

@@ -1,9 +1,9 @@
 import { startTransition, useActionState, useEffect } from "react";
 import { toast } from "sonner";
-import DialogDelete from "@/components/common/dialog/dialog-delete";
 import { INITIAL_STATE_BRANCH } from "@/constants/branch.constant";
 import { Branch } from "@/validations/branch.validation";
 import { deleteBranch } from "../action";
+import { AlertDialogDelete } from "@/components/common/dialog/dialog-delete";
 
 export default function DialogDeleteBranch({
   open,
@@ -41,12 +41,13 @@ export default function DialogDeleteBranch({
   }, [deleteBranchState]);
 
   return (
-    <DialogDelete
+    <AlertDialogDelete
       open={open}
       onOpenChange={handleChangeAction}
       isLoading={isPendingDeleteBranch}
       onSubmit={onSubmit}
       title="Branch"
+      name={currentData?.name as string}
     />
   );
 }

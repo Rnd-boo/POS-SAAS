@@ -1,9 +1,9 @@
 import { startTransition, useActionState, useEffect } from "react";
 import { toast } from "sonner";
-import DialogDelete from "@/components/common/dialog/dialog-delete";
 import { INITIAL_STATE_PRODUCTION_ORDER } from "@/constants/production/production-order.constant";
 import { ProductionOrder } from "@/validations/production/production-order.validation";
 import { deleteProductionOrder } from "../action";
+import { AlertDialogDelete } from "@/components/common/dialog/dialog-delete";
 
 export default function DialogDeleteProductionOrder({
   open,
@@ -44,12 +44,13 @@ export default function DialogDeleteProductionOrder({
   }, [deleteProductionOrderState]);
 
   return (
-    <DialogDelete
+    <AlertDialogDelete
       open={open}
       onOpenChange={handleChangeAction}
       isLoading={isPendingDeleteProductionOrder}
       onSubmit={onSubmit}
       title="Production Order"
+      name={currentData?.id as string}
     />
   );
 }

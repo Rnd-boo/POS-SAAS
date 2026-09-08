@@ -1,11 +1,11 @@
 "use client";
 
 import { toast } from "sonner";
-import DialogDelete from "@/components/common/dialog/dialog-delete";
 import { OrderContext } from "@/validations/pos/order-context.validation";
 import { deleteOrderContext } from "../action";
 import { INITIAL_STATE_ORDER_CONTEXT } from "@/constants/pos/order-context";
 import { startTransition, useActionState, useEffect } from "react";
+import { AlertDialogDelete } from "@/components/common/dialog/dialog-delete";
 
 export default function DialogDeleteOrderContext({
   open,
@@ -46,12 +46,13 @@ export default function DialogDeleteOrderContext({
   }, [deleteOrderContextState]);
 
   return (
-    <DialogDelete
+    <AlertDialogDelete
       open={open}
       onOpenChange={handleChangeAction}
       isLoading={isPendingDeleteOrderContext}
       onSubmit={onSubmit}
       title="Order Context"
+      name={currentData?.name as string}
     />
   );
 }

@@ -1,9 +1,9 @@
 import { startTransition, useActionState, useEffect } from "react";
 import { toast } from "sonner";
-import DialogDelete from "@/components/common/dialog/dialog-delete";
 import { INITIAL_STATE_STOCK_ADJUSTMENT } from "@/constants/inventory/stock-adjustment.constant";
 import { StockAdjustment } from "@/validations/inventory/stock-adjustment.validation";
 import { deleteStockAdjustment } from "../action";
+import { AlertDialogDelete } from "@/components/common/dialog/dialog-delete";
 
 export default function DialogDeleteStockAdjustment({
   open,
@@ -44,12 +44,13 @@ export default function DialogDeleteStockAdjustment({
   }, [deleteStockAdjustmentState]);
 
   return (
-    <DialogDelete
+    <AlertDialogDelete
       open={open}
       onOpenChange={handleChangeAction}
       isLoading={isPendingDeleteStockAdjustment}
       onSubmit={onSubmit}
       title="Stock Adjustment"
+      name={currentData?.id as string}
     />
   );
 }

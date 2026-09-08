@@ -1,9 +1,9 @@
 import { startTransition, useActionState, useEffect } from "react";
 import { toast } from "sonner";
-import DialogDelete from "@/components/common/dialog/dialog-delete";
 import { deleteBrand } from "../action";
 import { INITIAL_STATE_BRAND } from "@/constants/brand.constant";
 import { Brand } from "@/validations/brand-validation";
+import { AlertDialogDelete } from "@/components/common/dialog/dialog-delete";
 
 export default function DialogDeleteBrand({
   open,
@@ -41,12 +41,13 @@ export default function DialogDeleteBrand({
   }, [deleteBrandState]);
 
   return (
-    <DialogDelete
+    <AlertDialogDelete
       open={open}
       onOpenChange={handleChangeAction}
       isLoading={isPendingDeleteBrand}
       onSubmit={onSubmit}
       title="Brand"
+      name={currentData?.name as string}
     />
   );
 }

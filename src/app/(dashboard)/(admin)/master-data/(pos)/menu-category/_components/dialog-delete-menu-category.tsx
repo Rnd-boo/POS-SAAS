@@ -1,11 +1,11 @@
 "use client";
 
 import { toast } from "sonner";
-import DialogDelete from "@/components/common/dialog/dialog-delete";
 import { INITIAL_STATE_ORDER_CONTEXT } from "@/constants/pos/order-context";
 import { startTransition, useActionState, useEffect } from "react";
 import { MenuCategory } from "@/validations/pos/menu-category.validation";
 import { deleteMenuCategory } from "../action";
+import { AlertDialogDelete } from "@/components/common/dialog/dialog-delete";
 
 export default function DialogDeleteMenuCategory({
   open,
@@ -46,12 +46,13 @@ export default function DialogDeleteMenuCategory({
   }, [deleteMenuCategoryState]);
 
   return (
-    <DialogDelete
+    <AlertDialogDelete
       open={open}
       onOpenChange={handleChangeAction}
       isLoading={isPendingDeleteMenuCategory}
       onSubmit={onSubmit}
       title="Menu Category"
+      name={currentData?.name as string}
     />
   );
 }

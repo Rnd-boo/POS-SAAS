@@ -1,9 +1,9 @@
 import { startTransition, useActionState, useEffect } from "react";
 import { toast } from "sonner";
-import DialogDelete from "@/components/common/dialog/dialog-delete";
 import { deleteProductionProcess } from "../action";
 import { INITIAL_STATE_PRODUCTION_PROCESS } from "@/constants/production/production-process.constant";
 import { ProductionProcess } from "@/validations/production/production-process.validation";
+import { AlertDialogDelete } from "@/components/common/dialog/dialog-delete";
 
 export default function DialogDeleteProductionProcess({
   open,
@@ -44,12 +44,13 @@ export default function DialogDeleteProductionProcess({
   }, [deleteProductionProcessState]);
 
   return (
-    <DialogDelete
+    <AlertDialogDelete
       open={open}
       onOpenChange={handleChangeAction}
       isLoading={isPendingDeleteProductionProcess}
       onSubmit={onSubmit}
       title="Production Process"
+      name={currentData?.id as string}
     />
   );
 }

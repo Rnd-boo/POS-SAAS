@@ -1,9 +1,9 @@
 import { startTransition, useActionState, useEffect } from "react";
 import { toast } from "sonner";
-import DialogDelete from "@/components/common/dialog/dialog-delete";
 import { INITIAL_STATE_BOM } from "@/constants/products/bill-of-materials.constant";
 import { deleteBillOfMaterials } from "../action";
 import { BillOfMaterials } from "@/validations/products/bill-of-materials-validation";
+import { AlertDialogDelete } from "@/components/common/dialog/dialog-delete";
 
 export default function DialogDeleteBillOfMaterials({
   open,
@@ -43,12 +43,13 @@ export default function DialogDeleteBillOfMaterials({
   }, [deleteBOMState]);
 
   return (
-    <DialogDelete
+    <AlertDialogDelete
       open={open}
       onOpenChange={handleChangeAction}
       isLoading={isPendingDeleteBOM}
       onSubmit={onSubmit}
       title="Bill of materials"
+      name={currentData?.name as string}
     />
   );
 }

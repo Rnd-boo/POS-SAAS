@@ -1,49 +1,60 @@
-import { Loader2 } from "lucide-react";
-import { Button } from "../../ui/button";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "../../ui/dialog";
+import { Loader2, Trash2Icon } from "lucide-react";
 
-export default function DialogDelete({
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogMedia,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+
+export function AlertDialogDelete({
   open,
   onOpenChange,
   title,
   onSubmit,
   isLoading,
+  name,
 }: {
   open: boolean;
   isLoading: boolean;
   onOpenChange: (open: boolean) => void;
   title: string;
   onSubmit: () => void;
+  name: string;
 }) {
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
-        <form className="grid gap-6">
-          <DialogHeader>
-            <DialogTitle>Delete {title}</DialogTitle>
-            <DialogDescription>
-              Are you sure want to delete this
-              <span className="lowercase"> {title}</span>
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
-            </DialogClose>
-            <Button formAction={onSubmit} variant="destructive">
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
+      <AlertDialogContent size="sm">
+        <form>
+          <AlertDialogHeader className="mb-4">
+            <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
+              <Trash2Icon />
+            </AlertDialogMedia>
+            <AlertDialogTitle>Delete {title}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this{" "}
+              <span className="font-medium">{name}</span>
+              <span className="lowercase"> {title}</span>? <br />
+              This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel variant="outline">Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              formAction={onSubmit}
+              disabled={isLoading}
+            >
               {isLoading ? <Loader2 className="animate-spin" /> : "Delete"}
-            </Button>
-          </DialogFooter>
+            </AlertDialogAction>
+          </AlertDialogFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }

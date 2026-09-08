@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import { deleteCategory } from "../action";
 import { Category } from "@/validations/products/category-validation";
 import { INITIAL_STATE_CATEGORY } from "@/constants/products/category.constant";
-import DialogDelete from "@/components/common/dialog/dialog-delete";
+import { AlertDialogDelete } from "@/components/common/dialog/dialog-delete";
 
 export default function DialogDeleteCategory({
   open,
@@ -41,12 +41,13 @@ export default function DialogDeleteCategory({
   }, [deleteCategoryState]);
 
   return (
-    <DialogDelete
+    <AlertDialogDelete
       open={open}
       onOpenChange={handleChangeAction}
       isLoading={isPendingDeleteCategory}
       onSubmit={onSubmit}
       title="Category"
+      name={currentData?.name as string}
     />
   );
 }
