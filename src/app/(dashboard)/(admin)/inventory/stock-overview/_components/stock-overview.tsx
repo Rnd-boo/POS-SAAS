@@ -124,7 +124,6 @@ export default function StockOverview() {
         filters={filters}
         onOpenProductPicker={handleOpenProductPicker}
       />
-
       <DialogProducts
         form={form}
         is_base_unit={true}

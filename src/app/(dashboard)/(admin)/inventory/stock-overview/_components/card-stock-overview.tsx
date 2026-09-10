@@ -22,6 +22,7 @@ import { StockOverviewForm } from "@/validations/inventory/stock-overview.valida
 import { UnitProduct } from "@/types/products/product-dialog";
 import { useBranchQuery } from "@/hooks/queries/use-branches";
 import { useBranchLocationQuery } from "@/hooks/queries/use-branch-locations";
+import { useEffect } from "react";
 
 type CardStockOverviewProps = {
   form: UseFormReturn<StockOverviewForm>;
@@ -47,6 +48,12 @@ export default function CardStockOverview({
   const { branchLocations } = useBranchLocationQuery({
     branch_id: filters.branchId ?? "",
   });
+  const watchedBranchId = form.watch("branch_id");
+  useEffect(() => {
+    if (watchedBranchId !== filters.branchId)
+      form.setValue("branch_location_id", "");
+  }, [watchedBranchId, filters.branchId]);
+
   return (
     <Card className="w-full">
       <Form {...form}>
@@ -122,7 +129,6 @@ export default function CardStockOverview({
               label="Branch"
               name="branch_id"
             />
-
             <FormSelectData
               form={form}
               name="branch_location_id"
@@ -130,7 +136,6 @@ export default function CardStockOverview({
               label="Location"
               required
             />
-
             <Button type="submit" className="w-full">
               <Search />
               Search

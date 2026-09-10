@@ -65,7 +65,7 @@ export default function CardStockList({
   }, [filters.branchId]);
   const handleRowClick = (row: ProductStock) => {
     window.open(
-      `/inventory/stock-overview?product_units_id=${row.products.product_units[0].id}&branchId=${filters.branchId}&locationId=${filters.locationId}&date=${firstDayofMonth}_${formatDateLocal(new Date())}`,
+      `/inventory/stock-overview?product_units_id=${row.products.product_units[0].id}&date=${firstDayofMonth}_${formatDateLocal(new Date())}&branchId=${filters.branchId}&locationId=${filters.locationId}`,
       "_blank",
     );
   };
