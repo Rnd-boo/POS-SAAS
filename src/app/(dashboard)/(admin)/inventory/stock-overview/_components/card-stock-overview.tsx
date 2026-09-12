@@ -2,7 +2,6 @@
 
 import { Search } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
@@ -33,9 +32,8 @@ type CardStockOverviewProps = {
     locationId?: string | null;
     date?: string | null;
   };
-  branches?: Array<{ id: string; name: string }>;
-  branchLocations?: Array<{ id: string; name: string }>;
   onOpenProductPicker: () => void;
+  onSearch: () => void;
 };
 
 export default function CardStockOverview({
@@ -43,6 +41,7 @@ export default function CardStockOverview({
   selectedProduct,
   filters,
   onOpenProductPicker,
+  onSearch,
 }: CardStockOverviewProps) {
   const { data: branches } = useBranchQuery();
   const { branchLocations } = useBranchLocationQuery({
@@ -60,6 +59,7 @@ export default function CardStockOverview({
         <form
           onSubmit={(event) => {
             event.preventDefault();
+            onSearch();
           }}
         >
           <CardHeader className="text-2xl font-semibold">

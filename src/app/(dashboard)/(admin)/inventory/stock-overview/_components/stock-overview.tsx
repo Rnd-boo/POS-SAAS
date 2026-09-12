@@ -8,7 +8,7 @@ import useDataTable from "@/hooks/use-data-table";
 import { toast } from "sonner";
 import { useEffect, useRef, useState } from "react";
 import { useQueryStates } from "nuqs";
-import { stockListFilterParsers } from "@/constants/inventory/stock-overview.constant";
+import { STOCK_LIST_FILTER_PARSERS } from "@/constants/inventory/stock-overview.constant";
 import DialogProducts from "@/components/common/dialog/dialog-products";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,9 +18,13 @@ import {
 } from "@/validations/inventory/stock-overview.validation";
 import { UnitProduct } from "@/types/products/product-dialog";
 import CardStockOverview from "./card-stock-overview";
+import { DataTable } from "@/components/common/tanstack-table";
+import { StockMovement } from "@/types/inventory/stock-movement";
+import { stockOverviewColumns } from "@/components/columns.tsx/stock-overview-columns";
+import { formatDateLocal, parseRange } from "@/lib/format-date";
 
 export default function StockOverview() {
-  const [filters, setFilters] = useQueryStates(stockListFilterParsers);
+  const [filters, setFilters] = useQueryStates(STOCK_LIST_FILTER_PARSERS);
 
   const [openDialog, setOpenDialog] = useState(false);
   const [activeMapping, setActiveMapping] = useState<Record<string, string>>(
@@ -40,16 +44,11 @@ export default function StockOverview() {
     },
   });
 
-  const watchedFormValues = form.watch([
-    "branch_id",
-    "branch_location_id",
-    "product_units_id",
-    "date",
-  ]);
-
   const supabase = createClient();
   const currentId = useAuthStore((state) => state.profile?.clients);
   const currentBrandId = useBrandStore((state) => state.currentBrandId);
+  const { currentPage, handleChangePage } = useDataTable();
+
   const { data: defaultProduct } = useQuery({
     queryKey: ["stock-overview-default-product", filters.product_units_id],
     queryFn: async () => {
@@ -94,18 +93,17 @@ export default function StockOverview() {
     }
   }, [defaultProduct, selectedProduct]);
 
-  useEffect(() => {
-    const [branchId, branchLocationId, productUnitsId, date] =
-      watchedFormValues;
+  const handleSearch = () => {
+    const values = form.getValues();
 
     setFilters((prev) => ({
       ...prev,
-      branchId: branchId || null,
-      locationId: branchLocationId || null,
-      product_units_id: productUnitsId || null,
-      date: date || null,
+      branchId: values.branch_id || null,
+      locationId: values.branch_location_id || null,
+      product_units_id: values.product_units_id || null,
+      date: values.date || null,
     }));
-  }, [watchedFormValues, setFilters]);
+  };
 
   const handleOpenProductPicker = () => {
     setActiveMapping({
@@ -115,7 +113,48 @@ export default function StockOverview() {
     });
     setOpenDialog(true);
   };
+  const { from, to } = parseRange(filters.date ?? "") ?? {};
 
+  const { data: stockMovementData, isLoading } = useQuery({
+    queryKey: ["stock-movements", filters, currentPage],
+    queryFn: async () => {
+      const query = supabase
+        .from("stock_movements")
+        .select(
+          "products!inner(name, upc), product_units(units(name)), branch_location(name), reference_type, qty_base, direction, reference_id, movement_date",
+          {
+            count: "exact",
+          },
+        )
+        .eq("clients_id", currentId)
+        .eq("product_units_id", filters.product_units_id)
+        .eq("branch_location_id", filters.locationId)
+        .gte(
+          "movement_date",
+          formatDateLocal(
+            from ??
+              new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+          ),
+        )
+        .lte("movement_date", formatDateLocal(to ?? new Date()))
+        .range((currentPage - 1) * 20, currentPage * 20 - 1)
+        .eq("brand_id", currentBrandId);
+
+      const result = await query.overrideTypes<StockMovement[]>();
+
+      if (result.error) {
+        toast.error("Get Movement Data Failed", {
+          description: result.error.message,
+        });
+      }
+      return {
+        data: result.data ?? [],
+        totalPages: Math.ceil((result.count ?? 0) / 10),
+        totalData: result.count ?? 0,
+      };
+    },
+    enabled: !!filters.product_units_id && !!currentId && !!currentBrandId,
+  });
   return (
     <>
       <CardStockOverview
@@ -123,6 +162,17 @@ export default function StockOverview() {
         selectedProduct={selectedProduct}
         filters={filters}
         onOpenProductPicker={handleOpenProductPicker}
+        onSearch={handleSearch}
+      />
+      <DataTable
+        data={stockMovementData?.data || []}
+        columns={stockOverviewColumns(currentPage)}
+        totalPages={stockMovementData?.totalPages || 0}
+        currentPage={currentPage}
+        onChangePage={handleChangePage}
+        tableHeader={false}
+        isLoading={isLoading}
+        totalData={stockMovementData?.totalData}
       />
       <DialogProducts
         form={form}

@@ -133,7 +133,6 @@ export async function createOpenManufacturing(
     p_branch_location_id: validatedFields.data.destination_branch_location_id,
     p_product_units_id: validatedFields.data.product_units_id,
 
-    p_movement_type: "OPEN MANUFACTURING",
     p_direction: "IN",
 
     p_qty: validatedFields.data.qty,
@@ -153,7 +152,6 @@ export async function createOpenManufacturing(
       p_branch_location_id: validatedFields.data.origin_branch_location_id,
       p_product_units_id: om.product_units_id,
 
-      p_movement_type: "OPEN MANUFACTURING",
       p_direction: "OUT",
 
       p_qty: om.qty,
@@ -416,7 +414,6 @@ export async function updateOpenManufacturing(
     p_products_id: validatedFields.data.products_id,
     p_branch_location_id: validatedFields.data.destination_branch_location_id,
     p_product_units_id: validatedFields.data.product_units_id,
-    p_movement_type: "OPEN MANUFACTURING",
     p_direction: "IN",
     p_qty: validatedFields.data.qty,
     p_reference_type: "OPEN MANUFACTURING",
@@ -431,7 +428,6 @@ export async function updateOpenManufacturing(
       p_products_id: om.products_id,
       p_branch_location_id: validatedFields.data.origin_branch_location_id,
       p_product_units_id: om.product_units_id,
-      p_movement_type: "OPEN MANUFACTURING",
       p_direction: "OUT",
       p_qty: om.qty,
       p_reference_type: "OPEN MANUFACTURING",
