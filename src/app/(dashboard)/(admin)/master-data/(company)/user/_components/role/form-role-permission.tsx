@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { createClient } from "@/lib/supabase/client";
 import { useBrandStore } from "@/stores/brand-store";
-import { RolesForm } from "@/validations/role.validation";
+import { RolesForm } from "@/validations/user/role.validation";
 import { useQuery } from "@tanstack/react-query";
 import { useFieldArray, UseFormReturn } from "react-hook-form";
 import { toast } from "sonner";

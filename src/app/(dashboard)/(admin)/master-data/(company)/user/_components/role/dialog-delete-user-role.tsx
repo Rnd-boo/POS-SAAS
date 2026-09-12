@@ -1,9 +1,9 @@
 import { startTransition, useActionState, useEffect } from "react";
 import { toast } from "sonner";
-import { Roles } from "@/validations/role.validation";
+import { Roles } from "@/validations/user/role.validation";
 import { INITIAL_STATE_ROLE } from "@/constants/user/user-role.constant";
 import { AlertDialogDelete } from "@/components/common/dialog/dialog-delete";
-import { deleteUserRole } from "../action";
+import { deleteUserRole } from "../../role/action";
 
 export default function DialogDeleteUserRole({
   open,

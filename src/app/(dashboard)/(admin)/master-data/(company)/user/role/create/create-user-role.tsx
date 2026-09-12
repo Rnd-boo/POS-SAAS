@@ -8,12 +8,12 @@ import { useQueryClient } from "@tanstack/react-query";
 import { startTransition, useActionState, useEffect } from "react";
 import { toast } from "sonner";
 import { useBrandStore } from "@/stores/brand-store";
-import { roleFormSchema, RolesForm } from "@/validations/role.validation";
+import { roleFormSchema, RolesForm } from "@/validations/user/role.validation";
 import {
   INITIAL_ROLE,
   INITIAL_STATE_ROLE,
 } from "@/constants/user/user-role.constant";
-import CardFormUserRole from "../_components/card-form-user-role";
+import CardFormUserRole from "../../_components/role/card-form-user-role";
 import { createUserRole } from "../action";
 
 export default function CreateUserRole() {

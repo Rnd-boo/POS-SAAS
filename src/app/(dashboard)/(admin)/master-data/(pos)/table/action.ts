@@ -5,13 +5,12 @@ import { createClient } from "@/lib/supabase/server";
 import { TableLayoutFormState, TableMapFormState } from "@/types/pos/table";
 import {
   tableLayoutFormSchema,
-  tableLayoutSchema,
   tableMapSchema,
 } from "@/validations/pos/table.validation";
 
 export async function createTableMap(
   prevState: TableMapFormState,
-  formData: FormData
+  formData: FormData,
 ) {
   const validatedFields = tableMapSchema.safeParse({
     name: formData.get("name"),
@@ -57,7 +56,7 @@ export async function createTableMap(
 
 export async function updateTableMap(
   prevState: TableMapFormState,
-  formData: FormData
+  formData: FormData,
 ) {
   const validatedFields = tableMapSchema.safeParse({
     name: formData.get("name"),
@@ -103,7 +102,7 @@ export async function updateTableMap(
 
 export async function deleteTableMap(
   prevState: TableMapFormState,
-  formData: FormData
+  formData: FormData,
 ) {
   const supabase = await createClient();
 
@@ -127,7 +126,7 @@ export async function deleteTableMap(
 
 export async function tablesAction(
   prevState: TableLayoutFormState,
-  formData: FormData
+  formData: FormData,
 ) {
   const validatedFields = tableLayoutFormSchema.safeParse({
     tables: JSON.parse(formData.get("tables") as string),

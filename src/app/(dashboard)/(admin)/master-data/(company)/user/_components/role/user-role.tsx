@@ -14,8 +14,9 @@ import { ColumnDef, SortingState } from "@tanstack/react-table";
 import DropdownAction from "@/components/common/dropdown-action";
 import { DataTable } from "@/components/common/tanstack-table";
 import PageHeader from "@/components/common/page-header";
-import { Roles } from "@/validations/role.validation";
+import { Roles } from "@/validations/user/role.validation";
 import DialogDeleteUserRole from "./dialog-delete-user-role";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function UserRoleManagement() {
   const supabase = createClient();
@@ -130,7 +131,7 @@ export default function UserRoleManagement() {
                   </span>
                 ),
                 action: () => {
-                  handleClickAction(`${row?.original.id}/edit`);
+                  handleClickAction(`role/${row?.original.id}/edit`);
                 },
               },
               {
@@ -162,31 +163,32 @@ export default function UserRoleManagement() {
   }, [roles]);
 
   return (
-    <div className="w-full">
-      <PageHeader
-        title="branch"
-        pathname={pathname}
-        handleChangeSearch={handleChangeSearch}
-        placeholder="Role Name"
-      />
-      <DataTable
-        data={data}
-        columns={columns}
-        totalPages={totalPages}
-        currentPage={currentPage}
-        onChangePage={handleChangePage}
-        totalData={totalData}
-        sorting={sorting}
-        onSortingChange={setSorting}
-        refetch={refetch}
-        pathname={pathname}
-      />
-      <DialogDeleteUserRole
-        open={selectedAction !== null && selectedAction.type === "delete"}
-        refetch={refetch}
-        currentData={selectedAction?.data}
-        handleChangeAction={handleChangeAction}
-      />
-    </div>
+    <Card className="w-full pb-0">
+      <CardContent>
+        <PageHeader
+          pathname={`${pathname}/role`}
+          handleChangeSearch={handleChangeSearch}
+          placeholder="Role Name"
+        />
+        <DataTable
+          data={data}
+          columns={columns}
+          totalPages={totalPages}
+          currentPage={currentPage}
+          onChangePage={handleChangePage}
+          totalData={totalData}
+          sorting={sorting}
+          onSortingChange={setSorting}
+          refetch={refetch}
+          pathname={`${pathname}/role`}
+        />
+        <DialogDeleteUserRole
+          open={selectedAction !== null && selectedAction.type === "delete"}
+          refetch={refetch}
+          currentData={selectedAction?.data}
+          handleChangeAction={handleChangeAction}
+        />
+      </CardContent>
+    </Card>
   );
 }
