@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import UserManagement from "./_components/user/user";
 import UserRoleManagement from "./_components/role/user-role";
 import { useState } from "react";
+
 export default function TableManagement() {
   let initialTab = "user";
   const [value, setValue] = useState(initialTab);

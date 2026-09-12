@@ -15,7 +15,10 @@ export const userBranchSchema = z.object({
 });
 
 export const userFormSchema = z.object({
-  name: z.string().min(1, "Branch Name is required"),
+  name: z.string().min(1, "Name is required"),
+  username: z.string().min(1, "Username is required"),
+  password_hash: z.string().min(1, "Password is required"),
+  roles_id: z.string().min(1, "Roles is required"),
   status: z.string().optional(),
   brand_id: z.number().optional(),
   user_branches: z.array(userBranchSchema),
