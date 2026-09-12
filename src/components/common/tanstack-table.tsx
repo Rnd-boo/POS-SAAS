@@ -233,7 +233,7 @@ export function DataTable<TData extends { id: string | number }>({
                         "bg-background group-hover:bg-[#f0f0f0] dark:group-hover:bg-[#1c1c1c] transition-colors",
                       cell.column.getIsPinned() === "right" &&
                         cell.column.id === "actions" &&
-                        "text-center",
+                        "text-center w-18",
                     )}
                     style={{
                       boxShadow:
