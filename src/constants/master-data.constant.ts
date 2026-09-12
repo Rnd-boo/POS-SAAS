@@ -38,12 +38,6 @@ export const MASTER_CARD = [
         description:
           "Configure user and roles to ensure secure access in system.",
       },
-      {
-        title: "User Role",
-        url: "/master-data/user-role",
-        icon: ShieldUser,
-        description: "Configure user roles to ensure secure access in system.",
-      },
     ],
   },
   {

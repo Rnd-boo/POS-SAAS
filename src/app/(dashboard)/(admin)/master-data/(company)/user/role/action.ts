@@ -2,7 +2,7 @@
 import { getCurrentProfile } from "@/lib/get-current-profile";
 import { createClient } from "@/lib/supabase/server";
 import { UserRoleFormState } from "@/types/user-role";
-import { roleFormSchema } from "@/validations/role.validation";
+import { roleFormSchema } from "@/validations/user/role.validation";
 
 export async function createUserRole(
   prevState: UserRoleFormState,

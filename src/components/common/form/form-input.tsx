@@ -9,6 +9,7 @@ import {
 import { Input } from "../../ui/input";
 import { Textarea } from "../../ui/textarea";
 import { Skeleton } from "../../ui/skeleton";
+import { ReactNode } from "react";
 
 export default function FormInput<T extends FieldValues>({
   form,
@@ -21,6 +22,7 @@ export default function FormInput<T extends FieldValues>({
   isLoading,
   readOnly = false,
   required,
+  tooltip,
   onChange,
 }: {
   form: UseFormReturn<T>;
@@ -33,6 +35,7 @@ export default function FormInput<T extends FieldValues>({
   isLoading?: boolean;
   readOnly?: boolean;
   required?: boolean;
+  tooltip?: ReactNode;
   onChange?: (value: string) => void;
 }) {
   return (
@@ -42,7 +45,8 @@ export default function FormInput<T extends FieldValues>({
       render={({ field: { ...rest } }) => (
         <FormItem className={className}>
           <FormLabel>
-            {label} {required && <span className="text-destructive">*</span>}
+            {label} {required && <span className="text-destructive">*</span>}{" "}
+            {tooltip}
           </FormLabel>
           <FormControl>
             {isLoading ? (

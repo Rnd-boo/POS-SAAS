@@ -9,13 +9,13 @@ import { useParams, useRouter } from "next/navigation";
 import { startTransition, useActionState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { roleFormSchema, RolesForm } from "@/validations/role.validation";
+import { roleFormSchema, RolesForm } from "@/validations/user/role.validation";
 import {
   INITIAL_ROLE,
   INITIAL_STATE_ROLE,
 } from "@/constants/user/user-role.constant";
 import { UserRole } from "@/types/user-role";
-import CardFormUserRole from "../../_components/card-form-user-role";
+import CardFormUserRole from "../../../_components/role/card-form-user-role";
 import { updateUserRole } from "../../action";
 
 export default function EditUserRole() {
@@ -83,6 +83,7 @@ export default function EditUserRole() {
       }
     });
     formData.append("id", String(RoleId));
+    formData.append("brand_id", String(currentBrandId));
 
     startTransition(() => {
       updateUserRoleAction(formData);

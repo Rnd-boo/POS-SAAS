@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
-import { RolesForm } from "@/validations/role.validation";
+import { RolesForm } from "@/validations/user/role.validation";
 import { FormEvent, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import FormRolePermission from "./form-role-permission";
@@ -116,7 +116,7 @@ export default function CardFormUserRole({
         </Card>
         <CreateButton type={type} isPending={isPending} />
       </form>
-      <DialogImportRole open={open} setOpen={setOpen} />
+      <DialogImportRole open={open} setOpen={setOpen} form={form} />
     </Form>
   );
 }

@@ -3,9 +3,10 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Skeleton } from "@/components/ui/skeleton";
 import { createClient } from "@/lib/supabase/client";
 import { useBrandStore } from "@/stores/brand-store";
-import { RolesForm } from "@/validations/role.validation";
+import { RolesForm } from "@/validations/user/role.validation";
 import { useQuery } from "@tanstack/react-query";
 import { useFieldArray, UseFormReturn } from "react-hook-form";
 import { toast } from "sonner";
@@ -41,6 +42,7 @@ export default function FormRolePermission({
     },
   });
 
+  //Group permission into module -> resource -> ...permission
   const grouped = (permissions ?? []).reduce<
     Record<
       string,
@@ -65,7 +67,47 @@ export default function FormRolePermission({
     }
   };
 
-  if (isLoading) return <p>Loading...</p>;
+  //Skeleton UI
+  if (isLoading)
+    return (
+      <div>
+        <div className="grid grid-cols-3 place-items-center border p-2 bg-primary rounded-t-lg">
+          <Label>Resource</Label>
+          <Label className="col-span-2">Actions</Label>
+        </div>
+        <div className="grid grid-cols-[3fr_1fr_1fr_1fr_1fr_1fr] gap-2 border p-2">
+          <Skeleton className="h-4" />
+          {ACTIONS.map((a) => (
+            <Label key={a} className="capitalize mx-auto">
+              {a}
+            </Label>
+          ))}
+        </div>
+        <div>
+          <div className="grid grid-cols-[3fr_1fr_1fr_1fr_1fr_1fr] gap-2 items-center border p-2">
+            <Skeleton className="h-8 w-full" />
+            {Array.from({ length: 5 }).map((_, index) => (
+              <div
+                className="flex items-center gap-2 justify-center"
+                key={index}
+              >
+                <Skeleton className="w-4 h-4 rounded-xs" />
+              </div>
+            ))}
+            <Skeleton className="h-8 w-full" />
+            {Array.from({ length: 5 }).map((_, index) => (
+              <div
+                className="flex items-center gap-2 justify-center"
+                key={index}
+              >
+                <Skeleton className="w-4 h-4 rounded-xs" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+
   return (
     <div>
       <div className="grid grid-cols-3 place-items-center border p-2 bg-primary rounded-t-lg">

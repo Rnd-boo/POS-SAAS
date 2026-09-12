@@ -24,17 +24,19 @@ export default function PageHeader({
   filters?: Record<string, string>;
   setFilters?: (filters: Record<string, string>) => void;
   setOpenDialogFilters?: (open: boolean) => void;
-  title: string;
+  title?: string;
   placeholder?: string;
   DialogCreateComponent?: ReactNode;
 }) {
   return (
     <>
-      <div className="flex flex-col lg:flex-row mb-4 gap-2 justify-between w-full">
-        <h1 className="text-2xl font-semibold capitalize">
-          {title} Management
-        </h1>
-      </div>
+      {title && (
+        <div className="flex flex-col lg:flex-row mb-4 gap-2 justify-between w-full">
+          <h1 className="text-2xl font-semibold capitalize">
+            {title} Management
+          </h1>
+        </div>
+      )}
       <div className="mb-2 flex justify-between ">
         <div className="flex gap-2 w-full max-w-md">
           <InputGroup className="max-w-sm">
