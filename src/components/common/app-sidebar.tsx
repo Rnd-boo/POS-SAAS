@@ -48,21 +48,20 @@ export function AppSidebar() {
     (brand) => String(brand.id) === currentBrandId,
   )?.name;
   const [openItem, setOpenItem] = useState<string | null>(null);
-  console.log(profile);
-  useEffect(() => {
-    // Find which section contains the current pathname
-    const currentSection = SIDEBAR_MENULIST[
-      profile?.role as SidebarMenuKey
-    ]?.find((item) => {
-      return item.url === pathname;
-    });
+  // useEffect(() => {
+  //   // Find which section contains the current pathname
+  //   const currentSection = SIDEBAR_MENULIST[
+  //     profile?.role as SidebarMenuKey
+  //   ]?.find((item) => {
+  //     return item.url === pathname;
+  //   });
 
-    // If we found a section with sub-items, open it (and close others)
-    if (currentSection) {
-      setOpenItem(currentSection.title);
-    }
-    // If no matching section found, keep the currently open item (don't close it)
-  }, [pathname, profile?.role]);
+  //   // If we found a section with sub-items, open it (and close others)
+  //   if (currentSection) {
+  //     setOpenItem(currentSection.title);
+  //   }
+  //   // If no matching section found, keep the currently open item (don't close it)
+  // }, [pathname, profile?.role]);
 
   const toggleSingleItem = (title: string) => {
     // If clicking the same item, close it
@@ -101,25 +100,23 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupContent className="flex flex-col gap-2">
             <SidebarMenu>
-              {SIDEBAR_MENULIST[profile?.role as SidebarMenuKey]?.map(
-                (item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild tooltip={item.title}>
-                      <a
-                        href={item.url}
-                        className={cn("ring-sidebar-ring px-4 py-3 h-auto ", {
-                          "bg-primary/90 text-white hover:text-white hover:!bg-primary/80 ":
-                            pathname === item.url ||
-                            pathname.startsWith(item.url + "/"),
-                        })}
-                      >
-                        {item.icon && <item.icon />}
-                        <span>{item.title}</span>
-                      </a>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ),
-              )}
+              {SIDEBAR_MENULIST?.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild tooltip={item.title}>
+                    <a
+                      href={item.url}
+                      className={cn("ring-sidebar-ring px-4 py-3 h-auto ", {
+                        "bg-primary/90 text-white hover:text-white hover:!bg-primary/80 ":
+                          pathname === item.url ||
+                          pathname.startsWith(item.url + "/"),
+                      })}
+                    >
+                      {item.icon && <item.icon />}
+                      <span>{item.title}</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

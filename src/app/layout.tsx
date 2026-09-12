@@ -8,7 +8,6 @@ import { Profile } from "@/types/profiles";
 import ReactQueryProvider from "@/providers/react-query-provider";
 import { getProfileFromToken } from "@/actions/auth-action";
 import BrandStoreProvider from "@/providers/brand-store-provider";
-import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -48,7 +47,7 @@ export default async function RootLayout({
                 enableSystem
                 disableTransitionOnChange
               >
-                <NuqsAdapter>{children}</NuqsAdapter>
+                {children}
                 <Toaster />
               </ThemeProvider>
             </BrandStoreProvider>
