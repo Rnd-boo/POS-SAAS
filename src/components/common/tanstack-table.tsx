@@ -27,6 +27,7 @@ import {
   TableBody,
   TableCell,
   TableHead,
+  TableFooter,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
@@ -50,6 +51,7 @@ export function DataTable<TData extends { id: string | number }>({
   setSelectedAction,
   isLoading,
   tableHeader = true,
+  footer,
 }: {
   columns: ColumnDef<TData>[];
   data: TData[];
@@ -70,6 +72,7 @@ export function DataTable<TData extends { id: string | number }>({
   >;
   isLoading?: boolean;
   tableHeader?: boolean;
+  footer?: React.ReactNode;
 }) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -299,6 +302,7 @@ export function DataTable<TData extends { id: string | number }>({
               </TableRow>
             )}
           </TableBody>
+          {footer && <TableFooter>{footer}</TableFooter>}
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
