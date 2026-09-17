@@ -215,7 +215,7 @@ export default function FormOpenManufacturinDetail({
         bill_of_material_qty: String(productBOM.qty),
       })),
     );
-  }, [productBillOfMaterials, productStock?.data]);
+  }, [productBillOfMaterials, selectedBOM]);
 
   useEffect(() => {
     if (selectedIndex === null) return;
