@@ -43,9 +43,6 @@ export default function FormSelectData<T extends FieldValues>({
   isLoading?: boolean;
   required?: boolean;
 }) {
-  const mountedRef = useRef(false);
-  const initialValueSetRef = useRef(false);
-
   const selectItems = React.useMemo(() => {
     if (!data || data.length === 0) return [];
     return data.map((item) => ({
@@ -56,44 +53,21 @@ export default function FormSelectData<T extends FieldValues>({
   }, [data, valueKey, labelKey, disabledKey]);
 
   useEffect(() => {
-    if (!data) return;
-
-    if (data.length > 0) {
-      const timer = setTimeout(() => {
-        mountedRef.current = true;
-
-        if (data.length === 1) {
-          const singleValue = data[0][valueKey]?.toString() || "";
-
-          const currentValue = form.getValues(name);
-
-          if (currentValue !== singleValue) {
-            form.setValue(name, singleValue as any);
-          }
-        }
-      }, 50);
-
-      return () => clearTimeout(timer);
-    }
-
-    if (isLoading) return;
+    if (selectItems.length === 0) return;
 
     const currentValue = form.getValues(name);
-    if (currentValue) {
-      return;
-    }
 
-    mountedRef.current = false;
-    form.setValue(name, "" as any);
-  }, [data, form, name, valueKey, isLoading]);
+    // Only select first item if there is currently no value
+    if (!currentValue) {
+      form.setValue(name, selectItems[0].value as any);
+    }
+  }, [selectItems, form, name]);
 
   return (
     <FormField
       control={form.control}
       name={name}
       render={({ field }) => {
-        const currentValue = field.value?.toString() || "";
-
         return (
           <FormItem className={className}>
             <FormLabel>
@@ -101,20 +75,8 @@ export default function FormSelectData<T extends FieldValues>({
             </FormLabel>
             <FormControl>
               <Select
-                value={currentValue}
-                onValueChange={(value) => {
-                  if (!mountedRef.current) {
-                    return;
-                  }
-
-                  if (!initialValueSetRef.current && currentValue && !value) {
-                    initialValueSetRef.current = true;
-                    return;
-                  }
-
-                  initialValueSetRef.current = true;
-                  field.onChange(value || "");
-                }}
+                value={field.value}
+                onValueChange={field.onChange}
                 disabled={disabled || !data || data.length === 0 || isLoading}
               >
                 <SelectTrigger
