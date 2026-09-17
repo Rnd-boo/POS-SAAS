@@ -62,7 +62,7 @@ export default function Tables({
             y: Number(t.position_y ?? node.position.y),
           },
         };
-      })
+      }),
     );
   }, [tables]);
 
@@ -73,7 +73,6 @@ export default function Tables({
           Please select table map
         </div>
       ) : isPending ? (
-        // CASE 2: table map selected BUT pending
         <div className="flex h-full w-full items-center justify-center">
           Loading...
         </div>

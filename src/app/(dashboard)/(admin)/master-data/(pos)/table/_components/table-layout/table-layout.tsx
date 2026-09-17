@@ -120,11 +120,24 @@ export default function TableLayout() {
         toast.error("Get table Data Failed", {
           description: result.error.message,
         });
-      replace(result?.data ?? []);
       return result?.data ?? [];
     },
     enabled: !!currentId && !!selectedTableMap,
   });
+
+  //INITIAL FORM
+  useEffect(() => {
+    if (!tables) return;
+
+    replace(
+      tables.map((table) => ({
+        ...table,
+        status: table.status ? "true" : "false",
+      })),
+    );
+  }, [tables]);
+
+  //INITIAL TABLE NODE
   const mappedFields = fields?.map((field) => ({
     id: field.id,
     type: "tableNode",
@@ -139,7 +152,6 @@ export default function TableLayout() {
       height: field.height,
     },
   }));
-
   useEffect(() => {
     setNodes(mappedFields ?? []);
   }, [fields]);
