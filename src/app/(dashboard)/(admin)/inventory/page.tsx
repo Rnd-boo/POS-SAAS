@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { INVENTORY_CARD } from "@/constants/inventory.constant";
+import { cn } from "@/lib/utils";
 import Link from "next/link";
 
 export const metadata = {
@@ -13,8 +14,16 @@ export default function InventoryPage() {
         {INVENTORY_CARD.map((card, cardIndex) => {
           const Icon = card?.icon;
           return (
-            <Link href={card.url} key={`item-${cardIndex}`}>
-              <Card className="max-w-xs min-h-32 hover:shadow-lg transition-shadow hover:bg-muted/60 ">
+            <Link
+              href={card.disabled ? "#" : card.url}
+              key={`item-${cardIndex}`}
+            >
+              <Card
+                className={cn(
+                  "max-w-xs min-h-32 hover:shadow-lg transition-shadow hover:bg-muted/60 ",
+                  { "opacity-50 cursor-not-allowed": card.disabled },
+                )}
+              >
                 <CardContent>
                   <h1 className="font-semibold flex items-center gap-2">
                     {Icon && <Icon className=" text-primary size-5" />}
