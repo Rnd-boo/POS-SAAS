@@ -20,12 +20,12 @@ export default function TableNode({
   };
 }) {
   return (
-    <HoverCard>
+    <HoverCard openDelay={200} closeDelay={100}>
       <HoverCardTrigger
         className={cn(
           "flex items-center justify-center  bg-primary/90 text-foreground",
           data.shape === "circle" ? "rounded-full" : "rounded-sm",
-          selected ? "ring-2 ring-[#4749b6] dark:ring-[#595be8]" : ""
+          selected ? "ring-2 ring-[#4749b6] dark:ring-[#595be8]" : "",
         )}
         style={{
           width: `${data.width}px`,
