@@ -1,10 +1,12 @@
 export type StockMovement = {
-  id: number;
+  id: string;
+  isPrevious?: boolean;
   qty_base: number;
   direction: "OUT" | "IN";
   reference_type: string;
   reference_id: string;
-  movement_date: Date;
+  balance: number;
+  movement_date: string | Date;
   branch_location: {
     name: string;
   };

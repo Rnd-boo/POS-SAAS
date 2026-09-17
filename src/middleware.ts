@@ -29,7 +29,7 @@ export async function middleware(request: NextRequest) {
   try {
     const { payload: verifiedPayload } = await jwtVerify(
       token,
-      getJwtSecretKey()
+      getJwtSecretKey(),
     );
     payload = verifiedPayload;
   } catch (err) {
@@ -43,18 +43,18 @@ export async function middleware(request: NextRequest) {
 
   const userRole = payload.role as string | undefined;
 
-  const path = request.nextUrl.pathname;
-  if (path.startsWith("/admin")) {
-    if (userRole !== "admin" && userRole !== "supervisor") {
-      return NextResponse.redirect(new URL("/unauthorized", request.url));
-    }
-  }
+  // const path = request.nextUrl.pathname;
+  // if (path.startsWith("/admin")) {
+  //   if (userRole !== "admin" && userRole !== "supervisor") {
+  //     return NextResponse.redirect(new URL("/unauthorized", request.url));
+  //   }
+  // }
 
-  if (path.startsWith("/master-data")) {
-    if (userRole !== "supervisor") {
-      return NextResponse.redirect(new URL("/unauthorized", request.url));
-    }
-  }
+  // if (path.startsWith("/master-data")) {
+  //   if (userRole !== "supervisor") {
+  //     return NextResponse.redirect(new URL("/unauthorized", request.url));
+  //   }
+  // }
 
   // If logged in and tries to visit /login → send to home
   if (request.nextUrl.pathname === "/login") {

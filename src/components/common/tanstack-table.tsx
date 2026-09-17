@@ -306,9 +306,11 @@ export function DataTable<TData extends { id: string | number }>({
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="text-muted-foreground flex-1 text-sm">
-          Showing {table.getRowModel().rows.length} of {totalData} row(s).
-        </div>
+        {totalData && (
+          <div className="text-muted-foreground flex-1 text-sm">
+            Showing {table.getRowModel().rows.length} of {totalData} row(s).
+          </div>
+        )}
         {totalPages > 1 && (
           <div className="flex justify-end">
             <PaginationDataTable

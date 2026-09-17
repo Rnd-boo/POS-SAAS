@@ -11,7 +11,11 @@ export const stockOverviewColumns = (
     id: "number",
     enableHiding: false,
     header: () => <div>#</div>,
-    cell: ({ row }) => <div>{(currentPage - 1) * 10 + row.index + 1}</div>,
+    cell: ({ row }) => (
+      <div>
+        {row.original.isPrevious ? "" : (currentPage - 1) * 20 + row.index}
+      </div>
+    ),
   },
   {
     id: "products(name)",
@@ -58,7 +62,8 @@ export const stockOverviewColumns = (
     accessorFn: (row) => row.reference_id,
     enableHiding: false,
     header: () => <div>Reference ID</div>,
-    cell: ({ getValue }) => {
+    cell: ({ row, getValue }) => {
+      if (row.original.isPrevious) return <div />;
       const prefix = getValue<string>().slice(0, 2);
       let link = "";
       switch (prefix) {
@@ -83,8 +88,10 @@ export const stockOverviewColumns = (
     accessorFn: (row) => (row.direction === "IN" ? row.qty_base : 0),
     enableHiding: false,
     header: () => <div>In Qty</div>,
-    cell: ({ getValue }) => (
-      <div className="truncate max-w-xs">{getValue<number>()}</div>
+    cell: ({ row, getValue }) => (
+      <div className="truncate max-w-xs">
+        {row.original.isPrevious ? "-" : getValue<number>()}
+      </div>
     ),
   },
   {
@@ -92,6 +99,18 @@ export const stockOverviewColumns = (
     accessorFn: (row) => (row.direction === "OUT" ? row.qty_base : 0),
     enableHiding: false,
     header: () => <div>Out Qty</div>,
+    cell: ({ row, getValue }) => (
+      <div className="truncate max-w-xs">
+        {row.original.isPrevious ? "-" : getValue<number>()}
+      </div>
+    ),
+  },
+  {
+    id: "balance",
+    accessorFn: (row) => row.balance,
+    enableHiding: false,
+    header: () => <div>Balance</div>,
+    footer: () => <div>Total</div>,
     cell: ({ getValue }) => (
       <div className="truncate max-w-xs">{getValue<number>()}</div>
     ),

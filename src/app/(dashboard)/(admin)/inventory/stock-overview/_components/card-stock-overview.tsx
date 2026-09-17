@@ -3,7 +3,7 @@
 import { Search } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -44,26 +44,21 @@ export default function CardStockOverview({
   onSearch,
 }: CardStockOverviewProps) {
   const { data: branches } = useBranchQuery();
-  const { branchLocations } = useBranchLocationQuery({
-    branch_id: filters.branchId ?? "",
-  });
   const watchedBranchId = form.watch("branch_id");
+  const { branchLocations } = useBranchLocationQuery({
+    branch_id: watchedBranchId,
+  });
   useEffect(() => {
-    if (watchedBranchId !== filters.branchId)
+    if (watchedBranchId || watchedBranchId === "")
       form.setValue("branch_location_id", "");
-  }, [watchedBranchId, filters.branchId]);
+  }, [watchedBranchId]);
 
   return (
     <Card className="w-full">
       <Form {...form}>
-        <form
-          onSubmit={(event) => {
-            event.preventDefault();
-            onSearch();
-          }}
-        >
-          <CardHeader className="text-2xl font-semibold">
-            Stock Overview
+        <form onSubmit={form.handleSubmit(onSearch)}>
+          <CardHeader>
+            <CardTitle className="text-2xl mb-2">Stock Overview</CardTitle>
           </CardHeader>
           <CardContent className="grid grid-cols-[4fr_3fr_3fr_2fr_5fr_3fr_3fr_3fr] gap-4 items-end">
             <FormField

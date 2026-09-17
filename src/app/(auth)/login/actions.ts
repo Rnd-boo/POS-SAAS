@@ -20,7 +20,7 @@ const getJwtSecretKey = () => {
 
 export async function login(
   prevState: ClientProfilesFormState,
-  formData: FormData | null
+  formData: FormData | null,
 ): Promise<ClientProfilesFormState> {
   if (!formData) {
     return INITIAL_STATE_LOGIN_FORM;
@@ -45,16 +45,7 @@ export async function login(
 
   const { data: profile, error } = await supabase
     .from("client_profiles")
-    .select(
-      `
-      *,
-       role_access!role (
-        name,
-        dashboard,
-        inventory
-      )
-    `
-    )
+    .select(`*`)
     .eq("username", validatedFields.data.username)
     .single();
 
@@ -70,7 +61,7 @@ export async function login(
 
   const isValidPassword = await bcrypt.compare(
     validatedFields.data.password,
-    profile.password_hash
+    profile.password_hash,
   );
 
   if (!isValidPassword) {
@@ -89,11 +80,11 @@ export async function login(
       id: profile.id,
       clients: profile.clients_id,
       name: profile.name,
-      role: profile.role_access.name,
-      permissions: {
-        dashboard: profile.role_access.dashboard,
-        inventory: profile.role_access.inventory,
-      },
+      // role: profile.role_access.name,
+      // permissions: {
+      //   dashboard: profile.role_access.dashboard,
+      //   inventory: profile.role_access.inventory,
+      // },
     })
       .setProtectedHeader({ alg: "HS256" })
       .setIssuedAt()

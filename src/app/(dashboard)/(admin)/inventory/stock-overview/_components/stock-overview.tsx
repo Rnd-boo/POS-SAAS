@@ -6,7 +6,7 @@ import { useAuthStore } from "@/stores/auth-store";
 import { useBrandStore } from "@/stores/brand-store";
 import useDataTable from "@/hooks/use-data-table";
 import { toast } from "sonner";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useQueryStates } from "nuqs";
 import { STOCK_LIST_FILTER_PARSERS } from "@/constants/inventory/stock-overview.constant";
 import DialogProducts from "@/components/common/dialog/dialog-products";
@@ -19,9 +19,10 @@ import {
 import { UnitProduct } from "@/types/products/product-dialog";
 import CardStockOverview from "./card-stock-overview";
 import { DataTable } from "@/components/common/tanstack-table";
-import { StockMovement } from "@/types/inventory/stock-movement";
 import { stockOverviewColumns } from "@/components/columns.tsx/stock-overview-columns";
 import { formatDateLocal, parseRange } from "@/lib/format-date";
+import { useStockCardQuery } from "@/hooks/queries/use-stock-card";
+import { TableCell, TableRow } from "@/components/ui/table";
 
 export default function StockOverview() {
   const [filters, setFilters] = useQueryStates(STOCK_LIST_FILTER_PARSERS);
@@ -95,7 +96,10 @@ export default function StockOverview() {
 
   const handleSearch = () => {
     const values = form.getValues();
-
+    if (!values.branch_location_id && !values.date) {
+      toast.error("Please select at least one filter to search.");
+      return;
+    }
     setFilters((prev) => ({
       ...prev,
       branchId: values.branch_id || null,
@@ -115,46 +119,14 @@ export default function StockOverview() {
   };
   const { from, to } = parseRange(filters.date ?? "") ?? {};
 
-  const { data: stockMovementData, isLoading } = useQuery({
-    queryKey: ["stock-movements", filters, currentPage],
-    queryFn: async () => {
-      const query = supabase
-        .from("stock_movements")
-        .select(
-          "products!inner(name, upc), product_units(units(name)), branch_location(name), reference_type, qty_base, direction, reference_id, movement_date",
-          {
-            count: "exact",
-          },
-        )
-        .eq("clients_id", currentId)
-        .eq("product_units_id", filters.product_units_id)
-        .eq("branch_location_id", filters.locationId)
-        .gte(
-          "movement_date",
-          formatDateLocal(
-            from ??
-              new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-          ),
-        )
-        .lte("movement_date", formatDateLocal(to ?? new Date()))
-        .range((currentPage - 1) * 20, currentPage * 20 - 1)
-        .eq("brand_id", currentBrandId);
+  const { data: stockCardData, isLoading } = useStockCardQuery(
+    filters.product_units_id ?? "",
+    filters.locationId ?? "",
+    formatDateLocal(from),
+    formatDateLocal(to),
+    currentPage,
+  );
 
-      const result = await query.overrideTypes<StockMovement[]>();
-
-      if (result.error) {
-        toast.error("Get Movement Data Failed", {
-          description: result.error.message,
-        });
-      }
-      return {
-        data: result.data ?? [],
-        totalPages: Math.ceil((result.count ?? 0) / 10),
-        totalData: result.count ?? 0,
-      };
-    },
-    enabled: !!filters.product_units_id && !!currentId && !!currentBrandId,
-  });
   return (
     <>
       <CardStockOverview
@@ -165,14 +137,28 @@ export default function StockOverview() {
         onSearch={handleSearch}
       />
       <DataTable
-        data={stockMovementData?.data || []}
+        data={stockCardData?.rows || []}
         columns={stockOverviewColumns(currentPage)}
-        totalPages={stockMovementData?.totalPages || 0}
+        totalPages={Math.ceil((stockCardData?.totalData || 0) / 20)}
         currentPage={currentPage}
         onChangePage={handleChangePage}
         tableHeader={false}
         isLoading={isLoading}
-        totalData={stockMovementData?.totalData}
+        footer={
+          <TableRow>
+            <TableCell colSpan={7} />
+            <TableCell className="font-semibold text-center ">Total</TableCell>
+            <TableCell className="font-semibold">
+              {stockCardData?.totalIn ?? 0}
+            </TableCell>
+            <TableCell className="font-semibold">
+              {stockCardData?.totalOut ?? 0}
+            </TableCell>
+            <TableCell className="font-semibold">
+              {stockCardData?.endingBalance ?? 0}
+            </TableCell>
+          </TableRow>
+        }
       />
       <DialogProducts
         form={form}
