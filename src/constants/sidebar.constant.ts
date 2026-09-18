@@ -2,8 +2,7 @@ import {
   Archive,
   CalendarPlus,
   Component,
-  FileText,
-  Users,
+  ShoppingCart,
   Warehouse,
 } from "lucide-react";
 
@@ -12,6 +11,11 @@ export const SIDEBAR_MENULIST = [
     title: "Dashboard",
     url: "/",
     icon: Component,
+  },
+  {
+    title: "Purchasing",
+    icon: ShoppingCart,
+    url: "/purchasing",
   },
   {
     title: "Production Planning",
