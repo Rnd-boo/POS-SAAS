@@ -12,20 +12,19 @@ import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/common/tanstack-table";
 import DropdownAction from "@/components/common/dropdown-action";
 import PageHeader from "@/components/common/page-header";
-import DialogInformation from "@/components/common/dialog/dialog-information";
 import { Supplier } from "@/validations/supplier-validation";
-import DialogCreateSupplier from "./dialog-create-supplier";
 import DialogDeleteSupplier from "./dialog-delete-supplier";
-import DialogUpdateSupplier from "./dialog-update-supplier";
+import { usePathname, useRouter } from "next/navigation";
 
 export default function SupplierManagement() {
   const supabase = createClient();
   const currentId = useAuthStore((state) => state.profile?.clients);
+  const router = useRouter();
+  const pathname = usePathname();
   const { currentPage, handleChangePage, currentSearch, handleChangeSearch } =
     useDataTable();
   const {
     data: suppliers,
-    isLoading,
     refetch,
   } = useQuery({
     queryKey: ["supplier", currentPage, currentSearch, currentId],
@@ -47,29 +46,11 @@ export default function SupplierManagement() {
     },
     enabled: !!currentId,
   });
-  const { data: brands } = useQuery({
-    queryKey: ["supplier-brands", currentId],
-    queryFn: async () => {
-      const result = await supabase
-        .from("brand")
-        .select("id,name")
-        .eq("clients_id", currentId)
-        .eq("status", true)
-        .order("name");
-      if (result.error) throw result.error;
-      return result.data ?? [];
-    },
-    enabled: !!currentId,
-  });
   const [selectedAction, setSelectedAction] = useState<{
     data: Supplier;
-    type: "detail" | "update" | "delete";
+    type: "delete";
   } | null>(null);
   const data = (suppliers?.data ?? []) as unknown as Supplier[];
-  const brandItems = (brands ?? []).map((brand) => ({
-    value: String(brand.id),
-    label: brand.name,
-  }));
   const columns: ColumnDef<Supplier>[] = [
     {
       accessorKey: "name",
@@ -128,8 +109,7 @@ export default function SupplierManagement() {
                   <Pencil /> Edit
                 </span>
               ),
-              action: () =>
-                setSelectedAction({ data: row.original, type: "update" }),
+              action: () => router.push(`${pathname}/${row.original.id}/edit`),
             },
             {
               label: (
@@ -157,10 +137,8 @@ export default function SupplierManagement() {
     <div className="w-full">
       <PageHeader
         title="supplier"
+        pathname={pathname}
         handleChangeSearch={handleChangeSearch}
-        DialogCreateComponent={
-          <DialogCreateSupplier refetch={refetch} brands={brandItems} />
-        }
       />
       <DataTable
         data={data}
@@ -171,27 +149,6 @@ export default function SupplierManagement() {
         totalData={suppliers?.count ?? 0}
         setSelectedAction={setSelectedAction}
         refetch={refetch}
-      />
-      <DialogInformation
-        open={selectedAction?.type === "detail"}
-        onOpenChange={handleChangeAction}
-        title="Supplier"
-        data={[
-          { label: "Address", value: selectedAction?.data.address },
-          { label: "Phone", value: selectedAction?.data.phone },
-          {
-            label: "Payment Method",
-            value: selectedAction?.data.payment_method,
-          },
-          { label: "Bank", value: selectedAction?.data.bank_name },
-        ]}
-      />
-      <DialogUpdateSupplier
-        open={selectedAction?.type === "update"}
-        refetch={refetch}
-        currentData={selectedAction?.data}
-        handleChangeAction={handleChangeAction}
-        brands={brandItems}
       />
       <DialogDeleteSupplier
         open={selectedAction?.type === "delete"}
