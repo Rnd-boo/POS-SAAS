@@ -174,9 +174,11 @@ export function DataTable<TData extends { id: string | number }>({
                     <TableHead
                       key={header.id}
                       className={cn(
-                        "bg-muted hover:!bg-muted/50 cursor-pointer transition-all",
-                        header.column.id === "actions" &&
-                          "hover:!bg-muted cursor-default",
+                        "bg-muted transition-all",
+                        header.column.getCanSort() &&
+                          header.column.id !== "actions"
+                          ? "hover:!bg-muted/50 cursor-pointer"
+                          : "cursor-default hover:!bg-muted",
                       )}
                       style={{
                         boxShadow:
