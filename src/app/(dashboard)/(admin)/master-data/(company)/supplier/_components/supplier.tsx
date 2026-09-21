@@ -30,7 +30,11 @@ export default function SupplierManagement() {
   const [openDialogFilters, setOpenDialogFilters] = useState<boolean>(false);
   const { currentPage, handleChangePage, currentSearch, handleChangeSearch } =
     useDataTable();
-  const { data: suppliers, refetch } = useQuery({
+  const {
+    data: suppliers,
+    refetch,
+    isLoading,
+  } = useQuery({
     queryKey: [
       "supplier",
       currentPage,
@@ -101,6 +105,7 @@ export default function SupplierManagement() {
       />
       <DataTable
         data={data}
+        isLoading={isLoading}
         columns={supplierColumns({
           router: router,
           pathname,
