@@ -3,133 +3,88 @@
 import useDataTable from "@/hooks/use-data-table";
 import { createClient } from "@/lib/supabase/client";
 import { useAuthStore } from "@/stores/auth-store";
-import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowDown, ArrowUp, Pencil, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/common/tanstack-table";
-import DropdownAction from "@/components/common/dropdown-action";
 import PageHeader from "@/components/common/page-header";
-import { Supplier } from "@/validations/supplier-validation";
 import DialogDeleteSupplier from "./dialog-delete-supplier";
 import { usePathname, useRouter } from "next/navigation";
+import { supplierColumns } from "@/components/columns.tsx/suppliers-columns";
+import { useBrandStore } from "@/stores/brand-store";
+import { SupplierData } from "@/types/supplier";
+import { applyFilterQuery } from "@/hooks/use-filter-query";
+import { SortingState } from "@tanstack/react-table";
+import DialogFilters from "@/components/common/dialog/dialog-filters";
+import { FILTER_TABLE_SUPPLIER } from "@/constants/supplier.constant";
+import { STATUS_LIST } from "@/constants/general.constant";
 
 export default function SupplierManagement() {
   const supabase = createClient();
   const currentId = useAuthStore((state) => state.profile?.clients);
-  const router = useRouter();
+  const currentBrandId = useBrandStore((state) => state.currentBrandId);
   const pathname = usePathname();
+  const router = useRouter();
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [filters, setFilters] = useState<Record<string, string>>({});
+  const [openDialogFilters, setOpenDialogFilters] = useState<boolean>(false);
   const { currentPage, handleChangePage, currentSearch, handleChangeSearch } =
     useDataTable();
-  const {
-    data: suppliers,
-    refetch,
-  } = useQuery({
-    queryKey: ["supplier", currentPage, currentSearch, currentId],
+  const { data: suppliers, refetch } = useQuery({
+    queryKey: [
+      "supplier",
+      currentPage,
+      currentSearch,
+      currentId,
+      filters,
+      currentBrandId,
+      sorting,
+    ],
     queryFn: async () => {
-      const result = await supabase
-        .from("supplier")
-        .select("*,brand:brand_id(name),supplier_PIC:supplier_pic(*)", {
-          count: "exact",
-        })
+      let query = supabase
+        .from("suppliers")
+        .select(
+          "id,name,address,credit_terms,notes,supplier_pic!inner(name),status",
+          {
+            count: "exact",
+          },
+        )
         .eq("clients_id", currentId)
+        .eq("brand_id", currentBrandId)
+        .eq("supplier_pic.is_default", true)
         .range((currentPage - 1) * 10, currentPage * 10 - 1)
-        .order("name")
         .ilike("name", `%${currentSearch}%`);
+      const sort = sorting[0];
+      if (sort) {
+        query.order(sort.id, { ascending: sort.desc ? false : true });
+      } else {
+        query.order("created_at", { ascending: false });
+      }
+      query = applyFilterQuery(query, filters);
+
+      const result = await query.overrideTypes<SupplierData[]>();
+
       if (result.error)
         toast.error("Get Supplier Data Failed", {
           description: result.error.message,
         });
+
       return result;
     },
-    enabled: !!currentId,
+    enabled: !!currentId && !!currentBrandId,
   });
+
   const [selectedAction, setSelectedAction] = useState<{
-    data: Supplier;
+    data: SupplierData;
     type: "delete";
   } | null>(null);
-  const data = (suppliers?.data ?? []) as unknown as Supplier[];
-  const columns: ColumnDef<Supplier>[] = [
-    {
-      accessorKey: "name",
-      enableHiding: false,
-      header: ({ column }) => {
-        const sorted = column.getIsSorted();
-        return (
-          <div
-            className="flex items-center gap-2 font-medium"
-            onClick={() => column.toggleSorting(undefined, true)}
-          >
-            Supplier Name {sorted === "asc" && <ArrowUp className="size-3" />}
-            {sorted === "desc" && <ArrowDown className="size-3" />}
-          </div>
-        );
-      },
-      cell: ({ row }) => <div>{row.getValue("name")}</div>,
-    },
-    {
-      accessorKey: "phone",
-      header: () => <div>Phone</div>,
-      cell: ({ row }) => <div>{row.getValue("phone")}</div>,
-    },
-    {
-      accessorKey: "payment_method",
-      header: () => <div>Payment</div>,
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("payment_method")}</div>
-      ),
-    },
-    {
-      accessorKey: "status",
-      enableHiding: false,
-      header: () => <div>Status</div>,
-      cell: ({ row }) => (
-        <div
-          className={cn(
-            "w-fit rounded-full px-2 py-1 text-white",
-            row.getValue("status") ? "bg-green-600" : "bg-red-500",
-          )}
-        >
-          {row.getValue("status") ? "Active" : "Inactive"}
-        </div>
-      ),
-    },
-    {
-      id: "actions",
-      enableHiding: false,
-      header: () => <div className="flex justify-center">Actions</div>,
-      cell: ({ row }) => (
-        <DropdownAction
-          menu={[
-            {
-              label: (
-                <span className="flex items-center gap-2">
-                  <Pencil /> Edit
-                </span>
-              ),
-              action: () => router.push(`${pathname}/${row.original.id}/edit`),
-            },
-            {
-              label: (
-                <span className="flex items-center gap-2">
-                  <Trash2 className="text-red-400" /> Delete
-                </span>
-              ),
-              variant: "destructive",
-              action: () =>
-                setSelectedAction({ data: row.original, type: "delete" }),
-            },
-          ]}
-        />
-      ),
-    },
-  ];
+
+  const data = suppliers?.data ?? [];
   const totalPages = useMemo(
     () => (suppliers?.count ? Math.ceil(suppliers.count / 10) : 0),
     [suppliers],
   );
+
   const handleChangeAction = (open: boolean) => {
     if (!open) setSelectedAction(null);
   };
@@ -137,24 +92,48 @@ export default function SupplierManagement() {
     <div className="w-full">
       <PageHeader
         title="supplier"
+        placeholder="supplier name"
         pathname={pathname}
+        filters={filters}
+        setFilters={setFilters}
+        setOpenDialogFilters={setOpenDialogFilters}
         handleChangeSearch={handleChangeSearch}
       />
       <DataTable
         data={data}
-        columns={columns}
+        columns={supplierColumns({
+          router: router,
+          pathname,
+          setSelectedAction,
+        })}
         totalPages={totalPages}
         currentPage={currentPage}
         onChangePage={handleChangePage}
+        sorting={sorting}
+        onSortingChange={setSorting}
         totalData={suppliers?.count ?? 0}
-        setSelectedAction={setSelectedAction}
         refetch={refetch}
+        pathname={pathname}
       />
       <DialogDeleteSupplier
         open={selectedAction?.type === "delete"}
         refetch={refetch}
         currentData={selectedAction?.data}
         handleChangeAction={handleChangeAction}
+      />
+      <DialogFilters
+        configs={FILTER_TABLE_SUPPLIER.map((config) => {
+          if (config.key === "status") {
+            return {
+              ...config,
+              options: STATUS_LIST,
+            };
+          }
+          return config;
+        })}
+        onOpenChange={setOpenDialogFilters}
+        open={openDialogFilters}
+        onChange={setFilters}
       />
     </div>
   );
