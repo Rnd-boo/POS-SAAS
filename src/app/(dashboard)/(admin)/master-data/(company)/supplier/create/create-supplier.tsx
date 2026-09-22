@@ -52,10 +52,10 @@ export default function CreateSupplier() {
     if (state.status === "success") {
       toast.success("Create Supplier Success");
       form.reset();
-      queryClient.invalidateQueries({ queryKey: ["suppliers"] });
+      queryClient.refetchQueries({ queryKey: ["suppliers"] });
       router.push("/master-data/supplier");
     }
-  }, [state, form, queryClient, router]);
+  }, [state]);
 
   return (
     <CardFormSupplier

@@ -32,7 +32,8 @@ export default function DialogDeleteSupplier({
       handleChangeAction(false);
       refetch();
     }
-  }, [state, refetch, handleChangeAction]);
+  }, [state]);
+
   return (
     <AlertDialogDelete
       open={open}
