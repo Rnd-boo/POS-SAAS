@@ -26,6 +26,12 @@ export const MASTER_CARD = [
           "Manage company brands to represent different business identities.",
       },
       {
+        title: "Supplier",
+        icon: UsersRound,
+        url: "/master-data/supplier",
+        description: "Manage suppliers and their purchasing information.",
+      },
+      {
         title: "Branch",
         url: "/master-data/branch",
         icon: VectorSquare,
