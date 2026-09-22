@@ -1,15 +1,6 @@
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { SupplierForm } from "@/validations/supplier-validation";
-import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { FormEvent } from "react";
 import { UseFormReturn } from "react-hook-form";
@@ -19,16 +10,16 @@ import CreateButton from "@/components/common/create-button";
 export default function CardFormSupplier({
   form,
   type,
+  isLoading,
   isPending,
   onSubmit,
 }: {
   form: UseFormReturn<SupplierForm>;
-  type: "Create" | "Update";
-  isPending: boolean;
-  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  type: "Create" | "Update" | "Detail";
+  isLoading?: boolean;
+  isPending?: boolean;
+  onSubmit?: (event: FormEvent<HTMLFormElement>) => void;
 }) {
-  const router = useRouter();
-
   return (
     <Form {...form}>
       <form onSubmit={onSubmit} className="w-full pb-28">
@@ -37,7 +28,7 @@ export default function CardFormSupplier({
             <CardTitle className="text-2xl">{type} Supplier</CardTitle>
           </CardHeader>
           <CardContent>
-            <FormSupplier form={form} />
+            <FormSupplier form={form} type={type} isLoading={isLoading} />
           </CardContent>
           <CreateButton type={type} isPending={isPending} />
         </Card>

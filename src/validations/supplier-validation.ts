@@ -31,7 +31,7 @@ export const supplierFormSchema = z.object({
   state: z.string().min(1, "State is required"),
   country: z.string().min(1, "Country is required"),
   phone: z.string().min(1, "Phone is required"),
-  status: z.string().min(1, "Status is required"),
+  status: z.string(),
   payment_method: z.string().min(1, "Payment method is required"),
   credit_terms: z.string().min(1, "Credit terms is required"),
   bank_name: z.string(),

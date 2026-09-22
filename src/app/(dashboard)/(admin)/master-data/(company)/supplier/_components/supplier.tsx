@@ -36,7 +36,7 @@ export default function SupplierManagement() {
     isLoading,
   } = useQuery({
     queryKey: [
-      "supplier",
+      "suppliers",
       currentPage,
       currentSearch,
       currentId,

@@ -12,9 +12,11 @@ import { Label } from "@/components/ui/label";
 export default function FormSupplier({
   form,
   type,
+  isLoading,
 }: {
   form: UseFormReturn<SupplierForm>;
-  type?: "Detail" | "Create" | "Update" | "Approve";
+  type: "Detail" | "Create" | "Update";
+  isLoading?: boolean;
 }) {
   const { fields, append, remove } = useFieldArray({
     control: form.control,
@@ -98,8 +100,7 @@ export default function FormSupplier({
           form={form}
           name="phone"
           label="Phone"
-          placeholder="e.g. +62-8123-0000"
-          type="number"
+          placeholder="e.g. 0812-0000-1234"
         />
       </div>
       <div className="border rounded-2xl p-4 my-4">
