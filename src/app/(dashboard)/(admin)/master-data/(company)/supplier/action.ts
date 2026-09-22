@@ -5,11 +5,8 @@ import { createClient } from "@/lib/supabase/server";
 import { SupplierFormState } from "@/types/supplier";
 import { supplierFormSchema } from "@/validations/supplier-validation";
 
-export async function createSupplier(
-  prevState: SupplierFormState,
-  formData: FormData,
-) {
-  const validatedFields = supplierFormSchema.safeParse({
+const parseField = (formData: FormData) =>
+  supplierFormSchema.safeParse({
     name: formData.get("name"),
     address: formData.get("address"),
     city: formData.get("city"),
@@ -26,6 +23,12 @@ export async function createSupplier(
     notes: formData.get("notes"),
   });
 
+const { currentUserId, currentClientId } = await getCurrentProfile();
+export async function createSupplier(
+  prevState: SupplierFormState,
+  formData: FormData,
+) {
+  const validatedFields = parseField(formData);
   if (!validatedFields.success) {
     return {
       status: "error",
@@ -42,7 +45,7 @@ export async function createSupplier(
   };
 
   const supabase = await createClient();
-  const { currentUserId, currentClientId } = await getCurrentProfile();
+
   const { data, error } = await supabase
     .from("suppliers")
     .insert({
@@ -81,58 +84,63 @@ export async function createSupplier(
   return { status: "success" };
 }
 
-// export async function updateSupplier(
-//   prevState: SupplierFormState,
-//   formData: FormData,
-// ) {
-//   const validatedFields = parseSupplier(formData);
-//   if (!validatedFields.success) {
-//     return {
-//       status: "error",
-//       errors: { ...validatedFields.error.flatten().fieldErrors, _form: [] },
-//     };
-//   }
+export async function updateSupplier(
+  prevState: SupplierFormState,
+  formData: FormData,
+) {
+  const validatedFields = parseField(formData);
+  if (!validatedFields.success) {
+    return {
+      status: "error",
+      errors: { ...validatedFields.error.flatten().fieldErrors, _form: [] },
+    };
+  }
+  const { supplier_PIC, ...supplierData } = validatedFields.data;
+  const supplierPayload = {
+    ...supplierData,
+    status: supplierData.status === "true",
+    credit_terms: Number(supplierData.credit_terms),
+  };
 
-//   const supabase = await createClient();
-//   const id = formData.get("id");
-//   const { error } = await supabase
-//     .from("supplier")
-//     .update(validatedFields.data)
-//     .eq("id", id);
-//   if (error)
-//     return {
-//       status: "error",
-//       errors: { ...prevState.errors, _form: [error.message] },
-//     };
+  const supabase = await createClient();
+  const id = formData.get("id");
+  const { error } = await supabase
+    .from("suppliers")
+    .update(supplierPayload)
+    .eq("id", id);
+  if (error)
+    return {
+      status: "error",
+      errors: { ...prevState.errors, _form: [error.message] },
+    };
 
-//   const { error: deletePicError } = await supabase
-//     .from("supplier_pic")
-//     .delete()
-//     .eq("supplier_id", id);
-//   if (deletePicError)
-//     return {
-//       status: "error",
-//       errors: { ...prevState.errors, _form: [deletePicError.message] },
-//     };
-//   const parsedPics = parsePICs(formData);
-//   if (parsedPics.error)
-//     return {
-//       status: "error",
-//       errors: { ...prevState.errors, _form: [parsedPics.error] },
-//     };
-//   const pics = parsedPics.data ?? [];
-//   if (pics.length) {
-//     const { error: picError } = await supabase
-//       .from("supplier_pic")
-//       .insert(pics.map((pic) => ({ ...pic, supplier_id: id })));
-//     if (picError)
-//       return {
-//         status: "error",
-//         errors: { ...prevState.errors, _form: [picError.message] },
-//       };
-//   }
-//   return { status: "success" };
-// }
+  const { error: deletePicError } = await supabase
+    .from("supplier_pic")
+    .delete()
+    .eq("supplier_id", id);
+  if (deletePicError)
+    return {
+      status: "error",
+      errors: { ...prevState.errors, _form: [deletePicError.message] },
+    };
+
+  const picData = supplier_PIC ?? [];
+  if (picData.length) {
+    const { error: picError } = await supabase.from("supplier_pic").insert(
+      picData.map((pic) => ({
+        ...pic,
+        supplier_id: id,
+        clients_id: currentClientId,
+      })),
+    );
+    if (picError)
+      return {
+        status: "error",
+        errors: { ...prevState.errors, _form: [picError.message] },
+      };
+  }
+  return { status: "success" };
+}
 
 export async function deleteSupplier(
   prevState: SupplierFormState,
