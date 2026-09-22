@@ -28,6 +28,7 @@ export default function FormSelect<T extends FieldValues>({
   isLoading,
   disabled = false,
   required,
+  className,
 }: {
   form: UseFormReturn<T>;
   name: Path<T>;
@@ -36,6 +37,7 @@ export default function FormSelect<T extends FieldValues>({
   disabled?: boolean;
   isLoading?: boolean;
   required?: boolean;
+  className?: string;
 }) {
   const mountedRef = useRef(false);
   const hasTriggeredOnChangeRef = useRef(false);
@@ -88,7 +90,7 @@ export default function FormSelect<T extends FieldValues>({
               disabled={disabled}
             >
               <SelectTrigger
-                className={cn("w-full", {
+                className={cn(`w-full ${className}`, {
                   "border-red-500": form.formState.errors[name]?.message,
                 })}
               >

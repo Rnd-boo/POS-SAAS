@@ -14,17 +14,17 @@ export const supplierSchema = z.object({
   bank_name: z.string(),
   bank_account_number: z.string(),
   bank_account_name: z.string(),
+  notes: z.string(),
 });
 
 export const supplierPIC = z.object({
-  name: z.string(),
+  name: z.string().min(1, "Person name is required"),
   email: z.string(),
   phone: z.string(),
   is_default: z.boolean(),
 });
 
 export const supplierFormSchema = z.object({
-  brand_id: z.string().min(1, "Brand is required"),
   name: z.string().min(1, "Supplier Name is required"),
   address: z.string().min(1, "Address is required"),
   city: z.string().min(1, "City is required"),
@@ -37,6 +37,7 @@ export const supplierFormSchema = z.object({
   bank_name: z.string(),
   bank_account_number: z.string(),
   bank_account_name: z.string(),
+  notes: z.string(),
   supplier_PIC: z.array(supplierPIC).min(1, "At least one PIC is required"),
 });
 

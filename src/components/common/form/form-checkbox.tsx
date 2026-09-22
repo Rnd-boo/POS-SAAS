@@ -17,14 +17,16 @@ export default function FormCheckbox<T extends FieldValues>({
   className,
   isLoading,
   required,
+  onCheckedChange,
 }: {
   form: UseFormReturn<T>;
   name: Path<T>;
-  label: string;
+  label?: string;
   disabled?: boolean;
   className?: string;
   isLoading?: boolean;
   required?: boolean;
+  onCheckedChange?: (checked: boolean | "indeterminate") => void;
 }) {
   return (
     <FormField
@@ -41,7 +43,11 @@ export default function FormCheckbox<T extends FieldValues>({
             ) : (
               <Checkbox
                 checked={Boolean(field.value)}
-                onCheckedChange={(checked) => field.onChange(checked)}
+                onCheckedChange={(checked) => {
+                  const nextValue = checked === true;
+                  field.onChange(nextValue);
+                  onCheckedChange?.(nextValue);
+                }}
                 disabled={disabled}
               />
             )}
