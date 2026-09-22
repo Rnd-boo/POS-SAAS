@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { startTransition, useActionState, useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -12,8 +12,6 @@ import {
   INITIAL_STATE_SUPPLIER,
   INITIAL_SUPPLIER,
 } from "@/constants/supplier.constant";
-import { createClient } from "@/lib/supabase/client";
-import { useAuthStore } from "@/stores/auth-store";
 import {
   SupplierForm,
   supplierFormSchema,
@@ -40,8 +38,8 @@ export default function CreateSupplier() {
         key,
         typeof value === "string" ? value : JSON.stringify(value),
       );
-      formData.append("brand_id", String(currentBrandId));
     });
+    formData.append("brand_id", String(currentBrandId));
     startTransition(() => action(formData));
   });
 
@@ -54,10 +52,10 @@ export default function CreateSupplier() {
     if (state.status === "success") {
       toast.success("Create Supplier Success");
       form.reset();
-      queryClient.invalidateQueries({ queryKey: ["supplier"] });
+      queryClient.refetchQueries({ queryKey: ["suppliers"] });
       router.push("/master-data/supplier");
     }
-  }, [state, form, queryClient, router]);
+  }, [state]);
 
   return (
     <CardFormSupplier

@@ -8,13 +8,16 @@ import { Plus, X } from "lucide-react";
 import { Fragment, useEffect } from "react";
 import { useFieldArray, UseFormReturn } from "react-hook-form";
 import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
 export default function FormSupplier({
   form,
   type,
+  isLoading,
 }: {
   form: UseFormReturn<SupplierForm>;
-  type?: "Detail" | "Create" | "Update" | "Approve";
+  type: "Detail" | "Create" | "Update";
+  isLoading?: boolean;
 }) {
   const { fields, append, remove } = useFieldArray({
     control: form.control,
@@ -47,7 +50,7 @@ export default function FormSupplier({
   return (
     <div>
       <div className="grid grid-cols-[1fr_1fr_auto] gap-4 border p-4 rounded-2xl">
-        <p className="col-span-3 text-md font-medium text-muted-foreground">
+        <p className="col-span-full text-md font-medium text-muted-foreground">
           Supplier Information
         </p>
         <FormInput
@@ -57,14 +60,19 @@ export default function FormSupplier({
           placeholder="Insert supplier name"
           className="col-span-2"
           required
+          disabled={type === "Detail"}
+          isLoading={isLoading}
         />
-        <FormSelect
-          form={form}
-          name="status"
-          label="Status"
-          className="w-40"
-          selectItem={STATUS_LIST}
-        />
+        {type !== "Detail" && (
+          <FormSelect
+            form={form}
+            name="status"
+            label="Status"
+            className="w-40"
+            selectItem={STATUS_LIST}
+            isLoading={isLoading}
+          />
+        )}
         <FormInput
           form={form}
           name="address"
@@ -73,6 +81,8 @@ export default function FormSupplier({
           type="textarea"
           className="col-span-2"
           required
+          disabled={type === "Detail"}
+          isLoading={isLoading}
         />
         <div />
         <FormInput
@@ -80,12 +90,16 @@ export default function FormSupplier({
           name="city"
           label="City"
           placeholder="Insert city"
+          disabled={type === "Detail"}
+          isLoading={isLoading}
         />
         <FormInput
           form={form}
           name="state"
           label="State"
           placeholder="Insert state"
+          disabled={type === "Detail"}
+          isLoading={isLoading}
         />
         <div />
         <FormInput
@@ -93,32 +107,57 @@ export default function FormSupplier({
           name="country"
           label="Country"
           placeholder="Insert country"
+          disabled={type === "Detail"}
+          isLoading={isLoading}
         />
         <FormInput
           form={form}
           name="phone"
           label="Phone"
-          placeholder="e.g. +62-8123-0000"
-          type="number"
+          placeholder="e.g. 0812-0000-1234"
+          disabled={type === "Detail"}
+          isLoading={isLoading}
         />
       </div>
       <div className="border rounded-2xl p-4 my-4">
         <h3 className="font-medium text-muted-foreground mb-4 ">
           Supplier Person In Charge
         </h3>
-        <div className="grid grid-cols-[1fr_1fr_1fr_auto_auto] gap-2">
+        <div
+          className={cn(
+            "grid ] gap-2",
+            type === "Detail"
+              ? "grid-cols-[1fr_1fr_1fr_auto]"
+              : "grid-cols-[1fr_1fr_1fr_auto_auto]",
+          )}
+        >
           <Label>
             Person name <span className="text-destructive">*</span>
           </Label>
           <Label>Email</Label>
           <Label>Cell phone</Label>
           <Label>Default</Label>
-          <Label></Label>
+          {type !== "Detail" && <Label></Label>}
           {fields.map((field, index) => (
             <Fragment key={field.id}>
-              <FormInput form={form} name={`supplier_PIC.${index}.name`} />
-              <FormInput form={form} name={`supplier_PIC.${index}.email`} />
-              <FormInput form={form} name={`supplier_PIC.${index}.phone`} />
+              <FormInput
+                form={form}
+                name={`supplier_PIC.${index}.name`}
+                disabled={type === "Detail"}
+                isLoading={isLoading}
+              />
+              <FormInput
+                form={form}
+                name={`supplier_PIC.${index}.email`}
+                disabled={type === "Detail"}
+                isLoading={isLoading}
+              />
+              <FormInput
+                form={form}
+                name={`supplier_PIC.${index}.phone`}
+                disabled={type === "Detail"}
+                isLoading={isLoading}
+              />
               <FormCheckbox
                 form={form}
                 name={`supplier_PIC.${index}.is_default`}
@@ -126,6 +165,8 @@ export default function FormSupplier({
                 onCheckedChange={(checked) =>
                   handleDefaultPICChange(index, checked)
                 }
+                disabled={type === "Detail"}
+                isLoading={isLoading}
               />
               {fields.length > 1 && type !== "Detail" && (
                 <Button
@@ -141,17 +182,19 @@ export default function FormSupplier({
             </Fragment>
           ))}
         </div>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() =>
-            append({ name: "", email: "", phone: "", is_default: false })
-          }
-          className="mt-4"
-        >
-          <Plus /> Add PIC
-        </Button>
+        {type !== "Detail" && (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() =>
+              append({ name: "", email: "", phone: "", is_default: false })
+            }
+            className="mt-4"
+          >
+            <Plus /> Add PIC
+          </Button>
+        )}
       </div>
       <div className="border rounded-2xl p-4 grid grid-cols-3 gap-4">
         <h3 className="font-medium text-muted-foreground col-span-full">
@@ -166,26 +209,39 @@ export default function FormSupplier({
             { value: "credit", label: "Credit" },
           ]}
           required
+          disabled={type === "Detail"}
+          isLoading={isLoading}
         />
         <FormInput
           form={form}
           name="credit_terms"
           label="Credit Terms (days)"
           type="number"
-          disabled={paymentMethod === "cash"}
+          disabled={paymentMethod === "cash" || type === "Detail"}
+          isLoading={isLoading}
           required
         />
         <div />
-        <FormInput form={form} name="bank_name" label="Bank Name" />
+        <FormInput
+          form={form}
+          name="bank_name"
+          label="Bank Name"
+          disabled={type === "Detail"}
+          isLoading={isLoading}
+        />
         <FormInput
           form={form}
           name="bank_account_number"
+          disabled={type === "Detail"}
           label="Bank Account Number"
+          isLoading={isLoading}
         />
         <FormInput
           form={form}
           name="bank_account_name"
+          disabled={type === "Detail"}
           label="Bank Account Name"
+          isLoading={isLoading}
         />
       </div>
       <FormInput
@@ -193,7 +249,9 @@ export default function FormSupplier({
         name="notes"
         type="textarea"
         label="Notes"
+        disabled={type === "Detail"}
         className="p-2 mt-2"
+        isLoading={isLoading}
       />
     </div>
   );
