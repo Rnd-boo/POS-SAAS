@@ -2,9 +2,9 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { cn } from "@/lib/utils";
-import { User } from "@/validations/user/user.validation";
 import DropdownAction from "../common/dropdown-action";
 import { Pencil, Trash2 } from "lucide-react";
+import { User } from "@/validations/user/user.validation";
 
 export type UserColumn = {
   id: string;
@@ -12,11 +12,22 @@ export type UserColumn = {
   username: string;
   password_hash: string;
   status: boolean;
+  roles_id: string;
   roles: { name: string };
   brand_id?: string | undefined;
 };
 
-export const userColumns: ColumnDef<UserColumn>[] = [
+export const userColumns = ({
+  router,
+  setSelectedAction,
+  pathname,
+}: {
+  router: {
+    push: (path: string) => void;
+  };
+  setSelectedAction: (value: { data: User; type: "delete" } | null) => void;
+  pathname: string;
+}): ColumnDef<UserColumn>[] => [
   {
     id: "name",
     accessorFn: (row) => row.name,
@@ -71,12 +82,9 @@ export const userColumns: ColumnDef<UserColumn>[] = [
                   Edit
                 </span>
               ),
-              // action: () => {
-              //   setSelectedAction({
-              //     data: row.original,
-              //     type: "update",
-              //   });
-              // },
+              action: () => {
+                router.push(`${pathname}/${row?.original.id}/edit`);
+              },
             },
             {
               label: (
@@ -86,12 +94,12 @@ export const userColumns: ColumnDef<UserColumn>[] = [
                 </span>
               ),
               variant: "destructive",
-              // action: () => {
-              //   setSelectedAction({
-              //     data: row.original,
-              //     type: "delete",
-              //   });
-              // },
+              action: () => {
+                setSelectedAction({
+                  data: row.original,
+                  type: "delete",
+                });
+              },
             },
           ]}
         />

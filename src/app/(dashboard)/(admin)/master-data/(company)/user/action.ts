@@ -82,3 +82,27 @@ export async function createUser(
     status: "success",
   };
 }
+
+export async function deleteUser(
+  prevState: ClientProfilesFormState,
+  formData: FormData,
+) {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("client_profiles")
+    .delete()
+    .eq("id", formData.get("id"));
+
+  if (error) {
+    return {
+      status: "error",
+      errors: {
+        ...prevState.errors,
+        _form: [error.message],
+      },
+    };
+  }
+
+  return { status: "success" };
+}

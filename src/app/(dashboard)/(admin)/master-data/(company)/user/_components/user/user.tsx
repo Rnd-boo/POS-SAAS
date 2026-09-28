@@ -2,31 +2,25 @@
 
 import useDataTable from "@/hooks/use-data-table";
 import { createClient } from "@/lib/supabase/client";
-import { queryOptions, useQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useAuthStore } from "@/stores/auth-store";
 import { useBrandStore } from "@/stores/brand-store";
 import { Card, CardContent } from "@/components/ui/card";
 import PageHeader from "@/components/common/page-header";
 import { DataTable } from "@/components/common/tanstack-table";
-import { User } from "@/validations/user/user.validation";
 import { UserColumn, userColumns } from "@/components/columns.tsx/user-columns";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "@/components/ui/input-group";
-import { SearchIcon } from "lucide-react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import DialogDeleteUser from "./dialog-delete-user";
+import { User } from "@/validations/user/user.validation";
 
 export default function UserManagement() {
   const supabase = createClient();
   const currentBrandId = useBrandStore((s) => s.currentBrandId);
   const currentId = useAuthStore((state) => state.profile?.clients);
   const pathname = usePathname();
+  const router = useRouter();
   const { currentPage, handleChangePage, currentSearch, handleChangeSearch } =
     useDataTable();
 
@@ -66,14 +60,14 @@ export default function UserManagement() {
     enabled: !!currentId,
   });
 
-  // const [selectedAction, setSelectedAction] = useState<{
-  //   data: TableMap;
-  //   type: "detail" | "update" | "delete";
-  // } | null>(null);
+  const [selectedAction, setSelectedAction] = useState<{
+    data: User;
+    type: "delete";
+  } | null>(null);
 
-  // const handleChangeAction = (open: boolean) => {
-  //   if (!open) setSelectedAction(null);
-  // };
+  const handleChangeAction = (open: boolean) => {
+    if (!open) setSelectedAction(null);
+  };
 
   const totalData = users?.count ?? 0;
 
@@ -93,10 +87,20 @@ export default function UserManagement() {
           refetch={refetch}
           data={users?.data ?? []}
           totalData={totalData}
-          columns={userColumns}
+          columns={userColumns({
+            router: router,
+            pathname,
+            setSelectedAction,
+          })}
           totalPages={totalPages}
           currentPage={currentPage}
           onChangePage={handleChangePage}
+        />
+        <DialogDeleteUser
+          open={selectedAction?.type === "delete"}
+          refetch={refetch}
+          currentData={selectedAction?.data}
+          handleChangeAction={handleChangeAction}
         />
       </CardContent>
     </Card>
