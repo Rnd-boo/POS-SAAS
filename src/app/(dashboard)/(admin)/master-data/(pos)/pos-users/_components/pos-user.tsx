@@ -13,15 +13,12 @@ import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/auth-store";
 import { useBrandStore } from "@/stores/brand-store";
-import {
-  POSUserBranches,
-  POSUsers,
-} from "@/validations/pos/pos-users.validation";
+import { POSUserBranches } from "@/validations/pos/pos-users.validation";
 import { useQuery } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowDown, ArrowUp, Pencil, Trash2 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 export default function POSUser() {

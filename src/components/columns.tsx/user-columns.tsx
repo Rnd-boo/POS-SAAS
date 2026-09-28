@@ -5,6 +5,8 @@ import { cn } from "@/lib/utils";
 import DropdownAction from "../common/dropdown-action";
 import { Pencil, Trash2 } from "lucide-react";
 import { User } from "@/validations/user/user.validation";
+import Link from "next/link";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 export type UserColumn = {
   id: string;
@@ -13,6 +15,7 @@ export type UserColumn = {
   password_hash: string;
   status: boolean;
   roles_id: string;
+  client_branches: { branch: { name: string } }[];
   roles: { name: string };
   brand_id?: string | undefined;
 };
@@ -36,17 +39,48 @@ export const userColumns = ({
     cell: ({ getValue }) => <div>{getValue<string>()}</div>,
   },
   {
+    id: "username",
+    accessorFn: (row) => row.username,
+    enableHiding: false,
+    header: () => <div className="cursor-default">Username</div>,
+    cell: ({ getValue }) => <div>{getValue<string>()}</div>,
+  },
+  {
     id: "roles(name)",
     enableHiding: false,
     accessorFn: (row) => row.roles.name,
     header: () => <div className="cursor-default">Role</div>,
-    cell: ({ getValue }) => <div>{getValue<string>()}</div>,
+    cell: ({ getValue, row }) => (
+      <Link
+        href={`user/role/${row.original.roles_id}`}
+        className="text-primary hover:text-foreground"
+      >
+        {getValue<string>()}
+      </Link>
+    ),
   },
   {
-    id: "username",
-    accessorFn: (row) => row.username,
-    header: () => <div className="cursor-default">Username</div>,
-    cell: ({ getValue }) => <div>{getValue<string>()}</div>,
+    id: "branch",
+    accessorFn: (row) =>
+      row.client_branches.map(({ branch }) => branch.name).join(", "),
+    enableHiding: false,
+    header: () => <div>Branch Access</div>,
+    cell: ({ getValue, row }) => {
+      return row.original.client_branches.length > 1 ? (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="w-fit truncate whitespace-nowrap cursor-pointer text-primary hover:text-foreground">
+              {row.original.client_branches[0].branch.name} ..
+            </div>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{getValue<string>()}</p>
+          </TooltipContent>
+        </Tooltip>
+      ) : (
+        <div className="truncate max-w-xs">{getValue<string>()}</div>
+      );
+    },
   },
   {
     accessorKey: "status",

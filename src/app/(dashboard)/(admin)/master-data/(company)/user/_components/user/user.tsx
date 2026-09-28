@@ -39,9 +39,10 @@ export default function UserManagement() {
     queryFn: async () => {
       const query = supabase
         .from("client_profiles")
-        .select(`id,name,username,roles!roles_id(name),status,password_hash`, {
-          count: "exact",
-        })
+        .select(
+          `id,name,username,roles_id,roles!client_profiles_roles_id_fkey(name),status,password_hash,client_branches(branch(name))`,
+          { count: "exact" },
+        )
         .eq("clients_id", currentId)
         .eq("brand_id", currentBrandId)
         .range((currentPage - 1) * 10, currentPage * 10 - 1)
@@ -51,7 +52,7 @@ export default function UserManagement() {
       const result = await query.overrideTypes<UserColumn[]>();
 
       if (result.error)
-        toast.error("Get Table Map Data Failed", {
+        toast.error("Get User Data Failed", {
           description: result.error.message,
         });
 
