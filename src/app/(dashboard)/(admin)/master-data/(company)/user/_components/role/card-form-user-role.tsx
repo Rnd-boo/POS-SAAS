@@ -116,7 +116,9 @@ export default function CardFormUserRole({
         </Card>
         <CreateButton type={type} isPending={isPending} />
       </form>
-      <DialogImportRole open={open} setOpen={setOpen} form={form} />
+      {type !== "Detail" && (
+        <DialogImportRole open={open} setOpen={setOpen} form={form} />
+      )}
     </Form>
   );
 }

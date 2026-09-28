@@ -19,7 +19,6 @@ export async function createUser(
     brand_id: formData.get("brand_id"),
     client_branches: JSON.parse(formData.get("client_branches") as string),
   });
-
   if (!validatedFields.success) {
     return {
       status: "error",
@@ -27,7 +26,6 @@ export async function createUser(
     };
   }
 
-  console.log(validatedFields);
   const passwordHashed = await bcrypt.hash(
     validatedFields.data.password_hash,
     12,
@@ -64,7 +62,7 @@ export async function createUser(
   const userBranches = validatedFields.data.client_branches.map((client) => ({
     clients_id: currentClientId,
     client_profiles_id: clientProfiles.id,
-    role_id: client.branch_id,
+    branch_id: client.branch_id,
   }));
   const { error: userBranchesError } = await supabase
     .from("client_branches")

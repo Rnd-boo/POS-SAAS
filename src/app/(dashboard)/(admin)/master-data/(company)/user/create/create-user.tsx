@@ -19,7 +19,6 @@ export default function CreateUser() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const currentBrandId = useBrandStore((s) => s.currentBrandId);
-
   const form = useForm<UserForm>({
     resolver: zodResolver(userFormSchema),
     defaultValues: INITIAL_USER,
@@ -38,8 +37,7 @@ export default function CreateUser() {
         formData.append(key, String(value ?? ""));
       }
     });
-    formData.append("brand_id", String(currentBrandId));
-
+    formData.set("brand_id", String(currentBrandId));
     startTransition(() => {
       createUserAction(formData);
     });

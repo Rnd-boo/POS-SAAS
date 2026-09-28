@@ -95,7 +95,18 @@ export default function CardFormUser({
 
   return (
     <Form {...form}>
-      <form onSubmit={onSubmit} className="w-full pb-28">
+      <form
+        onSubmit={onSubmit}
+        onKeyDown={(event) => {
+          if (
+            event.key === "Enter" &&
+            event.target instanceof HTMLInputElement
+          ) {
+            event.preventDefault();
+          }
+        }}
+        className="w-full pb-28"
+      >
         <div className={cn(type !== "Create" ? "flex gap-2" : "")}>
           <Card className={cn(type !== "Create" ? "w-3/4 mb-2" : "w-full")}>
             <CardHeader>
