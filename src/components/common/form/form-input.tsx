@@ -9,7 +9,13 @@ import {
 import { Input } from "../../ui/input";
 import { Textarea } from "../../ui/textarea";
 import { Skeleton } from "../../ui/skeleton";
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function FormInput<T extends FieldValues>({
   form,
@@ -38,6 +44,8 @@ export default function FormInput<T extends FieldValues>({
   tooltip?: ReactNode;
   onChange?: (value: string) => void;
 }) {
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+
   return (
     <FormField
       control={form.control}
@@ -60,6 +68,21 @@ export default function FormInput<T extends FieldValues>({
                 disabled={disabled}
                 readOnly={readOnly}
               />
+            ) : type === "password" ? (
+              <InputGroup>
+                <InputGroupInput
+                  id="inline-end-input"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter password"
+                />
+                <InputGroupAddon
+                  align="inline-end"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="cursor-pointer"
+                >
+                  {showPassword ? <Eye /> : <EyeOff />}
+                </InputGroupAddon>
+              </InputGroup>
             ) : (
               <Input
                 {...rest}
