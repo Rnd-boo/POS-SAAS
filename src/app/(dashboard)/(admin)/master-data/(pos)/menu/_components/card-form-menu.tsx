@@ -22,9 +22,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useAuthStore } from "@/stores/auth-store";
 import { toast } from "sonner";
 import { useBranchQuery } from "@/hooks/queries/use-branches";
-import MultipleCombobox, {
-  comboboxType,
-} from "@/components/common/multiple-combobox";
+
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -35,6 +33,9 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import FormMultipleCombobox, {
+  comboboxType,
+} from "@/components/common/form/form-multiple-combobox";
 
 export const TYPE_STOCK = [
   { value: "product", label: "Product" },
@@ -206,7 +207,7 @@ export default function CardFormMenu({
               disabled={type === "Detail"}
               isLoading={isLoading}
             />
-            <MultipleCombobox
+            <FormMultipleCombobox
               form={form}
               name="menu_branches"
               value={branchValue}

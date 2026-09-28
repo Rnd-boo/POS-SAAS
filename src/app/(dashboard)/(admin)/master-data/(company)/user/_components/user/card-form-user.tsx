@@ -3,29 +3,48 @@
 import FormInput from "@/components/common/form/form-input";
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
-import { FormEvent, useState } from "react";
-import { UseFormReturn } from "react-hook-form";
+import { FormEvent, useEffect, useState } from "react";
+import { useFieldArray, UseFormReturn } from "react-hook-form";
 import CreateButton from "@/components/common/create-button";
-
-import { Label } from "@/components/ui/label";
-import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import FormSelect from "@/components/common/form/form-select";
-import { STATUS_LIST } from "@/constants/general.constant";
 import { UserForm } from "@/validations/user/user.validation";
-import FormSelectData from "@/components/common/form/form-select-data";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { ShieldQuestionMark } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { createClient } from "@/lib/supabase/client";
+import { useBrandStore } from "@/stores/brand-store";
+import { useAuthStore } from "@/stores/auth-store";
+import { useBranchQuery } from "@/hooks/queries/use-branches";
+import FormCombobox from "@/components/common/form/form-combobox";
+import FormMultipleCombobox, {
+  comboboxType,
+} from "@/components/common/form/form-multiple-combobox";
+import FormStatusSwitch from "@/components/common/form/form-status-switch";
+
+const passwordTooltip = (
+  <Tooltip>
+    <TooltipTrigger asChild>
+      <ShieldQuestionMark className="size-4 text-primary" />
+    </TooltipTrigger>
+    <TooltipContent>
+      <p>
+        Password will be hashed, make sure to write it down somewhere safe
+        before submit
+      </p>
+    </TooltipContent>
+  </Tooltip>
+);
 
 export default function CardFormUser({
   form,
@@ -40,20 +59,39 @@ export default function CardFormUser({
   isLoading?: boolean;
   onSubmit?: (event: FormEvent<HTMLFormElement>) => void;
 }) {
-  //   const status = form.watch("status") === "true" ? "true" : "false";
-  const passwordTooltip = (
-    <Tooltip>
-      <TooltipTrigger>
-        <ShieldQuestionMark className="size-4 text-primary" />
-      </TooltipTrigger>
-      <TooltipContent>
-        <p>
-          Password will be hashed, make sure to write it down somewhere safe
-          before submit
-        </p>
-      </TooltipContent>
-    </Tooltip>
-  );
+  const supabase = createClient();
+  const currentBrandId = useBrandStore((s) => s.currentBrandId);
+  const currentId = useAuthStore((state) => state.profile?.clients);
+  const { data: branches } = useBranchQuery();
+  const { data: roles, isLoading: isLoadingRoles } = useQuery({
+    queryKey: ["roles", currentId, currentBrandId],
+    queryFn: async () => {
+      const result = await supabase
+        .from("roles")
+        .select("id,name", {
+          count: "exact",
+        })
+        .eq("clients_id", currentId)
+        .eq("brand_id", currentBrandId);
+
+      return result;
+    },
+    enabled: !!currentId,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const [branchValue, branchSetValue] = useState<comboboxType[]>([]);
+  const { replace } = useFieldArray({
+    control: form.control,
+    name: "client_branches",
+  });
+  useEffect(() => {
+    replace(
+      branchValue.map((v) => ({
+        branch_id: String(v.id),
+      })),
+    );
+  }, [branchValue, replace]);
 
   return (
     <Form {...form}>
@@ -65,6 +103,13 @@ export default function CardFormUser({
               <CardDescription>
                 Manage user - {type} information as needed.
               </CardDescription>
+              <CardAction>
+                <FormStatusSwitch
+                  form={form}
+                  name="status"
+                  disabled={type === "Detail"}
+                />
+              </CardAction>
             </CardHeader>
             <CardContent className="grid grid-cols-3 gap-2 gap-y-6">
               <FormInput
@@ -77,72 +122,47 @@ export default function CardFormUser({
               />
               <FormInput
                 form={form}
-                label="Name"
-                name="name"
-                isLoading={isLoading}
-                disabled={type === "Detail"}
-                required
-              />
-              <FormSelectData
-                form={form}
-                label="User Role"
-                name="roles_id"
-                isLoading={isLoading}
-                disabled={type === "Detail"}
-                required
-              />
-              <FormInput
-                form={form}
                 label="Password Hashed"
                 name="password_hash"
                 isLoading={isLoading}
                 disabled={type === "Detail"}
                 required
+                type="password"
                 tooltip={passwordTooltip}
               />
-              <FormSelectData
+              <div />
+              <FormInput
                 form={form}
-                label="Branch Access"
-                name="user_branches"
+                label="Full Name"
+                name="name"
                 isLoading={isLoading}
                 disabled={type === "Detail"}
-                className="col-span-2"
                 required
               />
+              <FormCombobox
+                form={form}
+                items={roles?.data ?? []}
+                label="User Role"
+                name="roles_id"
+                isLoading={isLoadingRoles}
+                disabled={type === "Detail"}
+                required
+              />
+
+              <div className="col-span-2">
+                <FormMultipleCombobox
+                  form={form}
+                  label="Branch Access"
+                  name="client_branches"
+                  items={branches ?? []}
+                  setValue={branchSetValue}
+                  value={branchValue}
+                  required
+                />
+              </div>
             </CardContent>
           </Card>
-          {type !== "Create" && (
-            <Card className="w-1/4 h-fit">
-              <CardContent>
-                <div className="flex items-center justify-between">
-                  <Label>Status</Label>
-                  {type === "Detail" ? (
-                    isLoading ? (
-                      <Skeleton className="h-9 rounded-full w-[144px]" />
-                    ) : (
-                      <div
-                        className={cn(
-                          "px-2 py-1 rounded-full text-white w-fit capitalize text-sm",
-                          status === "true" ? "bg-green-600" : "bg-destructive",
-                        )}
-                      >
-                        {status === "true" ? "Active" : "Inactive"}
-                      </div>
-                    )
-                  ) : (
-                    <FormSelect
-                      form={form}
-                      name="status"
-                      selectItem={STATUS_LIST}
-                      isLoading={isLoading}
-                    />
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          )}
         </div>
-
         <CreateButton type={type} isPending={isPending} />
       </form>
     </Form>

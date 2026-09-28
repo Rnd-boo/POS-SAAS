@@ -171,6 +171,7 @@ export default function UserRoleManagement() {
           placeholder="Role Name"
         />
         <DataTable
+          isLoading={isLoading}
           data={data}
           columns={columns}
           totalPages={totalPages}

@@ -71,9 +71,16 @@ export default function FormInput<T extends FieldValues>({
             ) : type === "password" ? (
               <InputGroup>
                 <InputGroupInput
+                  {...rest}
                   id="inline-end-input"
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter password"
+                  autoComplete="off"
+                  disabled={disabled}
+                  onChange={(e) => {
+                    rest.onChange(e);
+                    onChange?.(e.target.value);
+                  }}
                 />
                 <InputGroupAddon
                   align="inline-end"
