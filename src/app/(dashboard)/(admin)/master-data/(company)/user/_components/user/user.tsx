@@ -19,6 +19,7 @@ export default function UserManagement() {
   const supabase = createClient();
   const currentBrandId = useBrandStore((s) => s.currentBrandId);
   const currentId = useAuthStore((state) => state.profile?.clients);
+  const currentProfileId = useAuthStore((state) => state.profile?.id);
   const pathname = usePathname();
   const router = useRouter();
   const { currentPage, handleChangePage, currentSearch, handleChangeSearch } =
@@ -35,6 +36,7 @@ export default function UserManagement() {
       currentSearch,
       currentId,
       currentBrandId,
+      currentProfileId,
     ],
     queryFn: async () => {
       const query = supabase
@@ -47,6 +49,7 @@ export default function UserManagement() {
         .eq("brand_id", currentBrandId)
         .range((currentPage - 1) * 10, currentPage * 10 - 1)
         .order("name")
+        .not("id", "eq", currentProfileId)
         .ilike("name", `%${currentSearch}%`);
 
       const result = await query.overrideTypes<UserColumn[]>();
