@@ -8,6 +8,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Combobox } from "../manual-combobox";
 import { FieldValues, Path, UseFormReturn } from "react-hook-form";
+import { cn } from "@/lib/utils";
 
 export default function FormCombobox<T extends FieldValues>({
   form,
@@ -54,7 +55,7 @@ export default function FormCombobox<T extends FieldValues>({
                 onChange={(value) => {
                   field.onChange(value);
                 }}
-                className={className}
+                className={cn(className, "w-full")}
               />
             )}
           </FormControl>

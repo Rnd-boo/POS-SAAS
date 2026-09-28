@@ -5,8 +5,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../ui/form";
-import { Skeleton } from "../ui/skeleton";
+} from "../../ui/form";
+import { Skeleton } from "../../ui/skeleton";
 import {
   Combobox,
   ComboboxChip,
@@ -17,13 +17,14 @@ import {
   ComboboxItem,
   ComboboxList,
   ComboboxValue,
-} from "../ui/combobox";
+  useComboboxAnchor,
+} from "../../ui/combobox";
 export type comboboxType = {
   id: string;
   name: string;
 };
 
-export default function MultipleCombobox<T extends FieldValues>({
+export default function FormMultipleCombobox<T extends FieldValues>({
   form,
   label,
   name,
@@ -32,6 +33,7 @@ export default function MultipleCombobox<T extends FieldValues>({
   isLoading,
   value,
   setValue,
+  required,
 }: {
   form: UseFormReturn<T>;
   label: string;
@@ -41,15 +43,19 @@ export default function MultipleCombobox<T extends FieldValues>({
   isLoading?: boolean;
   value: comboboxType[];
   setValue: (value: comboboxType[]) => void;
+  required?: boolean;
 }) {
+  const anchor = useComboboxAnchor();
   return (
     <FormField
       control={form.control}
       name={name}
-      render={({ field, fieldState }) => {
+      render={({ field }) => {
         return (
           <FormItem>
-            <FormLabel>{label}</FormLabel>
+            <FormLabel>
+              {label} {required && <span className="text-destructive">*</span>}
+            </FormLabel>
             <FormControl>
               {isLoading ? (
                 <Skeleton className="h-10 w-full" />
@@ -65,7 +71,7 @@ export default function MultipleCombobox<T extends FieldValues>({
                   itemToStringValue={(item) => item.name}
                   autoHighlight
                 >
-                  <ComboboxChips>
+                  <ComboboxChips ref={anchor}>
                     <ComboboxValue>
                       {value?.map((item) => (
                         <ComboboxChip key={item.id}>{item.name}</ComboboxChip>
@@ -73,7 +79,7 @@ export default function MultipleCombobox<T extends FieldValues>({
                     </ComboboxValue>
                     <ComboboxChipsInput disabled={disabled} />
                   </ComboboxChips>
-                  <ComboboxContent>
+                  <ComboboxContent anchor={anchor}>
                     <ComboboxEmpty>No items found.</ComboboxEmpty>
                     <ComboboxList>
                       {(item) => (
