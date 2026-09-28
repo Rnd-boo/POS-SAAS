@@ -1,27 +1,17 @@
 import { FieldValues, Path, UseFormReturn } from "react-hook-form";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "../../ui/form";
-import { Switch } from "../../ui/switch";
+import { FormControl, FormField, FormItem, FormMessage } from "../../ui/form";
+import StatusSwitch from "../status-switch";
 
-export default function FormSwitch<T extends FieldValues>({
+export default function FormStatusSwitch<T extends FieldValues>({
   form,
-  label,
   name,
   disabled = false,
   className,
-  defaultChecked = false,
 }: {
   form: UseFormReturn<T>;
   name: Path<T>;
-  label: string;
   disabled?: boolean;
   className?: string;
-  defaultChecked?: boolean;
 }) {
   return (
     <FormField
@@ -29,15 +19,13 @@ export default function FormSwitch<T extends FieldValues>({
       name={name}
       render={({ field: { ...rest } }) => (
         <FormItem className={className}>
-          <FormLabel>{label}</FormLabel>
           <FormControl>
-            <Switch
+            <StatusSwitch
               {...rest}
-              defaultChecked={defaultChecked}
-              disabled={disabled}
-              onCheckedChange={(e) => {
+              onChange={(e) => {
                 rest.onChange(e);
               }}
+              disabled={disabled}
             />
           </FormControl>
           <FormMessage className="text-xs" />
