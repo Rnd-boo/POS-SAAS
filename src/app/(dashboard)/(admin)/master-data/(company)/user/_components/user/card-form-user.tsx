@@ -10,10 +10,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
-import { FormEvent, useEffect, useState } from "react";
-import { useFieldArray, UseFormReturn } from "react-hook-form";
+import { FormEvent } from "react";
+import { UseFormReturn } from "react-hook-form";
 import CreateButton from "@/components/common/create-button";
-import { cn } from "@/lib/utils";
 import { UserForm } from "@/validations/user/user.validation";
 import {
   Tooltip,
@@ -27,10 +26,8 @@ import { useBrandStore } from "@/stores/brand-store";
 import { useAuthStore } from "@/stores/auth-store";
 import { useBranchQuery } from "@/hooks/queries/use-branches";
 import FormCombobox from "@/components/common/form/form-combobox";
-import FormMultipleCombobox, {
-  comboboxType,
-} from "@/components/common/form/form-multiple-combobox";
 import FormStatusSwitch from "@/components/common/form/form-status-switch";
+import FormMultiselect from "@/components/common/form/form-multiselect";
 
 const passwordTooltip = (
   <Tooltip>
@@ -80,19 +77,6 @@ export default function CardFormUser({
     staleTime: 5 * 60 * 1000,
   });
 
-  const [branchValue, branchSetValue] = useState<comboboxType[]>([]);
-  const { replace } = useFieldArray({
-    control: form.control,
-    name: "client_branches",
-  });
-  useEffect(() => {
-    replace(
-      branchValue.map((v) => ({
-        branch_id: String(v.id),
-      })),
-    );
-  }, [branchValue, replace]);
-
   return (
     <Form {...form}>
       <form
@@ -107,8 +91,8 @@ export default function CardFormUser({
         }}
         className="w-full pb-28"
       >
-        <div className={cn(type !== "Create" ? "flex gap-2" : "")}>
-          <Card className={cn(type !== "Create" ? "w-3/4 mb-2" : "w-full")}>
+        <div>
+          <Card>
             <CardHeader>
               <CardTitle>{type} User</CardTitle>
               <CardDescription>
@@ -131,16 +115,19 @@ export default function CardFormUser({
                 disabled={type === "Detail"}
                 required
               />
-              <FormInput
-                form={form}
-                label="Password Hashed"
-                name="password_hash"
-                isLoading={isLoading}
-                disabled={type === "Detail"}
-                required
-                type="password"
-                tooltip={passwordTooltip}
-              />
+              {type === "Detail" ? (
+                <div />
+              ) : (
+                <FormInput
+                  form={form}
+                  label="Password Hashed"
+                  name="password_hash"
+                  isLoading={isLoading}
+                  required
+                  type="password"
+                  tooltip={passwordTooltip}
+                />
+              )}
               <div />
               <FormInput
                 form={form}
@@ -155,20 +142,21 @@ export default function CardFormUser({
                 items={roles?.data ?? []}
                 label="User Role"
                 name="roles_id"
-                isLoading={isLoadingRoles}
+                isLoading={isLoadingRoles || isLoading}
                 disabled={type === "Detail"}
                 required
               />
-
+              <div />
               <div className="col-span-2">
-                <FormMultipleCombobox
+                <FormMultiselect
                   form={form}
-                  label="Branch Access"
                   name="client_branches"
+                  label="Branch Access"
                   items={branches ?? []}
-                  setValue={branchSetValue}
-                  value={branchValue}
+                  disabled={type === "Detail"}
+                  isLoading={isLoading}
                   required
+                  valueKey="branch_id"
                 />
               </div>
             </CardContent>
