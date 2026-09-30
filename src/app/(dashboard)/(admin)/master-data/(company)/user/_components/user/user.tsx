@@ -10,7 +10,7 @@ import { useBrandStore } from "@/stores/brand-store";
 import { Card, CardContent } from "@/components/ui/card";
 import PageHeader from "@/components/common/page-header";
 import { DataTable } from "@/components/common/tanstack-table";
-import { UserColumn, userColumns } from "@/components/columns.tsx/user-columns";
+import { userColumns } from "@/components/columns.tsx/user-columns";
 import { usePathname, useRouter } from "next/navigation";
 import DialogDeleteUser from "./dialog-delete-user";
 import { User } from "@/validations/user/user.validation";
@@ -52,7 +52,7 @@ export default function UserManagement() {
         .not("id", "eq", currentProfileId)
         .ilike("name", `%${currentSearch}%`);
 
-      const result = await query.overrideTypes<UserColumn[]>();
+      const result = await query.overrideTypes<User[]>();
 
       if (result.error)
         toast.error("Get User Data Failed", {

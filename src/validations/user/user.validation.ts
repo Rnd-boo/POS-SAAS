@@ -31,12 +31,17 @@ export const userFormSchema = z.object({
   roles_id: z.string().min(1, "Roles is required"),
   status: z.boolean(),
   brand_id: z.string().optional(),
-  client_branches: z.array(userBranchSchema),
+  client_branches: z
+    .array(userBranchSchema)
+    .min(1, "At least one branch is required"),
 });
 
 export type UserForm = z.infer<typeof userFormSchema>;
 export type User = z.infer<typeof userSchema> & {
   id: string;
+  // created_at?: string;
+  // updated_at?: string;
+  client_branches: { branch: { id?: number; name: string } }[];
+  roles: { name: string };
 };
-
 export type UserBranch = z.infer<typeof userBranchSchema>;

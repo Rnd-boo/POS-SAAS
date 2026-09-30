@@ -5,12 +5,7 @@ export const INITIAL_USER = {
   status: true,
   roles_id: "",
   brand_id: undefined,
-  client_branches: [
-    {
-      user_id: "",
-      branch_id: "",
-    },
-  ],
+  client_branches: [],
 };
 
 export const INITIAL_STATE_USER = {

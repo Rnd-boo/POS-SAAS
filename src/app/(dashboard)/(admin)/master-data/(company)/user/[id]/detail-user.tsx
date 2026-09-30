@@ -1,6 +1,6 @@
 "use client";
 
-import { createClient } from "@/lib/supabase/client";
+import { User } from "@/validations/user/user.validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useAuthStore } from "@/stores/auth-store";
@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import CardFormUser from "../_components/user/card-form-user";
 import { UserForm, userFormSchema } from "@/validations/user/user.validation";
 import { INITIAL_USER } from "@/constants/user/user.constant";
-import { UserColumn } from "@/components/columns.tsx/user-columns";
+import { createClient } from "@/lib/supabase/client";
 
 export default function DetailUser() {
   const supabase = createClient();
@@ -38,7 +38,7 @@ export default function DetailUser() {
           .eq("brand_id", currentBrandId)
           .eq("id", clientProfileId)
           .single();
-        const result = await query.overrideTypes<UserColumn>();
+        const result = await query.overrideTypes<User>();
 
         if (result.error)
           toast.error("Get User Role Data Failed", {

@@ -8,18 +8,6 @@ import { User } from "@/validations/user/user.validation";
 import Link from "next/link";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
-export type UserColumn = {
-  id: string;
-  name: string;
-  username: string;
-  password_hash: string;
-  status: boolean;
-  roles_id: string;
-  client_branches: { branch: { name: string } }[];
-  roles: { name: string };
-  brand_id?: string | undefined;
-};
-
 export const userColumns = ({
   router,
   setSelectedAction,
@@ -30,7 +18,7 @@ export const userColumns = ({
   };
   setSelectedAction: (value: { data: User; type: "delete" } | null) => void;
   pathname: string;
-}): ColumnDef<UserColumn>[] => [
+}): ColumnDef<User>[] => [
   {
     id: "name",
     accessorFn: (row) => row.name,
