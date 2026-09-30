@@ -50,11 +50,18 @@ export async function createUser(
     .single();
 
   if (clientProfileError) {
+    let errorMessage = clientProfileError.message;
+    
+    // Map database constraint errors to user-friendly messages
+    if (errorMessage.includes("client_profiles_clients_id_username_key")) {
+      errorMessage = "Username has been used";
+    }
+    
     return {
       status: "error",
       errors: {
         ...prevState.errors,
-        _form: [clientProfileError.message],
+        _form: [errorMessage],
       },
     };
   }
