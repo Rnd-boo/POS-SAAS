@@ -3,14 +3,11 @@
 import { getCurrentProfile } from "@/lib/get-current-profile";
 import { createClient } from "@/lib/supabase/server";
 import { BranchFormState } from "@/types/branch";
-import {
-  branchFormSchema,
-  branchSchema,
-} from "@/validations/branch.validation";
+import { branchFormSchema } from "@/validations/branch.validation";
 
 export async function createBranch(
   prevState: BranchFormState,
-  formData: FormData
+  formData: FormData,
 ) {
   const validatedFields = branchFormSchema.safeParse({
     name: formData.get("name"),
@@ -18,7 +15,7 @@ export async function createBranch(
     status: formData.get("status"),
     branch_location: JSON.parse(formData.get("branch_location") as string),
     branch_order_context: JSON.parse(
-      formData.get("branch_order_context") as string
+      formData.get("branch_order_context") as string,
     ),
   });
 
@@ -61,7 +58,7 @@ export async function createBranch(
       branch_id: branchData.id,
       name: location.name,
       type: location.type,
-    })
+    }),
   );
   const { error: branchLocationError } = await supabase
     .from("branch_location")
@@ -83,7 +80,7 @@ export async function createBranch(
       client_profiles_id: currentUserId,
       branch_id: branchData.id,
       order_context_id: order_context.order_context,
-    })
+    }),
   );
   const { error: branchOrderContextError } = await supabase
     .from("branch_order_context")
@@ -106,7 +103,7 @@ export async function createBranch(
 
 export async function updateBranch(
   prevState: BranchFormState,
-  formData: FormData
+  formData: FormData,
 ) {
   const validatedFields = branchFormSchema.safeParse({
     name: formData.get("name"),
@@ -114,7 +111,7 @@ export async function updateBranch(
     status: formData.get("status"),
     branch_location: JSON.parse(formData.get("branch_location") as string),
     branch_order_context: JSON.parse(
-      formData.get("branch_order_context") as string
+      formData.get("branch_order_context") as string,
     ),
   });
 
@@ -158,7 +155,7 @@ export async function updateBranch(
       branch_id: branchData.id,
       name: location.name,
       type: location.type,
-    })
+    }),
   );
 
   const { error: deleteErrorBranchLocation } = await supabase
@@ -196,7 +193,7 @@ export async function updateBranch(
       client_profiles_id: currentUserId,
       branch_id: branchData.id,
       order_context_id: order_context.order_context,
-    })
+    }),
   );
 
   const { error: deleteErrorOrderContext } = await supabase
@@ -235,7 +232,7 @@ export async function updateBranch(
 
 export async function deleteBranch(
   prevState: BranchFormState,
-  formData: FormData
+  formData: FormData,
 ) {
   const supabase = await createClient();
 
