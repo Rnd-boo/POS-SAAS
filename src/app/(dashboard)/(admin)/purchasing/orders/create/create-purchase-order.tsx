@@ -14,6 +14,8 @@ import {
   PurchaseOrderForm,
   purchaseOrderFormSchema,
 } from "@/validations/purchasing/purchase-order.validation";
+import { useBranchQuery } from "@/hooks/queries/use-branches";
+import { INITIAL_PURCHASE_ORDER } from "@/constants/purchasing/purchase-order.constant";
 
 export default function CreatePurchaseOrder() {
   const queryClient = useQueryClient();
@@ -21,7 +23,9 @@ export default function CreatePurchaseOrder() {
   const router = useRouter();
   const form = useForm<PurchaseOrderForm>({
     resolver: zodResolver(purchaseOrderFormSchema),
+    defaultValues: INITIAL_PURCHASE_ORDER,
   });
+  const { data: branches, isLoading: isLoadingBranch } = useBranchQuery();
   //   const [
   //     createStockAdjustmentState,
   //     createStockAdjustmentAction,
@@ -58,7 +62,11 @@ export default function CreatePurchaseOrder() {
 
   return (
     <div className="w-full">
-      <CardFormPurchaseOrder form={form} type="Create" />
+      <CardFormPurchaseOrder
+        form={form}
+        type="Create"
+        branches={branches ?? []}
+      />
     </div>
   );
 }

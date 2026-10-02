@@ -21,12 +21,14 @@ export default function CardFormPurchaseOrder({
   isLoading,
   isPending,
   onSubmit,
+  branches,
 }: {
   form: UseFormReturn<PurchaseOrderForm>;
   type: "Create" | "Update" | "Detail";
   isLoading?: boolean;
   isPending?: boolean;
   onSubmit?: (event: FormEvent<HTMLFormElement>) => void;
+  branches: { id: string; name: string }[];
 }) {
   const status = form.getValues("status");
   return (
@@ -56,7 +58,12 @@ export default function CardFormPurchaseOrder({
             )}
           </CardHeader>
           <CardContent>
-            <FormPurchaseOrder form={form} isLoading={false} type="Create" />
+            <FormPurchaseOrder
+              form={form}
+              isLoading={false}
+              type={type}
+              branches={branches}
+            />
           </CardContent>
           <CreateButton type={type} isPending={isPending} />
         </Card>
