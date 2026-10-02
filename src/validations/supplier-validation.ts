@@ -19,7 +19,10 @@ export const supplierSchema = z.object({
 
 export const supplierPIC = z.object({
   name: z.string().min(1, "Person name is required"),
-  email: z.string(),
+  email: z
+    .email({ error: "Invalid email format" })
+    .optional()
+    .or(z.literal("")),
   phone: z.string(),
   is_default: z.boolean(),
 });
