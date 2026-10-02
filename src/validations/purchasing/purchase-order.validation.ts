@@ -5,6 +5,7 @@ export const purchaseOrderSchema = z.object({
   required_date: z.string(),
   branch_id: z.number(),
   brand_id: z.number(),
+  due_days: z.number(),
   notes: z.string().optional(),
   status: z.string().optional(),
   supplier_id: z.number(),
@@ -12,7 +13,8 @@ export const purchaseOrderSchema = z.object({
 
 export const purchaseOrderItemSchema = z.object({
   products_units_id: z.string(),
-  price: z.number(),
+  old_price: z.number(),
+  new_price: z.number().optional(),
   discount: z.number(),
   qty: z.number(),
 });
@@ -23,6 +25,7 @@ export const purchaseOrderFormSchema = z.object({
   branch_id: z.string().min(1, "Branch is required"),
   notes: z.string().optional(),
   status: z.string().optional(),
+  due_days: z.string().optional(),
   supplier_id: z.string().min(1, "Supplier is required"),
   purchase_order_item: z.array(purchaseOrderItemSchema),
 });

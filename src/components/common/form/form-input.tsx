@@ -52,10 +52,12 @@ export default function FormInput<T extends FieldValues>({
       name={name}
       render={({ field: { ...rest } }) => (
         <FormItem className={className}>
-          <FormLabel>
-            {label} {required && <span className="text-destructive">*</span>}{" "}
-            {tooltip}
-          </FormLabel>
+          {label && (
+            <FormLabel>
+              {label} {required && <span className="text-destructive">*</span>}{" "}
+              {tooltip}
+            </FormLabel>
+          )}
           <FormControl>
             {isLoading ? (
               <Skeleton className="h-10 w-full" />
@@ -94,6 +96,7 @@ export default function FormInput<T extends FieldValues>({
               <Input
                 {...rest}
                 type={type}
+                value={rest.value === 0 ? "" : rest.value}
                 placeholder={placeholder}
                 autoComplete="off"
                 disabled={disabled}

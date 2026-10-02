@@ -15,7 +15,7 @@ export const purchaseOrderColumns: ColumnDef<PurchaseOrderData>[] = [
     cell: ({ getValue }) => <div>{getValue<string>()}</div>,
   },
   {
-    id: "Purchase Order Date",
+    id: "purchase_order_date",
     accessorFn: (row) => row.purchase_order_date,
     enableHiding: false,
     header: ({ column }) => (
@@ -24,7 +24,7 @@ export const purchaseOrderColumns: ColumnDef<PurchaseOrderData>[] = [
     cell: ({ getValue }) => <div>{getValue<string>()}</div>,
   },
   {
-    id: "Required Date",
+    id: "required_date",
     accessorFn: (row) => row.required_date,
     enableHiding: false,
     header: ({ column }) => (

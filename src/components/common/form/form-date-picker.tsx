@@ -44,7 +44,7 @@ export default function FormDatePicker<T extends FieldValues>({
             {isLoading ? (
               <Skeleton className="h-10 w-full" />
             ) : (
-              <Popover modal>
+              <Popover>
                 <PopoverTrigger asChild>
                   <Input
                     value={field.value ?? ""}

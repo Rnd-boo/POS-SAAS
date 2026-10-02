@@ -23,11 +23,12 @@ const parseField = (formData: FormData) =>
     notes: formData.get("notes"),
   });
 
-const { currentUserId, currentClientId } = await getCurrentProfile();
 export async function createSupplier(
   prevState: SupplierFormState,
   formData: FormData,
 ) {
+  const { currentUserId, currentClientId } = await getCurrentProfile();
+
   const validatedFields = parseField(formData);
   if (!validatedFields.success) {
     return {
@@ -88,6 +89,8 @@ export async function updateSupplier(
   prevState: SupplierFormState,
   formData: FormData,
 ) {
+  const { currentClientId } = await getCurrentProfile();
+
   const validatedFields = parseField(formData);
   if (!validatedFields.success) {
     return {
